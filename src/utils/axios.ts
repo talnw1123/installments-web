@@ -1,8 +1,7 @@
-import { envs } from '@constant';
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 
 export const apiInstances = axios.create({
-  baseURL: `${envs.BASE_URL}/api`,
+  baseURL: `http://localhost:5173/`,
   responseType: 'json',
 });
 
