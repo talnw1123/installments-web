@@ -24,5 +24,3 @@ export interface StepParams {
   enterAmount: string;
   interestRates: string;
 }
-
-//step 3 stepทั้งหมด

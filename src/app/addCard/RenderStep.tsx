@@ -282,15 +282,14 @@ const RenderStep: React.FC<RenderStepProps> = ({
                         <Controller
                           name="birthday"
                           control={form.control}
-                          defaultValue={null}
                           render={({ field: { onChange, value }, fieldState: { error } }) => (
                             <DatePicker
                               label="วันเกิด"
                               value={value || null}
                               onChange={date => onChange(date ? date.toISOString() : null)}
-                              renderInput={params => (
+                              renderInput={props => (
                                 <TextField
-                                  {...params}
+                                  {...props}
                                   variant="standard"
                                   fullWidth
                                   margin="normal"
