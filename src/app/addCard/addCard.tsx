@@ -4,7 +4,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../typings/renderStepProps';
 import RenderStep from './RenderStep';
@@ -26,11 +26,15 @@ export default function AddCard() {
   const [age, setAge] = useState('');
   const statuses = ['Single', 'Married', 'Divorced', 'Widowed'];
 
-  const handleDateChange = (newValue: dayjs.Dayjs | null) => {
-    setSelectedDate(newValue);
-    if (newValue) {
-      const calculatedAge = calculateAge(newValue);
+  const handleDateChange = (date: dayjs.Dayjs | null) => {
+    const selectedDate = date ? date.toDate() : null;
+    form.setValue('birthDate', selectedDate);
+
+    if (selectedDate) {
+      const calculatedAge = calculateAge(dayjs(selectedDate));
       setAge(calculatedAge.toString());
+    } else {
+      setAge('');
     }
   };
 
@@ -58,6 +62,10 @@ export default function AddCard() {
     return `${value}%`;
   };
 
+  useEffect(() => {
+    form.setValue('interestRates', '5%');
+  }, [form]);
+
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
 
   const AddCard = () => {
@@ -83,6 +91,7 @@ export default function AddCard() {
             selectedDate={selectedDate}
             handleDateChange={handleDateChange}
             valuetext={valuetext}
+            age={age}
           />
         </form>
       </>

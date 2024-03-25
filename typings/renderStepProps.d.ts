@@ -11,7 +11,7 @@ export interface StepParams {
   workNumber: string;
   flagNumber: string;
   lastName: string;
-  birthday: Date;
+  birthDate: Date | null;
   age?: number;
   income: string;
   workAddress: string;
