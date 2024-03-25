@@ -172,34 +172,28 @@ export default function PayPage() {
           <Grid item xs={9} sx={{ display: 'grid' }}>
             <Grid container className={classes.bigContainer}>
               <form>
-                <Grid container spacing={2} className={classes.formContainer}>
-                  <Grid item xs={4}>
-                    <Grid container spacing={6} direction="row">
-                      <Grid item xs={6}>
-                        <TextField
-                          label="บัตรประจำตัวประชาชน"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                          sx={{ width: '80' }}
-                        />
-                      </Grid>
-                      <Grid item xs={6}>
-                        <TextField
-                          label="เบอร์โทรศัพท์"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                          sx={{ width: '100%' }}
-                        />
-                      </Grid>
-                    </Grid>
+                <Grid container className={classes.formContainer}>
+                  <Grid className={classes.column}>
+                    <TextField
+                      label="บัตรประจำตัวประชาชน"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  </Grid>
+                  <Grid className={classes.column}>
+                    <TextField
+                      label="เบอร์โทรศัพท์"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
                   </Grid>
                 </Grid>
                 <Grid container className={classes.formContainer}>
-                  <div className={classes.column}>
+                  <Grid className={classes.column}>
                     <Grid item xs={12}>
                       <TextField
                         label="ชื่อ"
@@ -209,8 +203,8 @@ export default function PayPage() {
                         className={classes.formField}
                       />
                     </Grid>
-                  </div>
-                  <div className={classes.column}>
+                  </Grid>
+                  <Grid className={classes.column}>
                     <TextField
                       label="นามสกุล"
                       variant="standard"
@@ -218,25 +212,25 @@ export default function PayPage() {
                       margin="normal"
                       className={classes.formField}
                     />
-                  </div>
-                  <div className={classes.column}>
+                  </Grid>
+                  <Grid className={classes.column}>
                     <TextField
-                      label="บัตรประจำตัวประชาชน"
+                      label="วันเดือนปีเกิด"
                       variant="standard"
                       fullWidth
                       margin="normal"
                       className={classes.formField}
                     />
-                  </div>
-                  <div className={classes.column}>
+                  </Grid>
+                  <Grid className={classes.column}>
                     <TextField
-                      label="เบอร์โทรศัพท์"
+                      label="อายุ"
                       variant="standard"
                       fullWidth
                       margin="normal"
                       className={classes.formField}
                     />
-                  </div>
+                  </Grid>
                 </Grid>
                 <Grid>
                   <TextField
