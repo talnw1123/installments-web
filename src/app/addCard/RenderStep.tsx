@@ -1,14 +1,4 @@
-import {
-  Button,
-  FormControlLabel,
-  Grid,
-  MenuItem,
-  Slider,
-  Switch,
-  TextField,
-  TextFieldProps,
-  Typography,
-} from '@mui/material';
+import { Button, FormControlLabel, Grid, MenuItem, Slider, Switch, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -294,26 +284,7 @@ const RenderStep: React.FC<RenderStepProps> = ({
                         <Controller
                           name="birthDate"
                           control={form.control}
-                          render={({ field: { onChange, value }, fieldState: { error } }) => (
-                            <DatePicker
-                              label="วันเกิด"
-                              value={value ? dayjs(value) : null}
-                              onChange={newValue => {
-                                onChange(newValue ? newValue.toDate() : null);
-                              }}
-                              renderInput={(params: TextFieldProps) => (
-                                <TextField
-                                  {...params}
-                                  variant="standard"
-                                  fullWidth
-                                  margin="normal"
-                                  error={!!error}
-                                  helperText={error ? error.message : null}
-                                  className={classes.formField}
-                                />
-                              )}
-                            />
-                          )}
+                          render={({ field }) => <DatePicker label="วันเกิด" {...field} />}
                         />
                       </LocalizationProvider>
                     </Grid>
@@ -684,20 +655,7 @@ const RenderStep: React.FC<RenderStepProps> = ({
               </Grid>
               <Grid item xs={4}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <DatePicker
-                    label="วันที่ทำสัญญา"
-                    value={selectedDate}
-                    onChange={handleDateChange}
-                    renderInput={(params: TextFieldProps) => (
-                      <TextField
-                        {...params}
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
+                  <DatePicker label="วันที่ทำสัญญา" value={selectedDate} onChange={handleDateChange} />
                 </LocalizationProvider>
               </Grid>
 

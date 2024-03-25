@@ -68,33 +68,31 @@ export default function AddCard() {
 
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
 
-  const AddCard = () => {
-    return (
-      <>
-        <Box sx={{ width: '100%' }}>
-          <Stepper activeStep={step} alternativeLabel>
-            {steps.map(label => (
-              <Step key={label}>
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-        <form onSubmit={form.handleSubmit(handleSubmit)}>
-          <RenderStep
-            step={step}
-            data={data}
-            handleChange={handleChange}
-            nextStep={nextStep}
-            form={form}
-            statuses={statuses}
-            selectedDate={selectedDate}
-            handleDateChange={handleDateChange}
-            valuetext={valuetext}
-            age={age}
-          />
-        </form>
-      </>
-    );
-  };
+  return (
+    <>
+      <Box sx={{ width: '100%' }}>
+        <Stepper activeStep={step} alternativeLabel>
+          {steps.map(label => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </Box>
+      <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <RenderStep
+          step={step}
+          data={data}
+          handleChange={handleChange}
+          nextStep={nextStep}
+          form={form}
+          statuses={statuses}
+          selectedDate={selectedDate}
+          handleDateChange={handleDateChange}
+          valuetext={valuetext}
+          age={age}
+        />
+      </form>
+    </>
+  );
 }
