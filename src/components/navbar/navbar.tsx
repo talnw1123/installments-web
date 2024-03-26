@@ -53,18 +53,6 @@ const Navbar: FC<NavbarProps> = props => {
     <AppBar position="static" sx={{ bgcolor: '#4A4A4A' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Link href="/summary" style={{ textDecoration: 'none' }}>
-            <img
-              src="/assets/images/angel_acs.png"
-              style={{
-                marginRight: '8px',
-                height: '60px',
-                width: 'auto',
-                cursor: 'pointer',
-              }}
-            />
-          </Link>
-
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"

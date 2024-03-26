@@ -17,7 +17,7 @@ const useStyles = makeStyles({
     marginTop: '20px',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
 });
 
@@ -130,31 +130,37 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
 
               <Grid item xs={4} container direction="column" style={{ marginTop: '5px' }}>
                 <Grid item>
-                  <Controller
-                    name="lastName"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField {...field} label="นามสุกล" variant="standard" fullWidth margin="normal" />
-                    )}
-                  />
+                  <Grid item style={{ marginTop: '67px' }}>
+                    {' '}
+                    <Controller
+                      name="lastName"
+                      defaultValue=""
+                      control={form?.control}
+                      render={({ field }) => (
+                        <TextField {...field} label="นามสุกล" variant="standard" fullWidth margin="normal" />
+                      )}
+                    />
+                  </Grid>
 
-                  <Controller
-                    name="addressCurrent"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="ที่อยู่ปัจจุบัน"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                      />
-                    )}
-                  />
+                  <Grid item style={{ marginTop: '72px' }}>
+                    {' '}
+                    <Controller
+                      name="addressCurrent"
+                      defaultValue=""
+                      control={form?.control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="ที่อยู่ปัจจุบัน"
+                          variant="outlined"
+                          fullWidth
+                          margin="normal"
+                          multiline
+                          rows={4}
+                        />
+                      )}
+                    />
+                  </Grid>
                 </Grid>
 
                 <Controller
