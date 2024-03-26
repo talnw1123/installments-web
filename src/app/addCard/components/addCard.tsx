@@ -6,7 +6,7 @@ import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { StepParams } from '../../../typings/renderStepProps';
+import { StepParams } from '../../../../typings/renderStepProps';
 import RenderStep from './RenderStep';
 
 function valuetext(value: number) {
@@ -70,7 +70,7 @@ export default function AddCard() {
 
   return (
     <>
-      <Box sx={{ width: '100%' }}>
+      <Box sx={{ width: '100%', marginTop: 5 }}>
         <Stepper activeStep={step} alternativeLabel>
           {steps.map(label => (
             <Step key={label}>
