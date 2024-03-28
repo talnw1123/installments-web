@@ -50,13 +50,13 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
   return (
     <>
       <form>
-        <Grid container spacing={4} className={classes.formContainer}>
-          <Card sx={{ padding: 3, width: '75%', marginTop: 5 }}>
+        <Grid container className={classes.bigContainer}>
+          <Card sx={{ padding: 3, width: '75%' }}>
             <Typography variant="h4" sx={{ marginLeft: 22 }}>
               ข้อมูลผู้กู้
             </Typography>
 
-            <Grid container spacing={2} className={classes.formContainer}>
+            <Grid container spacing={4} className={classes.formContainer}>
               <Grid item xs={4}>
                 <Controller
                   name="idBorrower"
@@ -91,7 +91,7 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                 />
 
                 <Grid container item spacing={3}>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Controller
                       name="occupationBorrower"
                       defaultValue=""
@@ -107,6 +107,8 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                         />
                       )}
                     />
+                  </Grid>
+                  <Grid item xs={4}>
                     <Controller
                       name="incomeBorrower"
                       defaultValue=""
@@ -122,6 +124,8 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                         />
                       )}
                     />
+                  </Grid>
+                  <Grid item xs={4}>
                     <Controller
                       name="workPhoneNumberBorrower"
                       defaultValue=""
@@ -129,7 +133,7 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="เบอร์โทรศัพท์ที่ทำงาน"
+                          label="เบอร์ที่ทำงาน"
                           variant="standard"
                           fullWidth
                           margin="normal"
@@ -234,7 +238,7 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                 />
 
                 <Grid container item spacing={3}>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <Controller
                       name="occupationSpouse"
                       defaultValue=""
@@ -250,6 +254,8 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                         />
                       )}
                     />
+                  </Grid>
+                  <Grid item xs={4}>
                     <Controller
                       name="incomeSpouse"
                       defaultValue=""
@@ -265,6 +271,8 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                         />
                       )}
                     />
+                  </Grid>
+                  <Grid item xs={4}>
                     <Controller
                       name="workPhoneNumberSpouse"
                       defaultValue=""
@@ -272,7 +280,7 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="เบอร์โทรศัพท์ที่ทำงาน"
+                          label="เบอร์ที่ทำงาน"
                           variant="standard"
                           fullWidth
                           margin="normal"
@@ -298,30 +306,31 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                     />
                   )}
                 />
+              </Grid>
 
-                <Grid item xs={4} container direction="column">
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <Controller
-                          name="birthDate"
-                          control={form.control}
-                          render={({ field }) => <DatePicker label="วันเกิด" {...field} />}
-                        />
-                      </LocalizationProvider>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        label="อายุ"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                        value={age}
-                        disabled
+              <Grid item xs={4} container direction="column">
+                <Grid container spacing={3}>
+                  <Grid item xs={4}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <Controller
+                        name="birthDate"
+                        control={form.control}
+                        render={({ field }) => <DatePicker label="วันเกิด" {...field} />}
                       />
-                    </Grid>
-
+                    </LocalizationProvider>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <TextField
+                      label="อายุ"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                      value={age}
+                      disabled
+                    />
+                  </Grid>
+                  <Grid item xs={4}>
                     <Controller
                       name="phoneNumberBorrower"
                       defaultValue=""
@@ -338,9 +347,90 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                       )}
                     />
                   </Grid>
+                </Grid>
 
+                <Controller
+                  name="lastNameBorrower"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="นามสกุล"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
+
+                <Controller
+                  name="addressCurrentBorrower"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="ที่อยู่ปัจจุบัน"
+                      fullWidth
+                      margin="normal"
+                      multiline
+                      rows={4}
+                      className={classes.formField}
+                    />
+                  )}
+                />
+                <Controller
+                  name="mapLinkCurrentBorrower"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Google Map link"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
+                <Controller
+                  name="workAddressBorrower"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="ที่อยู่ที่ทำงาน"
+                      fullWidth
+                      margin="normal"
+                      multiline
+                      rows={4}
+                      className={classes.formField}
+                    />
+                  )}
+                />
+                <Controller
+                  name="mapLinkWorkBorrower"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Google Map link"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
+                <Grid item style={{ marginTop: '72px' }}>
+                  {' '}
                   <Controller
-                    name="lastNameBorrower"
+                    name="lastNameSpouse"
                     defaultValue=""
                     control={form?.control}
                     render={({ field }) => (
@@ -354,120 +444,39 @@ const StepOnePage: React.FC<StepOneProps> = ({ form, nextStep, statuses, age }) 
                       />
                     )}
                   />
-
-                  <Controller
-                    name="addressCurrentBorrower"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="ที่อยู่ปัจจุบัน"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="mapLinkCurrentBorrower"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Google Map link"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="workAddressBorrower"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="ที่อยู่ที่ทำงาน"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="mapLinkWorkBorrower"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Google Map link"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                  <Grid item style={{ marginTop: '72px' }}>
-                    {' '}
-                    <Controller
-                      name="lastNameSpouse"
-                      defaultValue=""
-                      control={form?.control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="นามสกุล"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
-                  </Grid>
-
-                  <Controller
-                    name="workAddressSpouse"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="ที่อยู่ที่ทำงาน"
-                        fullWidth
-                        margin="normal"
-                        multiline
-                        rows={4}
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                  <Controller
-                    name="mapLinkWorkSpouse"
-                    defaultValue=""
-                    control={form?.control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="Google Map link"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
                 </Grid>
+
+                <Controller
+                  name="workAddressSpouse"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="ที่อยู่ที่ทำงาน"
+                      fullWidth
+                      margin="normal"
+                      multiline
+                      rows={4}
+                      className={classes.formField}
+                    />
+                  )}
+                />
+                <Controller
+                  name="mapLinkWorkSpouse"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Google Map link"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
 

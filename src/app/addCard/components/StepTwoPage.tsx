@@ -101,8 +101,8 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep, prevStep }) => {
                   )}
                 />
 
-                <Grid container item spacing={3}>
-                  <Grid item xs={6}>
+                <Grid container item>
+                  <Grid item xs={12}>
                     <Controller
                       name="occupationGuarantor"
                       defaultValue=""
@@ -140,7 +140,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep, prevStep }) => {
                       render={({ field }) => (
                         <TextField
                           {...field}
-                          label="เบอร์โทรศัพท์ที่ทำงาน"
+                          label="เบอร์ที่ทำงาน"
                           variant="standard"
                           fullWidth
                           margin="normal"
