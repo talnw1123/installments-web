@@ -1,4 +1,4 @@
-import { Card, Grid, TextField, Typography } from '@mui/material';
+import { Button, Card, Grid, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import React from 'react';
 import { Controller, UseFormReturn } from 'react-hook-form';
@@ -24,9 +24,10 @@ const useStyles = makeStyles({
 interface StepTwoProps {
   form: UseFormReturn<any, object>;
   nextStep: () => void;
+  prevStep: () => void;
 }
 
-const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
+const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep, prevStep }) => {
   const classes = useStyles();
 
   return (
@@ -41,7 +42,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
             <Grid container spacing={4} className={classes.formContainer}>
               <Grid item xs={4}>
                 <Controller
-                  name="idCard"
+                  name="idGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -50,7 +51,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 />
 
                 <Controller
-                  name="name"
+                  name="nameGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -59,7 +60,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 />
 
                 <Controller
-                  name="phoneNumber"
+                  name="phoneNumberGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -68,13 +69,13 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 />
 
                 <Controller
-                  name="address"
+                  name="addressDefaultGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="ที่อยู่"
+                      label="ที่อยู่ตามบัตรประชาชน"
                       variant="outlined"
                       fullWidth
                       margin="normal"
@@ -85,7 +86,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 />
 
                 <Controller
-                  name="mapLink"
+                  name="mapLinkDefaultGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -100,32 +101,55 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                   )}
                 />
 
-                <Controller
-                  name="occupation"
-                  defaultValue=""
-                  control={form?.control}
-                  render={({ field }) => (
-                    <TextField {...field} label="อาชีพ" variant="standard" fullWidth margin="normal" />
-                  )}
-                />
-
-                <Controller
-                  name="workNumber"
-                  defaultValue=""
-                  control={form?.control}
-                  render={({ field }) => (
-                    <TextField {...field} label="เบอร์โทรศัพท์ที่ทำงาน" variant="standard" fullWidth margin="normal" />
-                  )}
-                />
-
-                <Controller
-                  name="flagNumber"
-                  defaultValue=""
-                  control={form?.control}
-                  render={({ field }) => (
-                    <TextField {...field} label="เบอร์แฟกซ์ที่ทำงาน" variant="standard" fullWidth margin="normal" />
-                  )}
-                />
+                <Grid container item spacing={3}>
+                  <Grid item xs={6}>
+                    <Controller
+                      name="occupationGuarantor"
+                      defaultValue=""
+                      control={form?.control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="อาชีพ"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="incomeGuarantor"
+                      defaultValue=""
+                      control={form?.control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="รายได้"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                    <Controller
+                      name="workPhoneNumberGuarantor"
+                      defaultValue=""
+                      control={form?.control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์โทรศัพท์ที่ทำงาน"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
               </Grid>
 
               <Grid item xs={4} container direction="column" style={{ marginTop: '5px' }}>
@@ -133,7 +157,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                   <Grid item style={{ marginTop: '67px' }}>
                     {' '}
                     <Controller
-                      name="lastName"
+                      name="lastNameGuarantor"
                       defaultValue=""
                       control={form?.control}
                       render={({ field }) => (
@@ -145,7 +169,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                   <Grid item style={{ marginTop: '72px' }}>
                     {' '}
                     <Controller
-                      name="addressCurrent"
+                      name="addressCurrentGuarantor"
                       defaultValue=""
                       control={form?.control}
                       render={({ field }) => (
@@ -164,7 +188,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 </Grid>
 
                 <Controller
-                  name="mapLink"
+                  name="mapLinkCurrentGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -180,16 +204,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 />
 
                 <Controller
-                  name="income"
-                  defaultValue=""
-                  control={form?.control}
-                  render={({ field }) => (
-                    <TextField {...field} label="รายได้" variant="standard" fullWidth margin="normal" />
-                  )}
-                />
-
-                <Controller
-                  name="workAddress"
+                  name="workAddressGuarantor"
                   defaultValue=""
                   control={form?.control}
                   render={({ field }) => (
@@ -204,12 +219,38 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                     />
                   )}
                 />
+                <Controller
+                  name="mapLinkWorkGuarantor"
+                  defaultValue=""
+                  control={form?.control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="Google Map link"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
               </Grid>
             </Grid>
 
-            <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-              <button
+            <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'space-between' }}>
+              <Button
+                variant="contained"
                 color="primary"
+                onClick={e => {
+                  e.preventDefault();
+                  prevStep();
+                }}
+              >
+                Back
+              </Button>
+              <Button
+                color="primary"
+                variant="contained"
                 style={{ marginTop: '20px' }}
                 onClick={e => {
                   e.preventDefault();
@@ -217,7 +258,7 @@ const StepTwoPage: React.FC<StepTwoProps> = ({ form, nextStep }) => {
                 }}
               >
                 Next
-              </button>
+              </Button>
             </Grid>
           </Card>
         </Grid>

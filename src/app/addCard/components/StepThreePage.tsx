@@ -44,6 +44,7 @@ interface StepThreeProps {
   selectedDate: dayjs.Dayjs | null;
   handleDateChange: (newValue: dayjs.Dayjs | null) => void;
   valuetext: (value: number, index: number) => string;
+  prevStep: () => void;
 }
 
 const StepThreePage: React.FC<StepThreeProps> = ({ form, onSubmit, selectedDate, handleDateChange, valuetext }) => {

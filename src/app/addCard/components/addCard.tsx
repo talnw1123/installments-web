@@ -9,10 +9,6 @@ import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
 import RenderStep from './RenderStep';
 
-function valuetext(value: number) {
-  return `${value}%`;
-}
-
 export default function AddCard() {
   const [step, setStep] = useState(0);
   const [data, setData] = useState({
@@ -53,6 +49,9 @@ export default function AddCard() {
   const nextStep = () => {
     setStep(step + 1);
   };
+  const prevStep = () => {
+    setStep(step - 1);
+  };
 
   const handleSubmit = (data: StepParams) => {
     console.log(data);
@@ -91,6 +90,7 @@ export default function AddCard() {
           handleDateChange={handleDateChange}
           valuetext={valuetext}
           age={age}
+          prevStep={prevStep}
         />
       </form>
     </>

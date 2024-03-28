@@ -12,6 +12,7 @@ interface RenderStepProps {
   data: StepParams;
   handleChange: (e: any) => void;
   nextStep: () => void;
+  prevStep: () => void;
   form: UseFormReturn<StepParams>;
   statuses: string[];
   selectedDate: dayjs.Dayjs | null;
@@ -26,6 +27,7 @@ const RenderStep: React.FC<RenderStepProps> = ({
   data,
   handleChange,
   nextStep,
+  prevStep,
   form,
   statuses,
   selectedDate,
@@ -38,6 +40,7 @@ const RenderStep: React.FC<RenderStepProps> = ({
     data,
     handleChange,
     nextStep,
+    prevStep,
     form,
     statuses,
     selectedDate,
