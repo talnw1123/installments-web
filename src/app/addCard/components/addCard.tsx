@@ -1,60 +1,33 @@
 'use client';
+import { Button, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { createContext, useEffect, useState } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
-import RenderStep from './RenderStep';
+import StepOnePage from './StepOnePage';
+import StepThreePage from './StepThreePage';
+import StepTwoPage from './StepTwoPage';
 
-export default function AddCard() {
+export const DataContext = createContext<any>({});
+
+const AddCard = () => {
   const [step, setStep] = useState(0);
-  const [data, setData] = useState({
-    name: '',
-    email: '',
-    password: '',
-  });
+  const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
+  const statuses: string[] = ['Single', 'Married', 'Divorced', 'Widowed'];
+  const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
 
-  const form = useForm<StepParams>({});
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
-  const [age, setAge] = useState('');
-  const statuses = ['Single', 'Married', 'Divorced', 'Widowed'];
-
-  const handleDateChange = (date: dayjs.Dayjs | null) => {
-    const selectedDate = date ? date.toDate() : null;
-    form.setValue('birthDate', selectedDate);
-
-    if (selectedDate) {
-      const calculatedAge = calculateAge(dayjs(selectedDate));
-      setAge(calculatedAge.toString());
-    } else {
-      setAge('');
-    }
-  };
-
-  const calculateAge = (birthday: dayjs.Dayjs) => {
-    const now = dayjs();
-    return now.diff(birthday, 'year');
-  };
-
-  const handleChange = (e: any) => {
-    setData({
-      ...data,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const onSubmit: SubmitHandler<StepParams> = data => console.log(data);
 
   const nextStep = () => {
     setStep(step + 1);
   };
+
   const prevStep = () => {
     setStep(step - 1);
-  };
-
-  const handleSubmit = (data: StepParams) => {
-    console.log(data);
   };
 
   const valuetext = (value: number) => {
@@ -62,10 +35,28 @@ export default function AddCard() {
   };
 
   useEffect(() => {
-    form.setValue('interestRates', '5%');
-  }, [form]);
+    setValue('interestRates', '5%');
+  });
 
-  const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
+  const date = watch('Date');
+
+  const calculate = (date: any) => {
+    const now = dayjs();
+    return `${now.diff(date, 'year')}`;
+  };
+
+  const conTextValue = {
+    step,
+    nextStep,
+    prevStep,
+    statuses,
+    valuetext,
+    onSubmit,
+    calculate,
+    date,
+    setValue,
+    control,
+  };
 
   return (
     <>
@@ -78,21 +69,78 @@ export default function AddCard() {
           ))}
         </Stepper>
       </Box>
-      <form onSubmit={form.handleSubmit(handleSubmit)}>
-        <RenderStep
-          step={step}
-          data={data}
-          handleChange={handleChange}
-          nextStep={nextStep}
-          form={form}
-          statuses={statuses}
-          selectedDate={selectedDate}
-          handleDateChange={handleDateChange}
-          valuetext={valuetext}
-          age={age}
-          prevStep={prevStep}
-        />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DataContext.Provider value={conTextValue}>
+          {step === 0 && (
+            <>
+              <StepOnePage />
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="button"
+                  onClick={e => {
+                    e.preventDefault();
+                    nextStep();
+                  }}
+                >
+                  Next
+                </Button>
+              </Grid>
+            </>
+          )}
+          {step === 1 && (
+            <>
+              <StepTwoPage />
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={e => {
+                    e.preventDefault();
+                    prevStep();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="button"
+                  onClick={e => {
+                    e.preventDefault();
+                    nextStep();
+                  }}
+                >
+                  Next
+                </Button>
+              </Grid>
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <StepThreePage />
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={e => {
+                    e.preventDefault();
+                    prevStep();
+                  }}
+                >
+                  Back
+                </Button>
+                <Button type="submit" variant="contained" color="primary">
+                  Submit
+                </Button>
+              </Grid>
+            </>
+          )}
+        </DataContext.Provider>
       </form>
     </>
   );
-}
+};
+
+export default AddCard;

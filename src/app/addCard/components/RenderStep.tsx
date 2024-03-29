@@ -1,64 +1,19 @@
 'use client';
-import dayjs from 'dayjs';
-import React from 'react';
-import { UseFormReturn } from 'react-hook-form';
-import { StepParams } from '../../../../typings/renderStepProps';
-import StepOnePage from './StepOnepage';
+import { useContext } from 'react';
+import StepOnePage from './StepOnePage';
 import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
+import { DataContext } from './addCard';
 
-interface RenderStepProps {
-  step: number;
-  data: StepParams;
-  handleChange: (e: any) => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  form: UseFormReturn<StepParams>;
-  statuses: string[];
-  selectedDate: dayjs.Dayjs | null;
-  handleDateChange: (date: dayjs.Dayjs | null) => void;
-  valuetext: (value: number) => string;
-  age: string;
-  onSubmit: () => {};
-}
-
-const RenderStep: React.FC<RenderStepProps> = ({
-  step,
-  data,
-  handleChange,
-  nextStep,
-  prevStep,
-  form,
-  statuses,
-  selectedDate,
-  handleDateChange,
-  valuetext,
-  age,
-  onSubmit,
-}) => {
-  const otherProps = {
-    data,
-    handleChange,
-    nextStep,
-    prevStep,
-    form,
-    statuses,
-    selectedDate,
-    handleDateChange,
-    valuetext,
-    age,
-    onSubmit,
-  };
-
+const RenderStep = () => {
+  const { step } = useContext(DataContext);
   switch (step) {
     case 0:
-      return <StepOnePage {...otherProps} />;
+      return <StepOnePage />;
     case 1:
-      return <StepTwoPage {...otherProps} />;
+      return <StepTwoPage />;
     case 2:
-      return <StepThreePage {...otherProps} />;
-    default:
-      return null;
+      return <StepThreePage />;
   }
 };
 

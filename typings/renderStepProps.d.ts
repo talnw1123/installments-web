@@ -38,7 +38,7 @@ export interface StepParams {
   mapLinkCurrentBorrower: string;
   mapLinkCurrentGuarantor: string;
 
-  statusBorrower: string;
+  statusBorrower: any;
   numOfChildBorrower: string;
 
   occupationBorrower: string;
@@ -49,10 +49,11 @@ export interface StepParams {
   incomeGuarantor: string;
   incomeSpouse: string;
 
-  birthDate: any;
+  Date: any;
   age: number;
 
   billNumber: string;
+  contractDate: string;
   contractNumber: string;
   totalLoan: string;
   taxMoney: string;
@@ -60,3 +61,5 @@ export interface StepParams {
   enterAmount: string;
   interestRates: string;
 }
+
+export default renderStepProps;
