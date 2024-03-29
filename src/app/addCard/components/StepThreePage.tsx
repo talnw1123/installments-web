@@ -1,5 +1,5 @@
 'use client';
-import { Card, FormControlLabel, Grid, Slider, Switch, TextField, Typography } from '@mui/material';
+import { Button, Card, Grid, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,9 +7,18 @@ import { useContext } from 'react';
 import { Controller } from 'react-hook-form';
 import { DataContext } from './addCard';
 
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 function valuetext(value: number) {
   return `${value}°C`;
 }
+
+const installmentColumns: GridColDef[] = [
+  { field: 'installmentNumber', headerName: 'งวดที่', width: 120 },
+  { field: 'date', headerName: 'วันที่', width: 150 },
+  { field: 'amountDue', headerName: 'เงินที่ต้องชำระ', type: 'number', width: 180 },
+  { field: 'interest', headerName: 'ดอกเบี้ย', type: 'number', width: 150 },
+  { field: 'principal', headerName: 'เงินต้น', type: 'number', width: 150 },
+];
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -44,8 +53,10 @@ const useStyles = makeStyles({
 });
 
 const StepThreePage = () => {
-  const { control, prevStep, setValue } = useContext(DataContext);
+  const { control, setValue, handleCreateInstallments, installments } = useContext(DataContext);
   const classes = useStyles();
+
+  console.log(installments);
 
   return (
     <>
@@ -121,19 +132,15 @@ const StepThreePage = () => {
               />
             </Grid>
 
-            <Grid item>
-              <FormControlLabel control={<Switch defaultChecked />} label="ภาษี" className={classes.formField} />
-            </Grid>
-
             <Grid item xs={3}>
               <Controller
-                name="taxMoney"
+                name="downPayment"
                 defaultValue=""
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="เป็นเงินภาษี"
+                    label="เงินดาว์น"
                     variant="standard"
                     fullWidth
                     margin="normal"
@@ -145,69 +152,19 @@ const StepThreePage = () => {
 
             <Grid item xs={3}>
               <Controller
-                name="inventoryValue"
+                name="numberOfInstallments"
                 defaultValue=""
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    label="มูลค่าสินค้าคงเหลือ"
+                    label="จำนวนงวด"
                     variant="standard"
                     fullWidth
                     margin="normal"
                     className={classes.formField}
                   />
                 )}
-              />
-            </Grid>
-
-            <Grid item xs={3.5}>
-              <Typography id="down-payment-slider" gutterBottom>
-                เงินดาว์น
-              </Typography>
-              <Slider
-                aria-labelledby="down-payment-slider"
-                defaultValue={30}
-                getAriaValueText={valuetext}
-                valueLabelDisplay="auto"
-                step={10}
-                marks
-                min={10}
-                max={110}
-              />
-            </Grid>
-
-            <Grid item xs={2}>
-              <Controller
-                name="enterAmount"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="กรอกจำนวนเงิน"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={3.5}>
-              <Typography id="installment-slider" gutterBottom>
-                จำนวนงวด
-              </Typography>
-              <Slider
-                aria-labelledby="installment-slider"
-                defaultValue={30}
-                getAriaValueText={valuetext}
-                valueLabelDisplay="auto"
-                step={1}
-                marks
-                min={1}
-                max={15}
               />
             </Grid>
 
@@ -227,6 +184,31 @@ const StepThreePage = () => {
                   />
                 )}
               />
+            </Grid>
+            <Grid item xs={3}>
+              <Controller
+                name="totalInstallmentAmount"
+                defaultValue=""
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="รวมยอดเงินผ่อน"
+                    variant="standard"
+                    fullWidth
+                    margin="normal"
+                    className={classes.formField}
+                  />
+                )}
+              />
+            </Grid>
+            <Grid item xs={3}>
+              <Button variant="contained" color="primary" type="button" onClick={handleCreateInstallments}>
+                สร้าง
+              </Button>
+            </Grid>
+            <Grid item xs={12}>
+              <DataGrid rows={installments} columns={installmentColumns} autoHeight />
             </Grid>
           </Grid>
         </Card>

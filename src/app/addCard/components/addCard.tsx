@@ -5,7 +5,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
 import StepOnePage from './StepOnePage';
@@ -50,6 +50,38 @@ const AddCard = () => {
     return age;
   };
 
+  const [installments, setInstallments] = useState<any[]>([]);
+
+  const handleCreateInstallments = useCallback(() => {
+    const totalLoan = parseFloat(watch('totalLoan'));
+    const downPayment = parseFloat(watch('downPayment'));
+    const numberOfInstallments = parseInt(watch('numberOfInstallments'), 10);
+    const interestRate = parseFloat(watch('interestRates')) / 100;
+    const loanAmount = totalLoan - downPayment;
+    const monthlyInterest = (loanAmount * interestRate) / 12;
+    const monthlyPayment = (loanAmount + loanAmount * interestRate) / numberOfInstallments;
+
+    const installmentData = [];
+    let remainingPrincipal = loanAmount;
+
+    for (let i = 1; i <= numberOfInstallments; i++) {
+      const interest = (remainingPrincipal * interestRate) / 12;
+      const principal = monthlyPayment - interest;
+      remainingPrincipal -= principal;
+
+      installmentData.push({
+        id: i,
+        installmentNumber: i,
+        date: dayjs(watch('contractDate')).add(i, 'month').format('DD/MM/YYYY'),
+        amountDue: monthlyPayment,
+        interest: interest.toFixed(2),
+        principal: principal.toFixed(2),
+      });
+    }
+
+    setInstallments(installmentData);
+  }, [watch, setInstallments]);
+
   const conTextValue = {
     step,
     nextStep,
@@ -63,6 +95,9 @@ const AddCard = () => {
     control,
     watch,
     setAge,
+    handleCreateInstallments,
+    installments,
+    setInstallments,
   };
 
   return (

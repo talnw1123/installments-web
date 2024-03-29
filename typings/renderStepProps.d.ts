@@ -56,10 +56,10 @@ export interface StepParams {
   contractDate: string;
   contractNumber: string;
   totalLoan: string;
-  taxMoney: string;
-  inventoryValue: string;
-  enterAmount: string;
+  downPayment: string;
+  numberOfInstallments: string;
   interestRates: string;
+  totalInstallmentAmount: string;
 }
 
 export default renderStepProps;
