@@ -128,7 +128,7 @@ export default function PayPage() {
   const searchParams = useSearchParams();
   const searchType = searchParams.get('type') || 'ชำระเงิน';
   const menuList = [
-    'ประวัติลูกหนี้',
+    'ประวัติผู้กู้',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',

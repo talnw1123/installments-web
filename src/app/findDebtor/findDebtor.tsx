@@ -70,7 +70,7 @@ export default function FindDebtorPage() {
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
         <form>
-          <Typography variant="h4">ค้นหาลูกหนี้</Typography>
+          <Typography variant="h4">ค้นหาผู้กู้</Typography>
 
           <div>
             <Grid container className={classes.formContainer}>
