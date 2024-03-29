@@ -1,6 +1,7 @@
 'use client';
-import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
@@ -40,6 +41,11 @@ const useStyles = makeStyles({
   column: {
     width: '25%',
     padding: '10px',
+  },
+  box: {
+    width: '25%',
+    display: 'flex',
+    alignItems: 'center',
   },
 });
 
@@ -174,21 +180,28 @@ export default function PayPage() {
               <form>
                 <Grid container className={classes.formContainer}>
                   <Grid className={classes.column}>
-                    <TextField
-                      label="บัตรประจำตัวประชาชน"
-                      variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
-                    />
+                    <Grid item xs={12}>
+                      <TextField
+                        id="standard-read-only-input"
+                        label="เลขบัตรประชาชน"
+                        defaultValue=" "
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                      />
+                    </Grid>
                   </Grid>
+
                   <Grid className={classes.column}>
                     <TextField
+                      id="standard-read-only-input"
                       label="เบอร์โทรศัพท์"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
                       variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
                     />
                   </Grid>
                 </Grid>
@@ -196,51 +209,59 @@ export default function PayPage() {
                   <Grid className={classes.column}>
                     <Grid item xs={12}>
                       <TextField
+                        id="standard-read-only-input"
                         label="ชื่อ"
+                        defaultValue=" "
+                        InputProps={{
+                          readOnly: true,
+                        }}
                         variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
                       />
                     </Grid>
                   </Grid>
                   <Grid className={classes.column}>
                     <TextField
+                      id="standard-read-only-input"
                       label="นามสกุล"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
                       variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
                     />
                   </Grid>
                   <Grid className={classes.column}>
                     <TextField
+                      id="standard-read-only-input"
                       label="วันเดือนปีเกิด"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
                       variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
                     />
                   </Grid>
                   <Grid className={classes.column}>
                     <TextField
+                      id="standard-read-only-input"
                       label="อายุ"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
                       variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
                     />
                   </Grid>
                 </Grid>
                 <Grid>
                   <TextField
-                    label="เลือกบิล"
+                    label="เลือกบิลที่ต้องการจ่าย"
                     variant="standard"
                     select
                     fullWidth
                     margin="normal"
                     className={classes.formField}
-                    sx={{ width: '100%' }}
+                    sx={{ width: '30%' }}
                   >
                     {billOptions.map(option => (
                       <MenuItem key={option} value={option}>
@@ -272,6 +293,81 @@ export default function PayPage() {
           </Grid>
         </Grid>
       </Card>
+      <Grid className={classes.box}>
+        <Typography variant="body1" sx={{ marginRight: '10px' }}>
+          ค่าปรับ
+        </Typography>
+        <ThemeProvider
+          theme={{
+            palette: {
+              primary: {
+                main: '#007FFF',
+                dark: '#0066CC',
+              },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: 170,
+              height: 50,
+              borderRadius: 1,
+              bgcolor: '#FFFFFF',
+              marginTop: 5,
+              marginBottom: 5,
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            hello
+          </Box>
+        </ThemeProvider>
+        <Typography variant="body1" sx={{ marginLeft: '10px' }}>
+          บาท
+        </Typography>
+      </Grid>
+      <Grid className={classes.box}>
+        <Typography variant="body1" sx={{ marginRight: '10px' }}>
+          รวมเป็นเงิน
+        </Typography>
+        <ThemeProvider
+          theme={{
+            palette: {
+              primary: {
+                main: '#007FFF',
+                dark: '#0066CC',
+              },
+            },
+          }}
+        >
+          <Box
+            sx={{
+              width: 170,
+              height: 50,
+              borderRadius: 1,
+              bgcolor: '#FFFFFF',
+              marginTop: 5,
+              marginBottom: 5,
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            hello
+          </Box>
+        </ThemeProvider>
+        <Typography variant="body1" sx={{ marginLeft: '10px' }}>
+          บาท
+        </Typography>
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: '#718171',
+            borderRadius: '1 px',
+            marginLeft: '10px',
+            padding: '10px 20px',
+          }}
+        >
+          ยืนยัน
+        </Button>
+      </Grid>
     </Grid>
   );
 }
