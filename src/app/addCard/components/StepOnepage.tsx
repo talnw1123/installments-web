@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 });
 
 const StepOnePage = () => {
-  const { control, statuses, setValue, calculate, watch } = useContext(DataContext);
+  const { control, statuses, setValue, calculate, watch, setAge } = useContext(DataContext);
   const classes = useStyles();
   return (
     <>
@@ -317,6 +317,9 @@ const StepOnePage = () => {
                           label="วันเกิด"
                           onChange={newValue => {
                             setValue('birthDate', newValue);
+                            const age = calculate(newValue);
+                            setValue('age', age);
+                            setAge(age);
                           }}
                         />
                       </LocalizationProvider>
@@ -324,7 +327,11 @@ const StepOnePage = () => {
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <p>{calculate(watch('birthDate'))}</p>
+                  <Controller
+                    name="age"
+                    control={control}
+                    render={({ field: { value } }) => <Typography>{value ? `Age: ${value}` : 'อายุ'}</Typography>}
+                  />
                 </Grid>
                 <Grid item xs={4}>
                   <Controller

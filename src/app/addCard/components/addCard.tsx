@@ -16,6 +16,7 @@ export const DataContext = createContext<any>({});
 
 const AddCard = () => {
   const [step, setStep] = useState(0);
+  const [age, setAge] = useState();
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const statuses: string[] = ['Single', 'Married', 'Divorced', 'Widowed'];
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
@@ -40,8 +41,10 @@ const AddCard = () => {
 
   const date = watch('birthDate');
 
-  const calculate = (birthDate: dayjs.Dayjs | null) => {
-    if (!birthDate) return '';
+  const calculate = (birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
+    if (!birthDate) {
+      return '';
+    }
     const now = dayjs();
     const age = now.diff(birthDate, 'year');
     return age;
@@ -59,6 +62,7 @@ const AddCard = () => {
     setValue,
     control,
     watch,
+    setAge,
   };
 
   return (

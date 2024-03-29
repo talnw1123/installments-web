@@ -20,7 +20,7 @@ const menuNav = [
   { name: 'หน้าแรก', path: '/summary' },
   { name: 'เพิ่มการ์ดลูกค้า', path: '/addCard' },
   { name: 'ค้นหาลูกหนี้', path: '/searchCustomer' },
-  { name: 'ประวัติลูกหนี้', path: '/customerProfile' },
+  { name: 'ประวัติการแจ้งเตือนลูกหนี้', path: '/customerProfile' },
 ];
 
 interface NavbarProps {
