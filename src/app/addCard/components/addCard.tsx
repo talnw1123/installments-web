@@ -38,11 +38,13 @@ const AddCard = () => {
     setValue('interestRates', '5%');
   });
 
-  const date = watch('Date');
+  const date = watch('birthDate');
 
-  const calculate = (date: any) => {
+  const calculate = (birthDate: dayjs.Dayjs | null) => {
+    if (!birthDate) return '';
     const now = dayjs();
-    return `${now.diff(date, 'year')}`;
+    const age = now.diff(birthDate, 'year');
+    return age;
   };
 
   const conTextValue = {
@@ -56,6 +58,7 @@ const AddCard = () => {
     date,
     setValue,
     control,
+    watch,
   };
 
   return (
@@ -74,7 +77,7 @@ const AddCard = () => {
           {step === 0 && (
             <>
               <StepOnePage />
-              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end' }}>
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -92,7 +95,7 @@ const AddCard = () => {
           {step === 1 && (
             <>
               <StepTwoPage />
-              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                 <Button
                   variant="contained"
                   color="primary"
@@ -120,7 +123,7 @@ const AddCard = () => {
           {step === 2 && (
             <>
               <StepThreePage />
-              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
                 <Button
                   variant="contained"
                   color="primary"

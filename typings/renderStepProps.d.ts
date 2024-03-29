@@ -49,7 +49,7 @@ export interface StepParams {
   incomeGuarantor: string;
   incomeSpouse: string;
 
-  Date: any;
+  birthDate: dayjs.Dayjs | null;
   age: number;
 
   billNumber: string;

@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 });
 
 const StepOnePage = () => {
-  const { control, statuses, setValue, calculate } = useContext(DataContext);
+  const { control, statuses, setValue, calculate, watch } = useContext(DataContext);
   const classes = useStyles();
   return (
     <>
@@ -307,18 +307,24 @@ const StepOnePage = () => {
               <Grid container spacing={3}>
                 <Grid item xs={6}>
                   <Controller
-                    name="Date"
+                    name="birthDate"
                     control={control}
                     defaultValue={null}
                     render={({ field }) => (
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker {...field} label="วันเกิด" onChange={newValue => setValue('Date', newValue)} />
+                        <DatePicker
+                          {...field}
+                          label="วันเกิด"
+                          onChange={newValue => {
+                            setValue('birthDate', newValue);
+                          }}
+                        />
                       </LocalizationProvider>
                     )}
                   />
                 </Grid>
                 <Grid item xs={2}>
-                  <p>{calculate(Date)}</p>
+                  <p>{calculate(watch('birthDate'))}</p>
                 </Grid>
                 <Grid item xs={4}>
                   <Controller
