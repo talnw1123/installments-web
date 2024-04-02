@@ -5,10 +5,10 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
-import { createContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
-import StepOnePage from './StepOnePage';
+import StepOnePage from './StepOnepage';
 import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
 
@@ -37,7 +37,7 @@ const AddCard = () => {
 
   useEffect(() => {
     setValue('interestRates', '5%');
-  });
+  }, [setValue]);
 
   const date = watch('birthDate');
 
@@ -80,25 +80,34 @@ const AddCard = () => {
     }
 
     setInstallments(installmentData);
-  }, [watch, setInstallments]);
+  }, [
+    watch('totalLoan'),
+    watch('downPayment'),
+    watch('numberOfInstallments'),
+    watch('interestRates'),
+    watch('contractDate'),
+  ]);
 
-  const conTextValue = {
-    step,
-    nextStep,
-    prevStep,
-    statuses,
-    valuetext,
-    onSubmit,
-    calculate,
-    date,
-    setValue,
-    control,
-    watch,
-    setAge,
-    handleCreateInstallments,
-    installments,
-    setInstallments,
-  };
+  const conTextValue = useMemo(
+    () => ({
+      step,
+      nextStep,
+      prevStep,
+      statuses,
+      valuetext,
+      onSubmit,
+      calculate,
+      date,
+      setValue,
+      control,
+      watch,
+      setAge,
+      handleCreateInstallments,
+      installments,
+      setInstallments,
+    }),
+    [step, installments, date]
+  );
 
   return (
     <>
