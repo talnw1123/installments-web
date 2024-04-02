@@ -1,9 +1,8 @@
 // step1;
 'use client';
 import { Button, Card, Grid, TextField, Typography } from '@mui/material';
-import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -73,27 +72,47 @@ const columns: GridColDef[] = [
   { field: 'period', headerName: 'งวดที่', width: 130, headerAlign: 'center', align: 'center' },
 ];
 
-export default function NotiHistoryPage() {
+export default function HomePage() {
   const classes = useStyles();
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
+  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
+  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
 
-  const handleDateChange = (newValue: dayjs.Dayjs | null) => {
-    setSelectedDate(newValue);
+  const handleStartDateChange = (date: dayjs.Dayjs | null) => {
+    setStartDate(date);
+  };
+
+  const handleEndDateChange = (date: dayjs.Dayjs | null) => {
+    setEndDate(date);
   };
 
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
         <form>
-          <Typography variant="h4">ค้นหาผู้กู้</Typography>
+          <Typography variant="h4">สรุปการผ่อนชำระสินค้า</Typography>
 
           <Grid container className={classes.topContainer}>
             <Grid item sx={{ marginRight: '1rem' }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* Start Date Picker */}
                 <DatePicker
-                  label="ดูประวัติการแจ้งเตือนลูกหนี้"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  label="วันที่เริ่มต้น"
+                  value={startDate}
+                  onChange={handleStartDateChange}
+                  renderInput={params => (
+                    <TextField {...params} variant="standard" fullWidth margin="normal" className={classes.formField} />
+                  )}
+                />
+              </LocalizationProvider>
+            </Grid>
+
+            <Grid item sx={{ marginRight: '1rem' }}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* End Date Picker */}
+                <DatePicker
+                  label="วันที่สิ้นสุด"
+                  value={endDate}
+                  onChange={handleEndDateChange}
                   renderInput={params => (
                     <TextField {...params} variant="standard" fullWidth margin="normal" className={classes.formField} />
                   )}
@@ -107,11 +126,11 @@ export default function NotiHistoryPage() {
           </Grid>
         </form>
 
-        <div className={classes.debtorListContainer}>
-          <Box className={classes.debtorList}>
-            <DataGrid rows={rows} columns={columns} />
-          </Box>
-        </div>
+        <Grid sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Card sx={{ height: '300px', width: '80%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Typography>Graph</Typography>
+          </Card>
+        </Grid>
       </Card>
     </Grid>
   );
