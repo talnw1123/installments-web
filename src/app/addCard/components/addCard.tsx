@@ -18,22 +18,16 @@ const AddCard = () => {
   const [step, setStep] = useState(0);
   const [age, setAge] = useState();
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
-  const statuses: string[] = ['Single', 'Married', 'Divorced', 'Widowed'];
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
+  const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
 
-  const onSubmit: SubmitHandler<StepParams> = data => console.log(data);
+  const onSubmit = useCallback<SubmitHandler<StepParams>>(data => {
+    console.log(data);
+  }, []);
 
-  const nextStep = () => {
-    setStep(step + 1);
-  };
-
-  const prevStep = () => {
-    setStep(step - 1);
-  };
-
-  const valuetext = (value: number) => {
-    return `${value}%`;
-  };
+  const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
+  const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);
+  const valuetext = useCallback((value: number) => `${value}%`, []);
 
   useEffect(() => {
     setValue('interestRates', '5%');
@@ -41,22 +35,29 @@ const AddCard = () => {
 
   const date = watch('birthDate');
 
-  const calculate = (birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
+  const calculate = useCallback((birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
     if (!birthDate) {
       return '';
     }
     const now = dayjs();
     const age = now.diff(birthDate, 'year');
     return age;
-  };
+  }, []);
 
   const [installments, setInstallments] = useState<any[]>([]);
 
+  const birthDateValue = watch('birthDate');
+  const totalLoanValue = watch('totalLoan');
+  const downPaymentValue = watch('downPayment');
+  const numberOfInstallmentsValue = watch('numberOfInstallments');
+  const interestRatesValue = watch('interestRates');
+  const contractDateValue = watch('contractDate');
+
   const handleCreateInstallments = useCallback(() => {
-    const totalLoan = parseFloat(watch('totalLoan'));
-    const downPayment = parseFloat(watch('downPayment'));
-    const numberOfInstallments = parseInt(watch('numberOfInstallments'), 10);
-    const interestRate = parseFloat(watch('interestRates')) / 100;
+    const totalLoan = parseFloat(totalLoanValue);
+    const downPayment = parseFloat(downPaymentValue);
+    const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
+    const interestRate = parseFloat(interestRatesValue) / 100;
     const loanAmount = totalLoan - downPayment;
     const monthlyInterest = (loanAmount * interestRate) / 12;
     const monthlyPayment = (loanAmount + loanAmount * interestRate) / numberOfInstallments;
@@ -72,7 +73,7 @@ const AddCard = () => {
       installmentData.push({
         id: i,
         installmentNumber: i,
-        date: dayjs(watch('contractDate')).add(i, 'month').format('DD/MM/YYYY'),
+        date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
         amountDue: monthlyPayment,
         interest: interest.toFixed(2),
         principal: principal.toFixed(2),
@@ -80,13 +81,7 @@ const AddCard = () => {
     }
 
     setInstallments(installmentData);
-  }, [
-    watch('totalLoan'),
-    watch('downPayment'),
-    watch('numberOfInstallments'),
-    watch('interestRates'),
-    watch('contractDate'),
-  ]);
+  }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue, contractDateValue]);
 
   const conTextValue = useMemo(
     () => ({
@@ -97,16 +92,30 @@ const AddCard = () => {
       valuetext,
       onSubmit,
       calculate,
-      date,
+      date: birthDateValue,
       setValue,
       control,
-      watch,
       setAge,
       handleCreateInstallments,
       installments,
       setInstallments,
     }),
-    [step, installments, date]
+    [
+      step,
+      nextStep,
+      prevStep,
+      statuses,
+      valuetext,
+      onSubmit,
+      calculate,
+      birthDateValue,
+      setValue,
+      control,
+      setAge,
+      handleCreateInstallments,
+      installments,
+      setInstallments,
+    ]
   );
 
   return (
