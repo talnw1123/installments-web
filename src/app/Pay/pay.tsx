@@ -285,6 +285,13 @@ export default function PayPage() {
                       pageSizeOptions={[5]}
                       checkboxSelection
                       disableRowSelectionOnClick
+                      components={{
+                        Toolbar: () => (
+                          <Typography variant="body1" sx={{ marginTop: '1rem', marginLeft: '1rem' }}>
+                            เลือกงวดที่ต้องการจ่าย
+                          </Typography>
+                        ),
+                      }}
                     />
                   </Box>
                 </Grid>
