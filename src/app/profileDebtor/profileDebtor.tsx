@@ -63,9 +63,9 @@ export default function ProfileDebtorPage() {
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const searchType = searchParams.get('type') || 'ประวัติลูกหนี้';
+  const searchType = searchParams.get('type') || 'ประวัติผู้กู้';
   const menuList = [
-    'ประวัติลูกหนี้',
+    'ประวัติผู้กู้',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',

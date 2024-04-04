@@ -50,16 +50,16 @@ export interface StepParams {
   incomeSpouse: string;
 
   birthDate: dayjs.Dayjs | null;
-  age: number;
+  age?: number;
 
   billNumber: string;
   contractDate: string;
   contractNumber: string;
   totalLoan: string;
-  taxMoney: string;
-  inventoryValue: string;
-  enterAmount: string;
+  downPayment: string;
+  numberOfInstallments: string;
   interestRates: string;
+  totalInstallmentAmount: string;
 }
 
 export default renderStepProps;
