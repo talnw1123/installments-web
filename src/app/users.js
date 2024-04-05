@@ -4,7 +4,7 @@ export const Users = [
     first_name: 'Emiline',
     last_name: 'McClune',
     phone: '123-456-7890',
-    date: '24/02/45',
+    date: '24/02/17',
     amount: '1500',
   },
   {
@@ -12,7 +12,7 @@ export const Users = [
     first_name: 'Felix',
     last_name: 'Ingleston',
     phone: '234-567-8901',
-    date: '25/02/45',
+    date: '25/02/18',
     amount: '2000',
   },
   {
@@ -20,7 +20,7 @@ export const Users = [
     first_name: 'Travus',
     last_name: 'Bergstram',
     phone: '345-678-9012',
-    date: '26/02/45',
+    date: '26/02/19',
     amount: '1750',
   },
   {
@@ -28,7 +28,7 @@ export const Users = [
     first_name: 'Holly-anne',
     last_name: 'Knighton',
     phone: '456-789-0123',
-    date: '27/02/45',
+    date: '27/02/20',
     amount: '1800',
   },
   {
@@ -36,7 +36,7 @@ export const Users = [
     first_name: 'Sollie',
     last_name: 'Naulty',
     phone: '567-890-1234',
-    date: '28/02/45',
+    date: '28/02/21',
     amount: '2100',
   },
   {
@@ -44,7 +44,7 @@ export const Users = [
     first_name: 'Annie',
     last_name: 'Cockayme',
     phone: '678-901-2345',
-    date: '01/03/45',
+    date: '01/03/22',
     amount: '1900',
   },
   {
@@ -52,7 +52,7 @@ export const Users = [
     first_name: 'Celinda',
     last_name: 'Sharvill',
     phone: '789-012-3456',
-    date: '02/03/45',
+    date: '02/03/23',
     amount: '1600',
   },
   {
@@ -60,7 +60,7 @@ export const Users = [
     first_name: 'Lamond',
     last_name: 'Ricket',
     phone: '890-123-4567',
-    date: '03/03/45',
+    date: '03/03/24',
     amount: '2200',
   },
   {
@@ -68,15 +68,15 @@ export const Users = [
     first_name: 'Florida',
     last_name: 'Licciardiello',
     phone: '901-234-5678',
-    date: '04/03/45',
+    date: '02/01/24',
     amount: '1950',
   },
   {
-    id: 12345678901234,
+    id: 1234567890124,
     first_name: 'Gerianne',
     last_name: 'Jonas',
     phone: '012-345-6789',
-    date: '05/03/45',
+    date: '04/03/24',
     amount: '2400',
   },
 ];

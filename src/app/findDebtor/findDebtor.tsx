@@ -46,7 +46,7 @@ const getFullName = row => {
 const users = Users;
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 160, headerAlign: 'center', align: 'center' },
+  { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 190, headerAlign: 'center', align: 'center' },
   { field: 'first_name', headerName: 'ชื่อจริง', width: 160, headerAlign: 'center', align: 'center' },
   { field: 'last_name', headerName: 'นามสกุล', width: 160, headerAlign: 'center', align: 'center' },
   { field: 'phone', headerName: 'เบอร์โทรศัพท์', width: 160, headerAlign: 'center', align: 'center' },
