@@ -53,6 +53,8 @@ export default function HomePage() {
   const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
   const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
   const [graphData, setGraphData] = useState<any[]>([]);
+  const [totalPaidInRange, setTotalPaidInRange] = useState<number>(0);
+  const [totalDeptInRange, setTotalDeptInRange] = useState<number>(0);
 
   const handleStartDateChange = (date: dayjs.Dayjs | null) => {
     setStartDate(date);
@@ -63,6 +65,7 @@ export default function HomePage() {
     setEndDate(date);
     updateGraphData(startDate, date);
   };
+
   const updateGraphData = (start: dayjs.Dayjs | null, end: dayjs.Dayjs | null) => {
     if (start && end) {
       const filteredData = data.filter(item => {
@@ -82,13 +85,17 @@ export default function HomePage() {
       }, []);
 
       setGraphData(averagedData);
+
+      const totalPaidInRange = filteredData.reduce((sum, item) => sum + item.paid, 0);
+      const totalDeptInRange = filteredData.reduce((sum, item) => sum + item.dept, 0);
+      setTotalPaidInRange(totalPaidInRange);
+      setTotalDeptInRange(totalDeptInRange);
     } else {
       setGraphData([]);
+      setTotalPaidInRange(0);
+      setTotalDeptInRange(0);
     }
   };
-
-  const totalPaid = data.reduce((sum, item) => sum + item.paid, 0);
-  const totalDept = data.reduce((sum, item) => sum + item.dept, 0);
 
   return (
     <Grid container className={classes.bigContainer} sx={{ display: '' }}>
@@ -146,13 +153,13 @@ export default function HomePage() {
           <Grid sx={{ display: 'flex' }}>
             <CircleIcon style={{ color: '#2196f3', marginRight: '10px' }} />
             <Typography style={{ color: '#2196f3', marginRight: '27px' }}>ยอดจ่ายแล้ว</Typography>
-            <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{totalPaid.toFixed(2)}</Typography>
+            <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{totalPaidInRange.toFixed(2)}</Typography>
             <Typography style={{ color: '#2196f3' }}>บาท</Typography>
           </Grid>
           <Grid sx={{ display: 'flex', marginTop: '5px' }}>
             <CircleIcon style={{ color: '#4caf50', marginRight: '10px' }} />
             <Typography style={{ color: '#4caf50', marginRight: '55px' }}>ยอดค้าง</Typography>
-            <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{totalDept.toFixed(2)}</Typography>
+            <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{totalDeptInRange.toFixed(2)}</Typography>
             <Typography style={{ color: '#4caf50' }}>บาท</Typography>
           </Grid>
         </Grid>
