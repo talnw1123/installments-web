@@ -1,3 +1,4 @@
+// mock up data
 export const Data = [
   { date: '01/01/2024', paid: 10000, dept: 5000 },
   { date: '02/01/2024', paid: 15000, dept: 3000 },
