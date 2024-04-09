@@ -1,6 +1,6 @@
 'use client';
 import { useContext } from 'react';
-import StepOnePage from './StepOnePage';
+import StepOnePage from './StepOnepage';
 import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
 import { DataContext } from './addCard';

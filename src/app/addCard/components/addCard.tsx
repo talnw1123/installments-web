@@ -5,7 +5,7 @@ import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
 import StepOnePage from './StepOnepage';
@@ -16,7 +16,8 @@ export const DataContext = createContext<any>({});
 
 const AddCard = () => {
   const [step, setStep] = useState(0);
-  const [age, setAge] = useState();
+  const [age, setAge] = useState<number | null>(null);
+  const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
@@ -31,10 +32,13 @@ const AddCard = () => {
 
   useEffect(() => {
     setValue('interestRates', '5%');
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
   }, [setValue]);
 
   const date = watch('birthDate');
-
   const calculate = useCallback((birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
     if (!birthDate) {
       return '';
