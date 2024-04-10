@@ -85,7 +85,7 @@ const StepThreePage = () => {
             </Grid>
             <Grid item xs={2.5}>
               <Controller
-                name="contractDate"
+                name="dateContract"
                 control={control}
                 defaultValue={null}
                 render={({ field }) => (
@@ -94,7 +94,7 @@ const StepThreePage = () => {
                       {...field}
                       label="วันที่ทำสัญญา"
                       onChange={newValue => {
-                        setValue('contractDate', newValue);
+                        setValue('dateContract', newValue);
                         field.onChange(newValue);
                       }}
                     />
@@ -211,15 +211,16 @@ const StepThreePage = () => {
             </Grid>
             <Grid item xs={3}>
               <Button variant="contained" color="primary" type="button" onClick={handleCreateInstallments}>
-                สร้าง
+                Crate
               </Button>
             </Grid>
             <Grid item xs={12}>
               <Controller
-                name="contractData"
+                name="table"
                 control={control}
+                defaultValue={[]}
                 render={({ field }) => (
-                  <DataGrid rows={installments} columns={installmentColumns} autoHeight {...field} />
+                  <DataGrid rows={installments || []} columns={installmentColumns} autoHeight {...field} />
                 )}
               />
             </Grid>

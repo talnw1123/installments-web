@@ -61,16 +61,6 @@ export interface StepParams {
   interestRates: string;
   totalInstallmentAmount: string;
 
-  contractData: string;
+  table: any[];
 }
-
-export interface ContractDate {
-  id: number;
-  installmentNumber: number;
-  date: string;
-  amountDue: number;
-  interest: string;
-  principal: string;
-}
-
 export default renderStepProps;

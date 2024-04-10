@@ -15,6 +15,8 @@ import StepTwoPage from './StepTwoPage';
 export const DataContext = createContext<any>({});
 
 const AddCard = () => {
+  const [installments, setInstallments] = useState<any[]>([]);
+
   const [step, setStep] = useState(0);
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
@@ -22,9 +24,14 @@ const AddCard = () => {
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
 
-  const onSubmit = useCallback<SubmitHandler<StepParams>>(data => {
-    console.log(data);
-  }, []);
+  const onSubmit = useCallback<SubmitHandler<StepParams>>(
+    data => {
+      console.log(data);
+      const newData = { ...data, table: installments };
+      console.log(newData);
+    },
+    [installments]
+  );
 
   const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
   const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);
@@ -48,8 +55,6 @@ const AddCard = () => {
     return age;
   }, []);
 
-  const [installments, setInstallments] = useState<any[]>([]);
-
   const birthDateValue = watch('birthDate');
   const totalLoanValue = watch('totalLoan');
   const downPaymentValue = watch('downPayment');
@@ -58,32 +63,27 @@ const AddCard = () => {
   const contractDateValue = watch('contractDate');
 
   const handleCreateInstallments = useCallback(() => {
-    const totalLoan = parseFloat(totalLoanValue);
-    const downPayment = parseFloat(downPaymentValue);
-    const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
-    const interestRate = parseFloat(interestRatesValue) / 100;
-    const loanAmount = totalLoan - downPayment;
+    const totalLoanAmount = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
+    let remainingPrincipal = totalLoanAmount;
+    const newInstallments = [];
 
-    const installmentData = [];
-    let remainingPrincipal = loanAmount;
+    for (let i = 0; i < parseInt(numberOfInstallmentsValue, 10); i++) {
+      const interestPayment = remainingPrincipal * (parseFloat(interestRatesValue) / 100 / 12);
+      const principalPayment = totalLoanAmount / parseInt(numberOfInstallmentsValue, 10);
+      const totalPayment = interestPayment + principalPayment;
+      remainingPrincipal -= principalPayment;
 
-    for (let i = 1; i <= numberOfInstallments; i++) {
-      const interest = (remainingPrincipal * interestRate) / 12;
-      const principal = loanAmount / numberOfInstallments;
-      remainingPrincipal -= principal;
-      const paymentDate = dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY');
-
-      installmentData.push({
-        id: i,
-        installmentNumber: i,
-        date: paymentDate,
-        amountDue: (principal + interest).toFixed(2),
-        interest: interest.toFixed(2),
-        principal: principal.toFixed(2),
+      newInstallments.push({
+        id: i + 1,
+        installmentNumber: i + 1,
+        date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
+        amountDue: totalPayment.toFixed(2),
+        interest: interestPayment.toFixed(2),
+        principal: principalPayment.toFixed(2),
       });
     }
 
-    setInstallments(installmentData);
+    setInstallments(newInstallments);
   }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue, contractDateValue]);
 
   const conTextValue = useMemo(
