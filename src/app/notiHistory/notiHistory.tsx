@@ -8,8 +8,10 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { Users } from 'app/users';
 import dayjs from 'dayjs';
+import Link from 'next/link';
 import { useState } from 'react';
 import 'react-multi-carousel/lib/styles.css';
+('app/ProfileCustomerPage');
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -42,69 +44,94 @@ const useStyles = makeStyles({
   debtorList: {
     width: '100%',
     minWidth: '500px',
-    maxWidth: '1000px',
+    maxWidth: '800px',
     minHeight: '400px',
   },
 });
 
-const getFullName = row => {
-  return `${row.first_name || ''} ${row.last_name || ''}`;
-};
-
-const users = Users;
-
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 190, headerAlign: 'center', align: 'center' },
-  { field: 'first_name', headerName: 'ชื่อจริง', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'last_name', headerName: 'นามสกุล', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'phone', headerName: 'เบอร์โทรศัพท์', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'date', headerName: 'วันครบกำหนดชำระ', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'amount', headerName: 'จำนวนเงินที่ค้าง', width: 160, headerAlign: 'center', align: 'center' },
-];
-
 export default function NotiHistoryPage() {
   const classes = useStyles();
   const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
-  const [filteredRows, setFilteredRows] = useState(users);
+  const [filteredRows, setFilteredRows] = useState(Users);
+  const [selectedUser, setSelectedUser] = useState(Users[0]);
+
+  const handleProfileClick = row => {
+    setSelectedUser(row);
+  };
+
+  const getFullName = row => {
+    return (
+      <Link href={`/profileCustomer?id=${row.id}`} passHref>
+        <Typography component="a" onClick={() => handleProfileClick(row)}>
+          {`${row.first_name || ''} ${row.last_name || ''}`}
+        </Typography>
+      </Link>
+    );
+  };
 
   const handleDateChange = (newValue: dayjs.Dayjs | null) => {
     setSelectedDate(newValue);
     // Filter rows based on the selected date
-    const filteredRows = newValue ? users.filter(row => dayjs(row.date, 'DD/MM/YY').isSame(newValue, 'date')) : users;
+    const filteredRows = newValue
+      ? Users.filter(row => dayjs(row.notiDate, 'DD/MM/YYYY').isSame(newValue, 'date'))
+      : Users;
     setFilteredRows(filteredRows);
   };
+
+  const columns: GridColDef[] = [
+    { field: 'notiDate', headerName: 'วันที่แจ้งเตือน', width: 190, headerAlign: 'center', align: 'center' },
+    {
+      field: 'first_name',
+      headerName: 'ชื่อจริง',
+      width: 160,
+      headerAlign: 'center',
+      align: 'center',
+      renderCell: params => getFullName(params.row),
+    },
+    { field: 'last_name', headerName: 'นามสกุล', width: 160, headerAlign: 'center', align: 'center' },
+    { field: 'billNumber', headerName: 'หมายเลขบิล', width: 160, headerAlign: 'center', align: 'center' },
+    { field: 'term', headerName: 'งวดที่', width: 100, headerAlign: 'center', align: 'center' },
+  ];
 
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
-        <form>
-          <Typography variant="h4">ประวัติการแจ้งเตือนผู้กู้</Typography>
+        <Grid>
+          <form>
+            <Typography variant="h4">ประวัติการแจ้งเตือนผู้กู้</Typography>
 
-          <Grid container className={classes.topContainer}>
-            <Grid item sx={{ marginRight: '1rem' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="ดูประวัติการแจ้งเตือนลูกหนี้"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                  renderInput={params => (
-                    <TextField {...params} variant="standard" fullWidth margin="normal" className={classes.formField} />
-                  )}
-                />
-              </LocalizationProvider>
-            </Grid>
+            <Grid container className={classes.topContainer}>
+              <Grid item sx={{ marginRight: '1rem' }}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <DatePicker
+                    label="ดูประวัติการแจ้งเตือนลูกหนี้"
+                    value={selectedDate}
+                    onChange={handleDateChange}
+                    renderInput={params => (
+                      <TextField
+                        {...params}
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </LocalizationProvider>
+              </Grid>
 
-            {/* <Button variant="contained" color="primary">
+              {/* <Button variant="contained" color="primary">
               ค้นหา
             </Button> */}
-          </Grid>
-        </form>
+            </Grid>
+          </form>
 
-        <div className={classes.debtorListContainer}>
-          <Box className={classes.debtorList}>
-            <DataGrid rows={filteredRows} columns={columns} localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }} />
-          </Box>
-        </div>
+          <div className={classes.debtorListContainer}>
+            <Box className={classes.debtorList}>
+              <DataGrid rows={filteredRows} columns={columns} localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }} />
+            </Box>
+          </div>
+        </Grid>
       </Card>
     </Grid>
   );

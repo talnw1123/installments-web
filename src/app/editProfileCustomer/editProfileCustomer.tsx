@@ -1,5 +1,4 @@
 'use client';
-import EditIcon from '@mui/icons-material/Edit';
 import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -35,7 +34,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ProfileCustomerPage() {
+export default function EditProfileCustomerPage() {
   const classes = useStyles();
 
   const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
@@ -57,14 +56,6 @@ export default function ProfileCustomerPage() {
     return now.diff(birthday, 'year');
   };
 
-  const handleEditClick = () => {
-    navigateTo('/editProfileCustomer');
-  };
-
-  const navigateTo = (path: string) => {
-    window.location.href = path;
-  };
-
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, minHeight: '950px', width: '80%', display: 'flex', flexDirection: 'column' }}>
@@ -72,11 +63,6 @@ export default function ProfileCustomerPage() {
           <Typography variant="h4" sx={{ marginLeft: '12.5px', marginBottom: '30px' }}>
             ประวัติผู้กู้
           </Typography>
-
-          <EditIcon
-            style={{ color: '#2196f3', width: '10%', marginTop: '10px', cursor: 'pointer' }}
-            onClick={handleEditClick}
-          />
         </Grid>
 
         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>

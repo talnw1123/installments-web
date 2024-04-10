@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Users } from 'app/users';
+import Link from 'next/link';
 import { useState } from 'react';
 
 const useStyles = makeStyles({
@@ -39,22 +40,32 @@ const useStyles = makeStyles({
   },
 });
 
+const users = Users;
 const getFullName = row => {
-  return `${row.first_name || ''} ${row.last_name || ''}`;
+  return (
+    <Link href={`/profileCustomer?id=${row.id}`} passHref>
+      <Typography component="a">{`${row.first_name || ''} ${row.last_name || ''}`}</Typography>
+    </Link>
+  );
 };
 
-const users = Users;
-
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 190, headerAlign: 'center', align: 'center' },
-  { field: 'first_name', headerName: 'ชื่อจริง', width: 160, headerAlign: 'center', align: 'center' },
+  { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 180, headerAlign: 'center', align: 'center' },
+  {
+    field: 'first_name',
+    headerName: 'ชื่อจริง',
+    width: 160,
+    headerAlign: 'center',
+    align: 'center',
+    renderCell: params => getFullName(params.row),
+  },
   { field: 'last_name', headerName: 'นามสกุล', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'phone', headerName: 'เบอร์โทรศัพท์', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'date', headerName: 'วันครบกำหนดชำระ', width: 160, headerAlign: 'center', align: 'center' },
-  { field: 'amount', headerName: 'จำนวนเงินที่ค้าง', width: 160, headerAlign: 'center', align: 'center' },
+  { field: 'phone', headerName: 'เบอร์โทรศัพท์', width: 140, headerAlign: 'center', align: 'center' },
+  { field: 'dueDate', headerName: 'วันครบกำหนดชำระ', width: 140, headerAlign: 'center', align: 'center' },
+  { field: 'amount', headerName: 'จำนวนเงินที่ค้าง', width: 140, headerAlign: 'center', align: 'center' },
 ];
 
-export default function FindDebtorPage() {
+export default function FindCustomerPage() {
   const classes = useStyles();
 
   const [idQuery, setIdQuery] = useState('');
@@ -63,15 +74,10 @@ export default function FindDebtorPage() {
   const [phoneQuery, setPhoneQuery] = useState('');
   const [showTable, setShowTable] = useState(false);
 
-  const filteredRows = showTable
-    ? users.filter(
-        row =>
-          row.id.toString().includes(idQuery) &&
-          getFullName(row).toLowerCase().includes(nameQuery.toLowerCase()) &&
-          row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
-          row.phone.includes(phoneQuery)
-      )
-    : users;
+  const preprocessedUsers = Users.map(user => ({
+    ...user,
+    fullNameLowerCase: `${(user.first_name || '').toLowerCase()} ${(user.last_name || '').toLowerCase()}`,
+  }));
 
   const handleIdChange = event => {
     setIdQuery(event.target.value);
@@ -92,6 +98,16 @@ export default function FindDebtorPage() {
     setPhoneQuery(event.target.value);
     setShowTable(true);
   };
+
+  const filteredRows = showTable
+    ? preprocessedUsers.filter(
+        row =>
+          row.id.toString().includes(idQuery) &&
+          row.fullNameLowerCase.includes(nameQuery.toLowerCase()) &&
+          (row.last_name || '').toLowerCase().includes(surnameQuery.toLowerCase()) &&
+          row.phone.includes(phoneQuery)
+      )
+    : preprocessedUsers;
 
   return (
     <Grid container className={classes.bigContainer}>

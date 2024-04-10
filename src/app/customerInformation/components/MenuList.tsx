@@ -14,9 +14,9 @@ const useStyles = makeStyles({
   menu: {
     display: 'flex',
     flexDirection: 'column',
-    borderRight: '2px solid lightgray',
-    width: '180px',
+    width: '200px',
     marginLeft: '15px',
+    marginTop: '10px',
   },
 });
 
@@ -38,7 +38,7 @@ export default function MenuList() {
     <>
       <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
         <Grid className={classes.menu}>
-          <Grid item sx={{ marginTop: '2rem' }}>
+          <Grid item>
             <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
               {menuList.map(item => (
                 <Grid item key={item.label}>
