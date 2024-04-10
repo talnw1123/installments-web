@@ -1,24 +1,17 @@
 'use client';
-import {
-  Card,
-  Grid,
-  MenuItem,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
-} from '@mui/material';
+import { Card, Grid, MenuItem, TextField } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -61,8 +54,10 @@ const useStyles = makeStyles({
   },
 });
 
+const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
+
 interface Column {
-  id: 'number' | 'due_date' | 'date' | 'day' | 'paid' | 'interest' | 'principle';
+  id: 'name' | 'code' | 'population' | 'size' | 'density';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -70,112 +65,86 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'number', label: 'งวดที่', minWidth: 70, align: 'center' },
-  { id: 'due_date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
+  { id: 'name', label: 'Name', minWidth: 170 },
+  { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
   {
-    id: 'date',
-    label: 'วันที่จ่าย',
-    minWidth: 100,
-    align: 'center',
+    id: 'population',
+    label: 'Population',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toLocaleString('en-US'),
   },
   {
-    id: 'day',
-    label: 'จำนวนเกินกำหนด',
-    minWidth: 100,
-    align: 'center',
+    id: 'size',
+    label: 'Size\u00a0(km\u00b2)',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toLocaleString('en-US'),
   },
   {
-    id: 'paid',
-    label: 'เงินที่ต้องชำระ',
-    minWidth: 100,
-    align: 'center',
-  },
-  {
-    id: 'interest',
-    label: 'ดอกเบี้ย',
-    minWidth: 100,
-    align: 'center',
-  },
-  {
-    id: 'principle',
-    label: 'เงินต้น',
-    minWidth: 100,
-    align: 'center',
+    id: 'density',
+    label: 'Density',
+    minWidth: 170,
+    align: 'right',
+    format: (value: number) => value.toFixed(2),
   },
 ];
 
 interface Data {
-  number: string;
-  due_date: string;
-  date: string;
-  day: number;
-  paid: number;
-  interest: number;
-  principle: number;
+  name: string;
+  code: string;
+  population: number;
+  size: number;
+  density: number;
 }
 
-function createData(
-  number: string,
-  due_date: string,
-  date: string,
-  day: number,
-  paid: number,
-  interest: number,
-  principle: number
-): Data {
-  return { number, due_date, date, day, paid, interest, principle };
+function createData(name: string, code: string, population: number, size: number): Data {
+  const density = population / size;
+  return { name, code, population, size, density };
 }
 
-const rows = [
-  createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('4', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('5', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('6', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('7', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('8', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('9', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('10', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('11', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('12', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('13', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('14', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('15', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-];
+// const rows = [
+//   createData('India', 'IN', 1324171354, 3287263),
+//   createData('China', 'CN', 1403500365, 9596961),
+//   createData('Italy', 'IT', 60483973, 301340),
+//   createData('United States', 'US', 327167434, 9833520),
+//   createData('Canada', 'CA', 37602103, 9984670),
+//   createData('Australia', 'AU', 25475400, 7692024),
+//   createData('Germany', 'DE', 83019200, 357578),
+//   createData('Ireland', 'IE', 4857000, 70273),
+//   createData('Mexico', 'MX', 126577691, 1972550),
+//   createData('Japan', 'JP', 126317000, 377973),
+// ];
 
-const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
+const createBillData = billNumber => {
+  switch (billNumber) {
+    case 'บิลหมายเลข 001':
+      return createData('China', 'CN', 1403500365, 9596961);
+    case 'บิลหมายเลข 002':
+      return createData('Italy', 'IT', 60483973, 301340);
+    case 'บิลหมายเลข 003':
+      return createData('United States', 'US', 327167434, 9833520);
+    case 'บิลหมายเลข 004':
+      return createData('Bill 004', '004', 250000, 80000);
+    default:
+      return createData('Canada', 'CA', 37602103, 9984670);
+  }
+};
 
-export default function PaymentHistoryPage() {
+export default function PaymentHistoryPagePage() {
+  const [selectedBill, setSelectedBill] = useState('');
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchType = searchParams.get('type') || 'ประวัติการชำระเงิน';
   const menuList = [
-    'ประวัติลูกหนี้',
+    'ประวัติผู้กู้',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',
     'ประวัติการผ่อนสินค้า',
     'ติดตามหนี้',
   ];
-
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
-  const [age, setAge] = useState('');
-
-  const handleDateChange = (newValue: dayjs.Dayjs | null) => {
-    setSelectedDate(newValue);
-    if (newValue) {
-      const calculatedAge = calculateAge(newValue);
-      setAge(calculatedAge.toString());
-    }
-  };
-
-  const calculateAge = (birthday: dayjs.Dayjs) => {
-    const now = dayjs();
-    return now.diff(birthday, 'year');
-  };
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -188,16 +157,11 @@ export default function PaymentHistoryPage() {
     setPage(0);
   };
 
-  const calculateDaysOverdue = (dueDate: string, paidDate: string): string => {
-    const dueDateObj = dayjs(dueDate, 'DD/MM/YYYY');
-    const paidDateObj = dayjs(paidDate, 'DD/MM/YYYY');
-    const daysOverdue = paidDateObj.diff(dueDateObj, 'day');
-    return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
+  const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedBill(event.target.value);
   };
 
-  const calculateAmountToPay = (interest: number, principle: number): number => {
-    return interest + principle;
-  };
+  const filteredRows = rows.filter(row => row.code === selectedBill);
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -211,7 +175,7 @@ export default function PaymentHistoryPage() {
                     <Typography
                       sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
                       onClick={() => {
-                        router.push(`/pay?type=${item}`);
+                        router.push(`/paymentHistory?type=${item}`);
                       }}
                       component="span"
                     >
@@ -227,70 +191,63 @@ export default function PaymentHistoryPage() {
               <form>
                 <Grid>
                   <TextField
-                    label="เลือกบิลที่ต้องการดู"
+                    label="เลือกบิลที่ต้องการจ่าย"
                     variant="standard"
                     select
                     fullWidth
                     margin="normal"
                     className={classes.formField}
                     sx={{ width: '30%' }}
+                    value={selectedBill}
+                    onChange={handleBillSelect}
                   >
-                    {billOptions.map(option => (
+                    {bill.map(option => (
                       <MenuItem key={option} value={option}>
                         {option}
                       </MenuItem>
                     ))}
                   </TextField>
                 </Grid>
-                <Grid>
-                  <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                      <Table stickyHeader aria-label="sticky table">
-                        <TableHead>
-                          <TableRow>
-                            {columns.map(column => (
-                              <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
-                                {column.label}
-                              </TableCell>
-                            ))}
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                            const daysOverdue = calculateDaysOverdue(row.due_date, row.date);
-                            return (
-                              <TableRow hover role="checkbox" tabIndex={-1} key={row.due_date}>
-                                {columns.map(column => {
-                                  const value = row[column.id];
-                                  return (
-                                    <TableCell key={column.id} align={column.align}>
-                                      {column.format && typeof value === 'number'
-                                        ? column.format(value)
-                                        : column.id === 'day'
-                                          ? calculateDaysOverdue(row.due_date, row.date)
-                                          : column.id === 'paid'
-                                            ? calculateAmountToPay(row.interest, row.principle)
-                                            : value}
-                                    </TableCell>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                    <TablePagination
-                      rowsPerPageOptions={[10, 25, 100]}
-                      component="div"
-                      count={rows.length}
-                      rowsPerPage={rowsPerPage}
-                      page={page}
-                      onPageChange={handleChangePage}
-                      onRowsPerPageChange={handleChangeRowsPerPage}
-                    />
-                  </Paper>
-                </Grid>
+                <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                  <TableContainer sx={{ maxHeight: 440 }}>
+                    <Table stickyHeader aria-label="sticky table">
+                      <TableHead>
+                        <TableRow>
+                          {columns.map(column => (
+                            <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                              {column.label}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {filteredRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+                          return (
+                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                              {columns.map(column => {
+                                const value = row[column.id];
+                                return (
+                                  <TableCell key={column.id} align={column.align}>
+                                    {column.format && typeof value === 'number' ? column.format(value) : value}
+                                  </TableCell>
+                                );
+                              })}
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  <TablePagination
+                    rowsPerPageOptions={[10, 25, 100]}
+                    component="div"
+                    count={rows.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </Paper>
               </form>
             </Grid>
           </Grid>
