@@ -203,6 +203,9 @@ export default function InstallmentHisPage() {
               <form>
                 <Grid>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                    <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
+                      ประวัติการผ่อนสินค้า
+                    </Typography>
                     <TableContainer sx={{ maxHeight: 440 }}>
                       <Table stickyHeader aria-label="sticky table">
                         <TableHead>
