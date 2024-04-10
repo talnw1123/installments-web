@@ -63,22 +63,21 @@ const AddCard = () => {
     const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
     const interestRate = parseFloat(interestRatesValue) / 100;
     const loanAmount = totalLoan - downPayment;
-    const monthlyInterest = (loanAmount * interestRate) / 12;
-    const monthlyPayment = (loanAmount + loanAmount * interestRate) / numberOfInstallments;
 
     const installmentData = [];
     let remainingPrincipal = loanAmount;
 
     for (let i = 1; i <= numberOfInstallments; i++) {
       const interest = (remainingPrincipal * interestRate) / 12;
-      const principal = monthlyPayment - interest;
+      const principal = loanAmount / numberOfInstallments;
       remainingPrincipal -= principal;
+      const paymentDate = dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY');
 
       installmentData.push({
         id: i,
         installmentNumber: i,
-        date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
-        amountDue: monthlyPayment,
+        date: paymentDate,
+        amountDue: (principal + interest).toFixed(2),
         interest: interest.toFixed(2),
         principal: principal.toFixed(2),
       });

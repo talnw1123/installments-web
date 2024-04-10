@@ -86,54 +86,6 @@ const StepOnePage = () => {
                     )}
                   />
 
-                  <Grid container spacing={3}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="birthDate"
-                        control={control}
-                        defaultValue={null}
-                        render={({ field }) => (
-                          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                              {...field}
-                              label="วันเกิด"
-                              onChange={newValue => {
-                                setValue('birthDate', newValue);
-                                const age = calculate(newValue);
-                                setValue('age', age);
-                                setAge(age);
-                              }}
-                            />
-                          </LocalizationProvider>
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Controller
-                        name="age"
-                        control={control}
-                        render={({ field: { value } }) => <Typography>{value ? `Age: ${value}` : 'อายุ'}</Typography>}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="phoneNumberBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์โทรศัพท์"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-
                   <Grid container item spacing={3}>
                     <Grid item xs={4}>
                       <Controller
@@ -357,24 +309,69 @@ const StepOnePage = () => {
             <Grid item style={{ width: '50%' }}>
               <Grid container spacing={4} className={classes.formContainer}>
                 <Grid item xs={8}>
-                  <Grid item style={{ marginTop: '71px' }}>
-                    {' '}
-                    <Controller
-                      name="lastNameBorrower"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="นามสกุล"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
+                  <Grid container spacing={3}>
+                    <Grid item xs={6}>
+                      <Controller
+                        name="birthDate"
+                        control={control}
+                        defaultValue={null}
+                        render={({ field }) => (
+                          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                              {...field}
+                              label="วันเกิด"
+                              onChange={newValue => {
+                                setValue('birthDate', newValue);
+                                const age = calculate(newValue);
+                                setValue('age', age);
+                                setAge(age);
+                              }}
+                            />
+                          </LocalizationProvider>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Controller
+                        name="age"
+                        control={control}
+                        render={({ field: { value } }) => <Typography>{value ? `Age: ${value}` : 'อายุ'}</Typography>}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="phoneNumberBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="เบอร์โทรศัพท์"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
                   </Grid>
+
+                  <Controller
+                    name="lastNameBorrower"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
 
                   <Controller
                     name="addressCurrentBorrower"
