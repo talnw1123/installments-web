@@ -11,22 +11,12 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
-  formContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  formSection: {
-    marginBottom: '1.5rem',
-  },
-  formColumn: {
+  menu: {
     display: 'flex',
     flexDirection: 'column',
-    flexBasis: '50%',
-    padding: '0 1rem',
-  },
-  formField: {
-    marginBottom: '3rem',
+    borderRight: '2px solid lightgray',
+    width: '180px',
+    marginLeft: '15px',
   },
 });
 
@@ -47,7 +37,7 @@ export default function MenuList() {
   return (
     <>
       <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-        <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
+        <Grid className={classes.menu}>
           <Grid item sx={{ marginTop: '2rem' }}>
             <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
               {menuList.map(item => (

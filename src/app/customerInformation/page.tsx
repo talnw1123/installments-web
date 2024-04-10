@@ -1,5 +1,5 @@
-import CustomerInformation from './components/customerInformation';
+import MenuList from './components/menuList';
 
 export default function CustomerInformationPage() {
-  return <CustomerInformation />;
+  return <MenuList />;
 }
