@@ -66,49 +66,42 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70, align: 'center' },
-  { id: 'status', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
+  { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
+  { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
   {
     id: 'principle',
     label: 'ราคาเต็ม',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'payment_term',
     label: 'ผ่อนทั้งหมด',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'payment',
     label: 'ยอดผ่อนต่องวด',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'interest',
     label: 'ดอกเบี้ยทั้งหมด',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'date',
     label: 'วันที่เริ่มผ่อน',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'paid',
     label: 'ชำระแล้ว',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'balance',
     label: 'ยอดคงเหลือ',
     minWidth: 100,
-    align: 'center',
   },
 ];
 
@@ -171,7 +164,7 @@ export default function InstallmentHisPage() {
   ];
 
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -215,7 +208,11 @@ export default function InstallmentHisPage() {
                         <TableHead>
                           <TableRow>
                             {columns.map(column => (
-                              <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                              <TableCell
+                                key={column.id}
+                                align={column.align}
+                                style={{ minWidth: column.minWidth, textAlign: 'center' }}
+                              >
                                 {column.label}
                               </TableCell>
                             ))}
@@ -224,7 +221,13 @@ export default function InstallmentHisPage() {
                         <TableBody>
                           {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
                             return (
-                              <TableRow hover role="checkbox" tabIndex={-1} key={row.status}>
+                              <TableRow
+                                hover
+                                role="checkbox"
+                                tabIndex={-1}
+                                key={row.billNo}
+                                style={{ textAlign: 'center' }}
+                              >
                                 {columns.map(column => {
                                   const value = row[column.id];
                                   return (

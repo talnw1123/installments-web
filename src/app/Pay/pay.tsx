@@ -173,7 +173,7 @@ const row = [
 
 export default function PayPage() {
   const [selectedBill, setSelectedBill] = useState('');
-  const handleBillSelect = event => {
+  const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedBill(event.target.value);
   };
   const classes = useStyles();
@@ -352,7 +352,7 @@ export default function PayPage() {
             contentEditable
             onInput={e => {
               const target = e.target as HTMLDivElement;
-              console.log(e.target.innerText);
+              console.log(target.innerText);
             }}
             sx={{
               width: 170,
