@@ -18,7 +18,6 @@ import { makeStyles } from '@mui/styles';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useState } from 'react';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -62,7 +61,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id: 'number' | 'due_date' | 'date' | 'day' | 'paid' | 'interest' | 'principle';
+  id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'principle';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -70,83 +69,80 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'number', label: 'งวดที่', minWidth: 70, align: 'center' },
-  { id: 'due_date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
+  { id: 'number', label: 'งวดที่', minWidth: 70 },
+  { id: 'due_Date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
   {
-    id: 'date',
+    id: 'due_Paid',
     label: 'วันที่จ่าย',
     minWidth: 100,
-    align: 'center',
   },
   {
-    id: 'day',
+    id: 'overDay',
     label: 'จำนวนเกินกำหนด',
     minWidth: 100,
-    align: 'center',
   },
   {
-    id: 'paid',
+    id: 'totalPay',
     label: 'เงินที่ต้องชำระ',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'interest',
     label: 'ดอกเบี้ย',
     minWidth: 100,
-    align: 'center',
   },
   {
     id: 'principle',
     label: 'เงินต้น',
     minWidth: 100,
-    align: 'center',
   },
 ];
 
 interface Data {
   number: string;
-  due_date: string;
-  date: string;
-  day: number;
-  paid: number;
+  due_Date: string;
+  due_Paid: string;
+  overDay: number;
+  totalPay: number;
   interest: number;
   principle: number;
+  bill: string;
 }
 
 function createData(
   number: string,
-  due_date: string,
-  date: string,
-  day: number,
-  paid: number,
+  due_Date: string,
+  due_Paid: string,
+  overDay: number,
+  totalPay: number,
   interest: number,
-  principle: number
+  principle: number,
+  bill: string
 ): Data {
-  return { number, due_date, date, day, paid, interest, principle };
+  return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
 }
-
-const rows = [
-  createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('4', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('5', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('6', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('7', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('8', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('9', '11/11/2011', '12/12/2011', 0, 0, 100, 900),
-  createData('10', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('11', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('12', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('13', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('14', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-  createData('15', '11/11/2012', '12/12/2011', 0, 0, 100, 900),
-];
 
 const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
 
+const bill1Rows = [
+  createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+  createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+  createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+];
+
+const bill2Rows = [
+  createData('1', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+  createData('2', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+  createData('3', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+];
+
+const rows = [...bill1Rows, ...bill2Rows];
+
 export default function PaymentHistoryPage() {
+  const [selectedBill, setSelectedBill] = React.useState<string>('');
+  const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedBill(event.target.value);
+  };
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -159,22 +155,6 @@ export default function PaymentHistoryPage() {
     'ประวัติการผ่อนสินค้า',
     'ติดตามหนี้',
   ];
-
-  const [selectedDate, setSelectedDate] = useState<dayjs.Dayjs | null>(null);
-  const [age, setAge] = useState('');
-
-  const handleDateChange = (newValue: dayjs.Dayjs | null) => {
-    setSelectedDate(newValue);
-    if (newValue) {
-      const calculatedAge = calculateAge(newValue);
-      setAge(calculatedAge.toString());
-    }
-  };
-
-  const calculateAge = (birthday: dayjs.Dayjs) => {
-    const now = dayjs();
-    return now.diff(birthday, 'year');
-  };
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -211,7 +191,7 @@ export default function PaymentHistoryPage() {
                     <Typography
                       sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
                       onClick={() => {
-                        router.push(`/pay?type=${item}`);
+                        router.push(`/paymentHistory?type=${item}`);
                       }}
                       component="span"
                     >
@@ -234,6 +214,8 @@ export default function PaymentHistoryPage() {
                     margin="normal"
                     className={classes.formField}
                     sx={{ width: '30%' }}
+                    value={selectedBill}
+                    onChange={handleBillChange}
                   >
                     {billOptions.map(option => (
                       <MenuItem key={option} value={option}>
@@ -249,34 +231,48 @@ export default function PaymentHistoryPage() {
                         <TableHead>
                           <TableRow>
                             {columns.map(column => (
-                              <TableCell key={column.id} align={column.align} style={{ minWidth: column.minWidth }}>
+                              <TableCell
+                                key={column.id}
+                                align={column.align}
+                                style={{ minWidth: column.minWidth, textAlign: 'center' }}
+                              >
                                 {column.label}
                               </TableCell>
                             ))}
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
-                            const daysOverdue = calculateDaysOverdue(row.due_date, row.date);
-                            return (
-                              <TableRow hover role="checkbox" tabIndex={-1} key={row.due_date}>
-                                {columns.map(column => {
-                                  const value = row[column.id];
-                                  return (
-                                    <TableCell key={column.id} align={column.align}>
-                                      {column.format && typeof value === 'number'
-                                        ? column.format(value)
-                                        : column.id === 'day'
-                                          ? calculateDaysOverdue(row.due_date, row.date)
-                                          : column.id === 'paid'
-                                            ? calculateAmountToPay(row.interest, row.principle)
-                                            : value}
-                                    </TableCell>
-                                  );
-                                })}
-                              </TableRow>
-                            );
-                          })}
+                          {rows
+                            .filter(row => row.bill === selectedBill)
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map(row => {
+                              const daysOverdue = calculateDaysOverdue(row.due_Date, row.due_Paid);
+                              return (
+                                <TableRow hover role="checkbox" tabIndex={-1} key={row.due_Date}>
+                                  {columns.map(column => {
+                                    const value = row[column.id];
+                                    return (
+                                      <TableCell key={column.id} align={column.align} style={{ textAlign: 'center' }}>
+                                        {column.format && typeof value === 'number'
+                                          ? column.format(value)
+                                          : column.id === 'overDay'
+                                            ? calculateDaysOverdue(row.due_Date, row.due_Paid)
+                                            : column.id === 'totalPay'
+                                              ? calculateAmountToPay(row.interest, row.principle)
+                                              : value}
+                                      </TableCell>
+                                    );
+                                  })}
+                                </TableRow>
+                              );
+                            })}
+                          {rows.filter(row => row.bill === selectedBill).length === 0 && (
+                            <TableRow>
+                              <TableCell colSpan={columns.length} align="center">
+                                No row
+                              </TableCell>
+                            </TableRow>
+                          )}
                         </TableBody>
                       </Table>
                     </TableContainer>

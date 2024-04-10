@@ -9378,6 +9378,13 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-use-navigate@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/react-use-navigate/-/react-use-navigate-0.1.1.tgz#5657642832c33afbefb595532252d6ed81af1c67"
+  integrity sha512-FjSKKHmTy0DA0KBGsNlN97HVha3L3WCTRfXG2lucrgWjQGzqZZTKQ2FdCOZgE+rkBdBTAM6PLEV9MfUdm6MHlQ==
+  dependencies:
+    minimatch "^3.0.4"
+
 react@^18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"

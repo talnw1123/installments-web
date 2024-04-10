@@ -35,4 +35,9 @@ export const John = {
     },
     phoneNumber: '081234567890',
   },
+  financialInfo: {
+    notiDate: '01/04/2024',
+    billNumber: '1234567890',
+    term: 3,
+  },
 };
