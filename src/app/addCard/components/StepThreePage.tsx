@@ -90,7 +90,14 @@ const StepThreePage = () => {
                 defaultValue={null}
                 render={({ field }) => (
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker {...field} label="วันที่ทำสัญญา" onChange={newValue => setValue('date', newValue)} />
+                    <DatePicker
+                      {...field}
+                      label="วันที่ทำสัญญา"
+                      onChange={newValue => {
+                        setValue('contractDate', newValue);
+                        field.onChange(newValue);
+                      }}
+                    />
                   </LocalizationProvider>
                 )}
               />
@@ -208,7 +215,13 @@ const StepThreePage = () => {
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <DataGrid rows={installments} columns={installmentColumns} autoHeight />
+              <Controller
+                name="contractData"
+                control={control}
+                render={({ field }) => (
+                  <DataGrid rows={installments} columns={installmentColumns} autoHeight {...field} />
+                )}
+              />
             </Grid>
           </Grid>
         </Card>
