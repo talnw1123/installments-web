@@ -1,5 +1,5 @@
-import ProfileCustomer from './profileCustomer';
+import ProfileData from './profileData';
 
-export default function ProfileCustomerPage() {
-  return <ProfileCustomer />;
+export default function ProfileDataPage() {
+  return <ProfileData />;
 }

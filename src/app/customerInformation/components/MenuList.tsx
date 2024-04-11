@@ -14,7 +14,7 @@ const useStyles = makeStyles({
   menu: {
     display: 'flex',
     flexDirection: 'column',
-    width: '200px',
+    minWidth: '200px',
     marginLeft: '15px',
     marginTop: '10px',
   },
