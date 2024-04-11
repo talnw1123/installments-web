@@ -1,9 +1,5 @@
 'use client';
 import { Button, Grid } from '@mui/material';
-import Box from '@mui/material/Box';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -18,7 +14,7 @@ const ProfileData = () => {
   const [step, setStep] = useState(0);
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
-  const { handleSubmit, watch, setValue, control } = useForm();
+  const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
 
@@ -86,22 +82,41 @@ const ProfileData = () => {
 
   const conTextValue = useMemo(
     () => ({
+      step,
+      nextStep,
+      prevStep,
+      statuses,
+      valuetext,
+      onSubmit,
+      calculate,
+      date: birthDateValue,
+      setValue,
       control,
+      setAge,
+      handleCreateInstallments,
+      installments,
+      setInstallments,
     }),
-    [control]
+    [
+      step,
+      nextStep,
+      prevStep,
+      statuses,
+      valuetext,
+      onSubmit,
+      calculate,
+      birthDateValue,
+      setValue,
+      control,
+      setAge,
+      handleCreateInstallments,
+      installments,
+      setInstallments,
+    ]
   );
 
   return (
     <>
-      <Box sx={{ width: '100%', marginTop: 5 }}>
-        <Stepper activeStep={step} alternativeLabel>
-          {steps.map(label => (
-            <Step key={label}>
-              <StepLabel>{label}</StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </Box>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DataContext1.Provider value={conTextValue}>
           {step === 0 && (
