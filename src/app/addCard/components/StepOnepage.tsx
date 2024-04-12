@@ -86,79 +86,6 @@ const StepOnePage = () => {
                     )}
                   />
 
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="occupationBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="อาชีพ"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="incomeBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="รายได้"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="phoneNumberBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์โทรศัพท์"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="workPhoneNumberBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์ที่ทำงาน"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-
                   <Controller
                     name="addressDefaultBorrower"
                     defaultValue=""
@@ -217,7 +144,7 @@ const StepOnePage = () => {
                         )}
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={4}>
                       <Controller
                         name="numOfChildBorrower"
                         defaultValue=""
@@ -234,6 +161,84 @@ const StepOnePage = () => {
                         )}
                       />
                     </Grid>
+                    <Grid item xs={2}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        คน
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Controller
+                      name="phoneNumberBorrower"
+                      defaultValue=""
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์โทรศัพท์"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid container item spacing={2}>
+                    <Grid item xs={6}>
+                      <Controller
+                        name="occupationBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="อาชีพ"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Controller
+                        name="incomeBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="รายได้"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <Controller
+                      name="workPhoneNumberBorrower"
+                      defaultValue=""
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์ที่ทำงาน"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
                   </Grid>
 
                   <Controller
@@ -251,6 +256,23 @@ const StepOnePage = () => {
                       />
                     )}
                   />
+                  <Grid item xs={12}>
+                    <Controller
+                      name="workPhoneNumberSpouse"
+                      defaultValue=""
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์ที่ทำงาน"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                  </Grid>
 
                   <Grid container item spacing={2}>
                     <Grid item xs={6}>
@@ -294,41 +316,22 @@ const StepOnePage = () => {
                     </Grid>
                   </Grid>
 
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="workPhoneNumberSpouse"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์ที่ทำงาน"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="phoneNumberSpouse"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์โทรศัพท์"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
+                  <Grid item xs={12}>
+                    <Controller
+                      name="phoneNumberSpouse"
+                      defaultValue=""
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์โทรศัพท์"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
                   </Grid>
                 </Grid>
               </Grid>
@@ -433,6 +436,7 @@ const StepOnePage = () => {
                       />
                     )}
                   />
+
                   <Controller
                     name="workAddressBorrower"
                     defaultValue=""
@@ -464,22 +468,25 @@ const StepOnePage = () => {
                       />
                     )}
                   />
+                  <Grid item style={{ marginTop: '67px' }}>
+                    {' '}
+                    <Controller
+                      name="lastNameSpouse"
+                      defaultValue=""
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="นามสกุล"
+                          variant="standard"
+                          fullWidth
+                          margin="normal"
+                          className={classes.formField}
+                        />
+                      )}
+                    />
+                  </Grid>
 
-                  <Controller
-                    name="lastNameSpouse"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="นามสกุล"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
                   <Controller
                     name="workAddressSpouse"
                     defaultValue=""
