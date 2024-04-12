@@ -86,6 +86,60 @@ const StepOnePage = () => {
                     )}
                   />
 
+                  <Grid container item spacing={3}>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="occupationBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="อาชีพ"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="incomeBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="รายได้"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="workPhoneNumberBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="เบอร์ที่ทำงาน"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+
                   <Controller
                     name="addressDefaultBorrower"
                     defaultValue=""
@@ -119,126 +173,51 @@ const StepOnePage = () => {
                     )}
                   />
 
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="statusBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            select
-                            label="สถานะภาพ"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          >
-                            {statuses.map((status: string) => (
-                              <MenuItem key={status} value={status}>
-                                {status}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={4}>
-                      <Controller
-                        name="numOfChildBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="จำนวนบุตร"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                        คน
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Controller
-                      name="phoneNumberBorrower"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="เบอร์โทรศัพท์"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
+                  <Grid item style={{ marginTop: '77px' }}>
+                    {' '}
+                    <Grid container item spacing={2}>
+                      <Grid item xs={6}>
+                        <Controller
+                          name="statusBorrower"
+                          defaultValue=""
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              select
+                              label="สถานะภาพ"
+                              variant="standard"
+                              fullWidth
+                              margin="normal"
+                              className={classes.formField}
+                            >
+                              {statuses.map((status: string) => (
+                                <MenuItem key={status} value={status}>
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          )}
                         />
-                      )}
-                    />
-                  </Grid>
-
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="occupationBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="อาชีพ"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="incomeBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="รายได้"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
-                    </Grid>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <Controller
-                      name="workPhoneNumberBorrower"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="เบอร์ที่ทำงาน"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Controller
+                          name="numOfChildBorrower"
+                          defaultValue=""
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              label="จำนวนบุตร"
+                              variant="standard"
+                              fullWidth
+                              margin="normal"
+                              className={classes.formField}
+                            />
+                          )}
                         />
-                      )}
-                    />
+                      </Grid>
+                    </Grid>
                   </Grid>
 
                   <Controller
@@ -256,26 +235,9 @@ const StepOnePage = () => {
                       />
                     )}
                   />
-                  <Grid item xs={12}>
-                    <Controller
-                      name="workPhoneNumberSpouse"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="เบอร์ที่ทำงาน"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
-                  </Grid>
 
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
+                  <Grid container item spacing={3}>
+                    <Grid item xs={4}>
                       <Controller
                         name="occupationSpouse"
                         defaultValue=""
@@ -309,30 +271,40 @@ const StepOnePage = () => {
                         )}
                       />
                     </Grid>
-                    <Grid item xs={2}>
-                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                        บาท
-                      </Typography>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="workPhoneNumberSpouse"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="เบอร์ที่ทำงาน"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
                     </Grid>
                   </Grid>
 
-                  <Grid item xs={12}>
-                    <Controller
-                      name="phoneNumberSpouse"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="เบอร์โทรศัพท์"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
-                  </Grid>
+                  <Controller
+                    name="phoneNumberSpouse"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="เบอร์โทรศัพท์"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
             </Grid>
@@ -362,48 +334,47 @@ const StepOnePage = () => {
                         )}
                       />
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={2}>
                       <Controller
                         name="age"
                         control={control}
-                        render={({ field: { value } }) => (
-                          <Typography
-                            style={{
-                              marginTop: '17px',
-                              display: 'flex',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                            }}
-                          >
-                            {value ? `อายุ : ${value}` : 'อายุ'}
-                          </Typography>
+                        render={({ field: { value } }) => <Typography>{value ? `Age: ${value}` : 'อายุ'}</Typography>}
+                      />
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Controller
+                        name="phoneNumberBorrower"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="เบอร์โทรศัพท์"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
                         )}
                       />
                     </Grid>
-                    <Grid item xs={2}>
-                      <Typography variant="body1" sx={{ marginTop: '17px', marginLeft: '-32px' }}>
-                        ปี
-                      </Typography>
-                    </Grid>
                   </Grid>
-                  <Grid item style={{ marginTop: '16px' }}>
-                    {' '}
-                    <Controller
-                      name="lastNameBorrower"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="นามสกุล"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
-                  </Grid>
+
+                  <Controller
+                    name="lastNameBorrower"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
 
                   <Controller
                     name="addressCurrentBorrower"
@@ -436,7 +407,6 @@ const StepOnePage = () => {
                       />
                     )}
                   />
-
                   <Controller
                     name="workAddressBorrower"
                     defaultValue=""
@@ -468,24 +438,22 @@ const StepOnePage = () => {
                       />
                     )}
                   />
-                  <Grid item style={{ marginTop: '67px' }}>
-                    {' '}
-                    <Controller
-                      name="lastNameSpouse"
-                      defaultValue=""
-                      control={control}
-                      render={({ field }) => (
-                        <TextField
-                          {...field}
-                          label="นามสกุล"
-                          variant="standard"
-                          fullWidth
-                          margin="normal"
-                          className={classes.formField}
-                        />
-                      )}
-                    />
-                  </Grid>
+
+                  <Controller
+                    name="lastNameSpouse"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
 
                   <Controller
                     name="workAddressSpouse"
@@ -503,7 +471,6 @@ const StepOnePage = () => {
                       />
                     )}
                   />
-
                   <Controller
                     name="mapLinkWorkSpouse"
                     defaultValue=""

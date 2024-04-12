@@ -17,7 +17,7 @@ export const Users = [
     },
     income: 25000,
     workPhoneNumber: '022345678',
-    maritalStatus: 'สมรส',
+    status: 'สมรส',
     numberOfChildren: 0,
 
     spouse: {

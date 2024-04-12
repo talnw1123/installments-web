@@ -1,5 +1,5 @@
-import EditProfileCustomer from './editProfileCustomer';
+import EditProfileData from './editProfileData';
 
 export default function EditProfileCustomerPage() {
-  return <EditProfileCustomer />;
+  return <EditProfileData />;
 }

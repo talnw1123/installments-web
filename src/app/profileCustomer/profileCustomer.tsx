@@ -25,6 +25,12 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  formContainer: {
+    // marginTop: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    // alignItems: 'center',
+  },
   topContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -46,17 +52,10 @@ const useStyles = makeStyles({
     borderLeft: '2px solid lightgray',
     display: 'flex',
     flexDirection: 'row',
-  },
-  formContainer: {
-    marginTop: '20px',
-    marginLeft: '0',
-    display: 'flex',
-
-    justifyContent: 'center', // comment(?)
-    alignItems: 'center',
+    justifyContent: 'center',
   },
   formField: {
-    marginBottom: '1.5rem',
+    marginBottom: '3rem',
   },
 });
 
@@ -92,8 +91,8 @@ const ProfileCustomer = () => {
               <MenuList />
             </Grid>
             <Grid className={classes.formBigColumn}>
-              <Grid item xs={6} className={classes.formColumn}>
-                <Grid container spacing={2}>
+              <Grid item xs={6} className={classes.formColumn} sx={{ marginLeft: '50px' }}>
+                <Grid container spacing={1}>
                   <Grid item xs={10}>
                     <Controller
                       name="idBorrower"
@@ -118,7 +117,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="nameBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].first_name}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -133,10 +132,10 @@ const ProfileCustomer = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={10}>
+                  <Grid item xs={10} sx={{ marginTop: '4px' }}>
                     <Controller
                       name="addressDefaultBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].homeAddress.address}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -154,7 +153,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="mapLinkDefaultBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].homeAddress.googleMapLink}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -173,7 +172,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="statusBorrower"
-                        defaultValue=""
+                        defaultValue={Users[0].status}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -182,12 +181,13 @@ const ProfileCustomer = () => {
                             label="สถานะภาพ"
                             variant="standard"
                             fullWidth
+                            defaultValue={Users[0].status}
                             margin="dense"
                             className={classes.formField}
                           >
                             {statuses.map((status: string) => (
                               <MenuItem key={status} value={status}>
-                                {status}
+                                {Users[0].status}
                               </MenuItem>
                             ))}
                           </TextField>
@@ -294,7 +294,7 @@ const ProfileCustomer = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={10}>
+                  <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
                       name="nameSpouse"
                       defaultValue=""
@@ -312,7 +312,7 @@ const ProfileCustomer = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={10}>
+                  <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
                       name="phoneNumberSpouse"
                       defaultValue=""
@@ -393,7 +393,7 @@ const ProfileCustomer = () => {
               </Grid>
 
               <Grid item xs={6} className={classes.formColumn}>
-                <Grid container spacing={2}>
+                <Grid container spacing={1}>
                   <Grid item xs={5}>
                     <Controller
                       name="birthDate"
@@ -429,7 +429,7 @@ const ProfileCustomer = () => {
                   </Grid>
                 </Grid>
 
-                <Grid item xs={10}>
+                <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
                     name="lastNameBorrower"
                     defaultValue=""
@@ -484,6 +484,61 @@ const ProfileCustomer = () => {
                   />
                 </Grid>
 
+                <Grid item xs={10} sx={{ marginTop: '48px' }}>
+                  <Controller
+                    name="workAddressBorrower"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="ที่อยู่ที่ทำงาน"
+                        fullWidth
+                        margin="normal"
+                        multiline
+                        rows={4}
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="mapLinkCurrentBorrower"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="lastNameSpouse"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+
                 <Grid item xs={10}>
                   <Controller
                     name="workAddressBorrower"
@@ -497,6 +552,24 @@ const ProfileCustomer = () => {
                         margin="normal"
                         multiline
                         rows={4}
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="mapLinkCurrentBorrower"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
                         className={classes.formField}
                       />
                     )}
