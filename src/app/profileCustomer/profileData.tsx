@@ -1,5 +1,4 @@
 'use client';
-import { Button, Grid } from '@mui/material';
 import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -122,19 +121,6 @@ const ProfileData = () => {
           {step === 0 && (
             <>
               <ProfileCustomer />
-              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="button"
-                  onClick={e => {
-                    e.preventDefault();
-                    nextStep();
-                  }}
-                >
-                  Next
-                </Button>
-              </Grid>
             </>
           )}
         </DataContext1.Provider>
