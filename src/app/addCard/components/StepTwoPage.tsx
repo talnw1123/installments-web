@@ -99,23 +99,24 @@ const StepTwoPage = () => {
                     )}
                   />
 
-                  <Grid container item>
-                    <Grid item xs={12}>
-                      <Controller
-                        name="occupationGuarantor"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="อาชีพ"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
+                  <Controller
+                    name="occupationGuarantor"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="อาชีพ"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
                       />
+                    )}
+                  />
+
+                  <Grid container item spacing={2}>
+                    <Grid item xs={10}>
                       <Controller
                         name="incomeGuarantor"
                         defaultValue=""
@@ -131,23 +132,28 @@ const StepTwoPage = () => {
                           />
                         )}
                       />
-                      <Controller
-                        name="workPhoneNumberGuarantor"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="เบอร์ที่ทำงาน"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        บาท
+                      </Typography>
                     </Grid>
                   </Grid>
+                  <Controller
+                    name="workPhoneNumberGuarantor"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="เบอร์ที่ทำงาน"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
                 </Grid>
               </Grid>
             </Grid>

@@ -21,7 +21,7 @@ const AddCard = () => {
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
+  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง', 'ม่าย'], []);
 
   const totalLoanValue = watch('totalLoan');
   const downPaymentValue = watch('downPayment');
@@ -73,7 +73,6 @@ const AddCard = () => {
   }, [totalLoanValue, downPaymentValue]);
 
   useEffect(() => {
-    // Make sure both values are present and are numbers before calling toFixed
     if (totalLoanValue && downPaymentValue) {
       const total = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
       setValue('totalInstallmentAmount', total.toFixed(2));
@@ -84,23 +83,13 @@ const AddCard = () => {
     const loanAmount = parseFloat(totalLoanValue);
     const downPayment = parseFloat(downPaymentValue);
     const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
-    const interestRate = parseFloat(interestRatesValue.replace('%', '')); // Remove the '%' character
+    const interestRate = parseFloat(interestRatesValue.replace('%', ''));
 
-    // Calculate the total installment amount after the down payment
     const totalInstallmentAmount = loanAmount - downPayment;
-
-    // Flat rate interest calculation: Total interest over the loan period
     const totalInterest = (totalInstallmentAmount * interestRate) / 100;
-
-    // Calculate monthly interest
     const monthlyInterest = totalInterest / numberOfInstallments;
-
-    // Calculate principal payment per installment
     const principalPayment = totalInstallmentAmount / numberOfInstallments;
-
-    // Monthly payment is sum of monthly interest and principal payment
     const monthlyPayment = principalPayment + monthlyInterest;
-
     const newInstallments = [];
 
     for (let i = 0; i < numberOfInstallments; i++) {
@@ -112,7 +101,7 @@ const AddCard = () => {
         id: i + 1,
         installmentNumber: i + 1,
         date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
-        amountDue: roundedMonthlyPayment.toFixed(2), // Rounded monthly payment
+        amountDue: roundedMonthlyPayment.toFixed(2),
         interest: roundedInterestPayment.toFixed(2),
         principal: roundedPrincipalPayment.toFixed(2),
       });
@@ -186,7 +175,7 @@ const AddCard = () => {
                     nextStep();
                   }}
                 >
-                  Next
+                  ถัดไป
                 </Button>
               </Grid>
             </>
@@ -203,7 +192,7 @@ const AddCard = () => {
                     prevStep();
                   }}
                 >
-                  Back
+                  ย้อนกลับ
                 </Button>
                 <Button
                   variant="contained"
@@ -214,7 +203,7 @@ const AddCard = () => {
                     nextStep();
                   }}
                 >
-                  Next
+                  ถัดไป
                 </Button>
               </Grid>
             </>
@@ -231,10 +220,10 @@ const AddCard = () => {
                     prevStep();
                   }}
                 >
-                  Back
+                  ย้อนกลับ
                 </Button>
                 <Button type="submit" variant="contained" color="primary">
-                  Submit
+                  ยืนยัน
                 </Button>
               </Grid>
             </>

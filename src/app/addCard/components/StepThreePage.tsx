@@ -50,6 +50,11 @@ const useStyles = makeStyles({
   formField: {
     marginBottom: '4rem',
   },
+  form: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 const StepThreePage = () => {
@@ -66,154 +71,186 @@ const StepThreePage = () => {
             สร้างการ์ดผ่อนสินค้า
           </Typography>
           <Grid container spacing={2} className={classes.formContainer}>
-            <Grid item xs={4}>
-              <Controller
-                name="billNumber"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="หมายเลขบิล"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
+            <Grid item>
+              <Grid container spacing={3} className={classes.form}>
+                <Grid item xs={4}>
+                  <Controller
+                    name="billNumber"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="หมายเลขบิล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
                   />
-                )}
-              />
+                </Grid>
+                <Grid item xs={4}>
+                  <Controller
+                    name="dateContract"
+                    control={control}
+                    defaultValue={null}
+                    render={({ field }) => (
+                      <LocalizationProvider dateAdapter={AdapterDayjs}>
+                        <DatePicker
+                          {...field}
+                          label="วันที่ทำสัญญา"
+                          onChange={newValue => {
+                            setValue('dateContract', newValue);
+                            field.onChange(newValue);
+                          }}
+                        />
+                      </LocalizationProvider>
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={4}>
+                  <Controller
+                    name="contractNumber"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="หมายเลขสัญญา"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+
+              <Grid container spacing={3} className={classes.form}>
+                <Grid item xs={3}>
+                  <Controller
+                    name="totalLoan"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="รวมยอดเงินกู้"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                    บาท
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Controller
+                    name="downPayment"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="เงินดาว์น"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                    บาท
+                  </Typography>
+                </Grid>
+                <Grid item xs={3}>
+                  <Controller
+                    name="numberOfInstallments"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="จำนวนงวด"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                    งวด
+                  </Typography>
+                </Grid>
+              </Grid>
             </Grid>
-            <Grid item xs={2.5}>
-              <Controller
-                name="dateContract"
-                control={control}
-                defaultValue={null}
-                render={({ field }) => (
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
+
+            <Grid container spacing={3} className={classes.form}>
+              <Grid item xs={3}>
+                <Controller
+                  name="interestRates"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
                       {...field}
-                      label="วันที่ทำสัญญา"
-                      onChange={newValue => {
-                        setValue('dateContract', newValue);
-                        field.onChange(newValue);
-                      }}
+                      label="อัตราดอกเบี้ย"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
                     />
-                  </LocalizationProvider>
-                )}
-              />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={3}>
+                <Controller
+                  name="totalInstallmentAmount"
+                  defaultValue=""
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      label="รวมยอดเงินผ่อน"
+                      variant="standard"
+                      fullWidth
+                      margin="normal"
+                      className={classes.formField}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item xs={1}>
+                <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                  บาท
+                </Typography>
+              </Grid>
+              <Grid item xs={2}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="button"
+                  onClick={handleCreateInstallments}
+                  sx={{ marginTop: '22px' }}
+                >
+                  สร้าง
+                </Button>
+              </Grid>
             </Grid>
 
-            <Grid item xs={4}>
-              <Controller
-                name="contractNumber"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="หมายเลขสัญญา"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={3}>
-              <Controller
-                name="totalLoan"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="รวมยอดเงินกู้"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={3}>
-              <Controller
-                name="downPayment"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="เงินดาว์น"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={3}>
-              <Controller
-                name="numberOfInstallments"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="จำนวนงวด"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-
-            <Grid item xs={1}>
-              <Controller
-                name="interestRates"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="อัตราดอกเบี้ย"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Controller
-                name="totalInstallmentAmount"
-                defaultValue=""
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="รวมยอดเงินผ่อน"
-                    variant="standard"
-                    fullWidth
-                    margin="normal"
-                    className={classes.formField}
-                  />
-                )}
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Button variant="contained" color="primary" type="button" onClick={handleCreateInstallments}>
-                Crate
-              </Button>
-            </Grid>
             <Grid item xs={12}>
               <Controller
                 name="table"
