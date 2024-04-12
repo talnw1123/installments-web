@@ -16,13 +16,18 @@ export const DataContext = createContext<any>({});
 
 const AddCard = () => {
   const [installments, setInstallments] = useState<any[]>([]);
-
   const [step, setStep] = useState(0);
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
+
+  const totalLoanValue = watch('totalLoan');
+  const downPaymentValue = watch('downPayment');
+
+  const loanAmount = Number(totalLoanValue);
+  const downPayment = Number(downPaymentValue);
 
   const onSubmit = useCallback<SubmitHandler<StepParams>>(
     data => {
@@ -56,30 +61,60 @@ const AddCard = () => {
   }, []);
 
   const birthDateValue = watch('birthDate');
-  const totalLoanValue = watch('totalLoan');
-  const downPaymentValue = watch('downPayment');
   const numberOfInstallmentsValue = watch('numberOfInstallments');
   const interestRatesValue = watch('interestRates');
   const contractDateValue = watch('contractDate');
 
+  const totalInstallmentAmount = useMemo(() => {
+    if (totalLoanValue && downPaymentValue) {
+      return parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
+    }
+    return '';
+  }, [totalLoanValue, downPaymentValue]);
+
+  useEffect(() => {
+    // Make sure both values are present and are numbers before calling toFixed
+    if (totalLoanValue && downPaymentValue) {
+      const total = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
+      setValue('totalInstallmentAmount', total.toFixed(2));
+    }
+  }, [totalLoanValue, downPaymentValue, setValue]);
+
   const handleCreateInstallments = useCallback(() => {
-    const totalLoanAmount = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
-    let remainingPrincipal = totalLoanAmount;
+    const loanAmount = parseFloat(totalLoanValue);
+    const downPayment = parseFloat(downPaymentValue);
+    const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
+    const interestRate = parseFloat(interestRatesValue.replace('%', '')); // Remove the '%' character
+
+    // Calculate the total installment amount after the down payment
+    const totalInstallmentAmount = loanAmount - downPayment;
+
+    // Flat rate interest calculation: Total interest over the loan period
+    const totalInterest = (totalInstallmentAmount * interestRate) / 100;
+
+    // Calculate monthly interest
+    const monthlyInterest = totalInterest / numberOfInstallments;
+
+    // Calculate principal payment per installment
+    const principalPayment = totalInstallmentAmount / numberOfInstallments;
+
+    // Monthly payment is sum of monthly interest and principal payment
+    const monthlyPayment = principalPayment + monthlyInterest;
+
     const newInstallments = [];
 
-    for (let i = 0; i < parseInt(numberOfInstallmentsValue, 10); i++) {
-      const interestPayment = remainingPrincipal * (parseFloat(interestRatesValue) / 100 / 12);
-      const principalPayment = totalLoanAmount / parseInt(numberOfInstallmentsValue, 10);
-      const totalPayment = interestPayment + principalPayment;
-      remainingPrincipal -= principalPayment;
+    for (let i = 0; i < numberOfInstallments; i++) {
+      const roundedMonthlyPayment = Math.ceil(monthlyPayment);
+      const roundedInterestPayment = Math.ceil(monthlyInterest);
+      const roundedPrincipalPayment = roundedMonthlyPayment - roundedInterestPayment;
 
       newInstallments.push({
         id: i + 1,
         installmentNumber: i + 1,
         date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
-        amountDue: totalPayment.toFixed(2),
-        interest: interestPayment.toFixed(2),
-        principal: principalPayment.toFixed(2),
+        amountDue: roundedMonthlyPayment.toFixed(2), // Rounded monthly payment
+        interest: roundedInterestPayment.toFixed(2),
+        principal: roundedPrincipalPayment.toFixed(2),
       });
     }
 
@@ -102,6 +137,8 @@ const AddCard = () => {
       handleCreateInstallments,
       installments,
       setInstallments,
+      totalLoanValue,
+      downPaymentValue,
     }),
     [
       step,
@@ -118,6 +155,8 @@ const AddCard = () => {
       handleCreateInstallments,
       installments,
       setInstallments,
+      totalLoanValue,
+      downPaymentValue,
     ]
   );
 
