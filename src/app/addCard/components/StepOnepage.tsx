@@ -173,47 +173,50 @@ const StepOnePage = () => {
                     )}
                   />
 
-                  <Grid container item spacing={2}>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="statusBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            select
-                            label="สถานะภาพ"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          >
-                            {statuses.map((status: string) => (
-                              <MenuItem key={status} value={status}>
-                                {status}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        )}
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <Controller
-                        name="numOfChildBorrower"
-                        defaultValue=""
-                        control={control}
-                        render={({ field }) => (
-                          <TextField
-                            {...field}
-                            label="จำนวนบุตร"
-                            variant="standard"
-                            fullWidth
-                            margin="normal"
-                            className={classes.formField}
-                          />
-                        )}
-                      />
+                  <Grid item style={{ marginTop: '77px' }}>
+                    {' '}
+                    <Grid container item spacing={2}>
+                      <Grid item xs={6}>
+                        <Controller
+                          name="statusBorrower"
+                          defaultValue=""
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              select
+                              label="สถานะภาพ"
+                              variant="standard"
+                              fullWidth
+                              margin="normal"
+                              className={classes.formField}
+                            >
+                              {statuses.map((status: string) => (
+                                <MenuItem key={status} value={status}>
+                                  {status}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          )}
+                        />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <Controller
+                          name="numOfChildBorrower"
+                          defaultValue=""
+                          control={control}
+                          render={({ field }) => (
+                            <TextField
+                              {...field}
+                              label="จำนวนบุตร"
+                              variant="standard"
+                              fullWidth
+                              margin="normal"
+                              className={classes.formField}
+                            />
+                          )}
+                        />
+                      </Grid>
                     </Grid>
                   </Grid>
 
