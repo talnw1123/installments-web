@@ -7,6 +7,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MenuList from 'app/customerInformation/page';
 import { Users } from 'app/users';
+import dayjs from 'dayjs';
 import { useContext } from 'react';
 import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
@@ -127,6 +128,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -146,6 +150,9 @@ const ProfileCustomer = () => {
                           multiline
                           rows={4}
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -163,6 +170,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -183,6 +193,9 @@ const ProfileCustomer = () => {
                             fullWidth
                             margin="dense"
                             className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
                           >
                             {statuses.map((status: string) => (
                               <MenuItem key={status} value={status}>
@@ -196,7 +209,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="numOfChildBorrower"
-                        defaultValue=""
+                        defaultValue={Users[0].numOfChild}
                         control={control}
                         render={({ field }) => (
                           <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -207,6 +220,9 @@ const ProfileCustomer = () => {
                               fullWidth
                               margin="dense"
                               className={classes.formField}
+                              InputProps={{
+                                readOnly: true,
+                              }}
                             />
                             <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>คน</Typography>
                           </Grid>
@@ -218,7 +234,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneNumberBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].phone}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -228,6 +244,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -237,7 +256,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="occupationSpouse"
-                        defaultValue=""
+                        defaultValue={Users[0].occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -247,6 +266,9 @@ const ProfileCustomer = () => {
                             fullWidth
                             margin="dense"
                             className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
                           />
                         )}
                       />
@@ -255,7 +277,7 @@ const ProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="incomeSpouse"
-                          defaultValue=""
+                          defaultValue={Users[0].income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -266,6 +288,9 @@ const ProfileCustomer = () => {
                                 fullWidth
                                 margin="dense"
                                 className={classes.formField}
+                                InputProps={{
+                                  readOnly: true,
+                                }}
                               />
                               <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>บาท</Typography>
                             </Grid>
@@ -278,7 +303,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="workPhoneNumberBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -288,6 +313,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -296,7 +324,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
                       name="nameSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.firstName}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -306,6 +334,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -314,7 +345,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
                       name="phoneNumberSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.phoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -324,6 +355,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -333,7 +367,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="occupationSpouse"
-                        defaultValue=""
+                        defaultValue={Users[0].spouse.occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -343,6 +377,9 @@ const ProfileCustomer = () => {
                             fullWidth
                             margin="dense"
                             className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
                           />
                         )}
                       />
@@ -351,7 +388,7 @@ const ProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="incomeSpouse"
-                          defaultValue=""
+                          defaultValue={Users[0].spouse.income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -362,6 +399,9 @@ const ProfileCustomer = () => {
                                 fullWidth
                                 margin="dense"
                                 className={classes.formField}
+                                InputProps={{
+                                  readOnly: true,
+                                }}
                               />
                               <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>บาท</Typography>
                             </Grid>
@@ -374,7 +414,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="workPhoneNumberSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -384,6 +424,9 @@ const ProfileCustomer = () => {
                           fullWidth
                           margin="dense"
                           className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
                         />
                       )}
                     />
@@ -397,12 +440,13 @@ const ProfileCustomer = () => {
                     <Controller
                       name="birthDate"
                       control={control}
-                      defaultValue={null}
+                      defaultValue={dayjs(Users[0].dateOfBirth)}
                       render={({ field }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
                             {...field}
                             label="วันเกิด"
+                            readOnly={true}
                             onChange={newValue => {
                               setValue('birthDate', newValue);
                               const age = calculate(newValue);
@@ -418,6 +462,7 @@ const ProfileCustomer = () => {
                     <Controller
                       name="age"
                       control={control}
+                      defaultValue={Users[0].age}
                       render={({ field: { value } }) => (
                         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                           <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
@@ -431,7 +476,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
                     name="lastNameBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].last_name}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -441,6 +486,9 @@ const ProfileCustomer = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -449,7 +497,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].currentAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -460,6 +508,9 @@ const ProfileCustomer = () => {
                         multiline
                         rows={4}
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -468,7 +519,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].currentAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -478,6 +529,9 @@ const ProfileCustomer = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -486,7 +540,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
                     name="workAddressBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].work.workAddress}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -497,6 +551,9 @@ const ProfileCustomer = () => {
                         multiline
                         rows={4}
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -505,7 +562,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].work.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -515,6 +572,9 @@ const ProfileCustomer = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -523,7 +583,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="lastNameSpouse"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.lastName}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -533,6 +593,9 @@ const ProfileCustomer = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -541,7 +604,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="workAddressBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.workAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -552,6 +615,9 @@ const ProfileCustomer = () => {
                         multiline
                         rows={4}
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
@@ -560,7 +626,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.workAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -570,6 +636,9 @@ const ProfileCustomer = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />

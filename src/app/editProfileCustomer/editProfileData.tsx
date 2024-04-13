@@ -1,4 +1,5 @@
 'use client';
+import { Button, Grid } from '@mui/material';
 import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -14,8 +15,8 @@ const EditProfileData = () => {
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
-  const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['Single', 'Married', 'Divorced', 'Widowed'], []);
+
+  const statuses = useMemo(() => ['โสด', 'สมรส', 'หย่าร้าง', 'หม้าย'], []);
 
   const onSubmit = useCallback<SubmitHandler<StepParams>>(
     data => {
@@ -26,8 +27,6 @@ const EditProfileData = () => {
     [installments]
   );
 
-  const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
-  const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);
   const valuetext = useCallback((value: number) => `${value}%`, []);
 
   useEffect(() => {
@@ -50,40 +49,12 @@ const EditProfileData = () => {
 
   const birthDateValue = watch('birthDate');
   const totalLoanValue = watch('totalLoan');
-  const downPaymentValue = watch('downPayment');
-  const numberOfInstallmentsValue = watch('numberOfInstallments');
-  const interestRatesValue = watch('interestRates');
-  const contractDateValue = watch('contractDate');
-
-  const handleCreateInstallments = useCallback(() => {
-    const totalLoanAmount = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
-    let remainingPrincipal = totalLoanAmount;
-    const newInstallments = [];
-
-    for (let i = 0; i < parseInt(numberOfInstallmentsValue, 10); i++) {
-      const interestPayment = remainingPrincipal * (parseFloat(interestRatesValue) / 100 / 12);
-      const principalPayment = totalLoanAmount / parseInt(numberOfInstallmentsValue, 10);
-      const totalPayment = interestPayment + principalPayment;
-      remainingPrincipal -= principalPayment;
-
-      newInstallments.push({
-        id: i + 1,
-        installmentNumber: i + 1,
-        date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
-        amountDue: totalPayment.toFixed(2),
-        interest: interestPayment.toFixed(2),
-        principal: principalPayment.toFixed(2),
-      });
-    }
-
-    setInstallments(newInstallments);
-  }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue, contractDateValue]);
 
   const conTextValue = useMemo(
     () => ({
       step,
-      nextStep,
-      prevStep,
+      // nextStep,
+      // prevStep,
       statuses,
       valuetext,
       onSubmit,
@@ -92,27 +63,17 @@ const EditProfileData = () => {
       setValue,
       control,
       setAge,
-      handleCreateInstallments,
-      installments,
-      setInstallments,
     }),
-    [
-      step,
-      nextStep,
-      prevStep,
-      statuses,
-      valuetext,
-      onSubmit,
-      calculate,
-      birthDateValue,
-      setValue,
-      control,
-      setAge,
-      handleCreateInstallments,
-      installments,
-      setInstallments,
-    ]
+    [step, statuses, valuetext, onSubmit, calculate, birthDateValue, setValue, control, setAge]
   );
+
+  const handleEditClick = () => {
+    navigateTo('/profileCustomer');
+  };
+
+  const navigateTo = (path: string) => {
+    window.location.href = path;
+  };
 
   return (
     <>
@@ -121,6 +82,11 @@ const EditProfileData = () => {
           {step === 0 && (
             <>
               <EditProfileCustomer />
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+                <Button type="submit" variant="contained" color="primary" onClick={handleEditClick}>
+                  ยืนยัน
+                </Button>
+              </Grid>
             </>
           )}
         </DataContext.Provider>

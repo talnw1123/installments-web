@@ -1,12 +1,12 @@
 'use client';
 
-import EditIcon from '@mui/icons-material/Edit';
 import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MenuList from 'app/customerInformation/page';
 import { Users } from 'app/users';
+import dayjs from 'dayjs';
 import { useContext } from 'react';
 import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
@@ -64,7 +64,7 @@ const EditProfileCustomer = () => {
   const classes = useStyles();
 
   const handleEditClick = () => {
-    navigateTo('/editProfileCustomer');
+    navigateTo('/profileCustomer');
   };
 
   const navigateTo = (path: string) => {
@@ -78,11 +78,6 @@ const EditProfileCustomer = () => {
           <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
             ประวัติผู้กู้
           </Typography>
-
-          <EditIcon
-            style={{ color: '#2196f3', width: '10%', marginTop: '10px', cursor: 'pointer' }}
-            onClick={handleEditClick}
-          />
         </Grid>
 
         <Grid container className={classes.formContainer}>
@@ -394,7 +389,7 @@ const EditProfileCustomer = () => {
                     <Controller
                       name="birthDate"
                       control={control}
-                      defaultValue={null}
+                      defaultValue={dayjs(Users[0].dateOfBirth)}
                       render={({ field }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
@@ -415,6 +410,7 @@ const EditProfileCustomer = () => {
                     <Controller
                       name="age"
                       control={control}
+                      defaultValue={Users[0].age}
                       render={({ field: { value } }) => (
                         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                           <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
@@ -428,7 +424,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
                     name="lastNameBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].last_name}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -446,7 +442,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].currentAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -465,7 +461,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].currentAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -483,7 +479,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
                     name="workAddressBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].work.workAddress}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -502,7 +498,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].work.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -520,7 +516,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="lastNameSpouse"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.lastName}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -538,7 +534,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="workAddressBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.workAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -557,7 +553,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkCurrentBorrower"
-                    defaultValue=""
+                    defaultValue={Users[0].spouse.workAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
