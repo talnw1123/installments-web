@@ -181,13 +181,12 @@ const ProfileCustomer = () => {
                             label="สถานะภาพ"
                             variant="standard"
                             fullWidth
-                            defaultValue={Users[0].status}
                             margin="dense"
                             className={classes.formField}
                           >
                             {statuses.map((status: string) => (
                               <MenuItem key={status} value={status}>
-                                {Users[0].status}
+                                {status}
                               </MenuItem>
                             ))}
                           </TextField>

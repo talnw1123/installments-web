@@ -193,7 +193,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="numOfChildBorrower"
-                        defaultValue=""
+                        defaultValue={Users[0].numOfChild}
                         control={control}
                         render={({ field }) => (
                           <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -215,7 +215,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneNumberBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].phone}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -234,7 +234,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="occupationSpouse"
-                        defaultValue=""
+                        defaultValue={Users[0].occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -252,7 +252,7 @@ const EditProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="incomeSpouse"
-                          defaultValue=""
+                          defaultValue={Users[0].income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -275,7 +275,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="workPhoneNumberBorrower"
-                      defaultValue=""
+                      defaultValue={Users[0].workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -293,7 +293,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
                       name="nameSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.firstName}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -311,7 +311,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
                       name="phoneNumberSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.phoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -330,7 +330,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="occupationSpouse"
-                        defaultValue=""
+                        defaultValue={Users[0].spouse.occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -348,7 +348,7 @@ const EditProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="incomeSpouse"
-                          defaultValue=""
+                          defaultValue={Users[0].spouse.income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -371,7 +371,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="workPhoneNumberSpouse"
-                      defaultValue=""
+                      defaultValue={Users[0].spouse.workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
