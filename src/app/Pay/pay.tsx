@@ -46,6 +46,15 @@ const useStyles = makeStyles({
     display: 'flex',
     alignItems: 'center',
   },
+  showBox: {
+    width: 300,
+    height: 50,
+    borderRadius: 1,
+    bgcolor: '#FFFFFF',
+    marginTop: 5,
+    marginBottom: 5,
+    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+  },
 });
 
 const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
@@ -122,18 +131,6 @@ const columns: GridColDef<(typeof row)[number]>[] = [
   },
 ];
 
-// const rows = [
-//   { id: 1, station: 'ค้างชำระ', date: '25/03/2024', debt: 14 },
-//   { id: 2, station: 'ค้างชำระ', date: '25/03/2024', debt: 31 },
-//   { id: 3, station: 'ค้างชำระ', date: '25/03/2024', debt: 31 },
-//   { id: 4, station: 'ค้างชำระ', date: '25/03/2024', debt: 11 },
-//   { id: 5, station: 'ค้างชำระ', date: '25/03/2024', debt: null },
-//   { id: 6, station: 'ค้างชำระ', date: '25/03/2024', debt: 150 },
-//   { id: 7, station: 'ค้างชำระ', date: '25/03/2024', debt: 44 },
-//   { id: 8, station: 'ค้างชำระ', date: '25/03/2024', debt: 36 },
-//   { id: 9, station: 'ค้างชำระ', date: '25/03/2024', debt: 65 },
-// ];
-
 const row = [
   {
     id: 1,
@@ -168,7 +165,6 @@ const row = [
     accrued_interest: 8,
     accrued_principle: 15,
   },
-  // เพิ่มข้อมูลบิลอื่นๆ ตามต้องการ
 ];
 
 export default function PayPage() {
@@ -349,20 +345,11 @@ export default function PayPage() {
           }}
         >
           <Box
+            className={classes.showBox}
             contentEditable
             onInput={e => {
               const target = e.target as HTMLDivElement;
               console.log(target.innerText);
-            }}
-            sx={{
-              width: 170,
-              height: 50,
-              borderRadius: 1,
-              bgcolor: '#FFFFFF',
-              marginTop: 5,
-              marginBottom: 5,
-              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-              padding: '10px',
             }}
           ></Box>
         </ThemeProvider>
@@ -384,19 +371,7 @@ export default function PayPage() {
             },
           }}
         >
-          <Box
-            sx={{
-              width: 170,
-              height: 50,
-              borderRadius: 1,
-              bgcolor: '#FFFFFF',
-              marginTop: 5,
-              marginBottom: 5,
-              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-            }}
-          >
-            hello
-          </Box>
+          <Box className={classes.showBox}>hello</Box>
         </ThemeProvider>
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท

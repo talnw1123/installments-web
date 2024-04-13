@@ -226,6 +226,9 @@ export default function PaymentHistoryPage() {
                 </Grid>
                 <Grid>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                    <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
+                      ประวัติการชำระหนี้
+                    </Typography>
                     <TableContainer sx={{ maxHeight: 440 }}>
                       <Table stickyHeader aria-label="sticky table">
                         <TableHead>
@@ -248,7 +251,7 @@ export default function PaymentHistoryPage() {
                             .map(row => {
                               const daysOverdue = calculateDaysOverdue(row.due_Date, row.due_Paid);
                               return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={row.due_Date}>
+                                <TableRow hover role="checkbox" tabIndex={-1} key={row.number}>
                                   {columns.map(column => {
                                     const value = row[column.id];
                                     return (
