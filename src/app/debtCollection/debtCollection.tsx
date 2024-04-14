@@ -2,6 +2,7 @@
 import {
   Autocomplete,
   Box,
+  Button,
   Card,
   Grid,
   Paper,
@@ -76,7 +77,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id: 'billNo' | 'termNo' | 'due_Date' | 'dayAsk' | 'overDay' | 'paid' | 'askCount' | 'bill';
+  id: 'billNo' | 'termNo' | 'due_Date' | 'dayAsk' | 'overDay' | 'paid' | 'AppointmentDate' | 'bill';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -107,7 +108,7 @@ const columns: readonly Column[] = [
     minWidth: 100,
   },
   {
-    id: 'askCount',
+    id: 'AppointmentDate',
     label: 'ครั้งที่ทวง',
     minWidth: 100,
   },
@@ -120,7 +121,7 @@ interface Data {
   dayAsk: number;
   overDay: number;
   paid: number;
-  askCount: number;
+  AppointmentDate: number;
   bill: string;
 }
 
@@ -131,10 +132,10 @@ function createData(
   dayAsk: number,
   overDay: number,
   paid: number,
-  askCount: number,
+  AppointmentDate: number,
   bill: string
 ): Data {
-  return { billNo, termNo, due_Date, dayAsk, overDay, paid, askCount, bill };
+  return { billNo, termNo, due_Date, dayAsk, overDay, paid, AppointmentDate, bill };
 }
 
 const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
@@ -485,7 +486,7 @@ export default function DebtCollectionPage() {
                       <Grid item xs={6}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
-                            label="วันเกิด"
+                            label="วันที่นัดชำระ"
                             value={selectedDate}
                             onChange={handleDateChange}
                             renderInput={params => (
@@ -501,6 +502,18 @@ export default function DebtCollectionPage() {
                         </LocalizationProvider>
                       </Grid>
                     </Grid>
+                    <Button
+                      variant="contained"
+                      onClick={() => console.log('บันทึกการทวงหนี้')}
+                      sx={{
+                        backgroundColor: '#718171',
+                        borderRadius: '1px',
+                        marginLeft: '10px',
+                        padding: '10px 20px',
+                      }}
+                    >
+                      บันทึกการทวงหนี้
+                    </Button>
                   </Grid>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>

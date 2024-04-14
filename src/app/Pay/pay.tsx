@@ -185,6 +185,17 @@ export default function PayPage() {
     'ติดตามหนี้',
   ];
 
+  const [checklist, setChecklist] = useState<string[]>([]);
+
+  const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setChecklist([...checklist, value]);
+    } else {
+      setChecklist(checklist.filter(item => item !== value));
+    }
+  };
+
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
@@ -371,7 +382,7 @@ export default function PayPage() {
             },
           }}
         >
-          <Box className={classes.showBox}>hello</Box>
+          <Box className={classes.showBox}></Box>
         </ThemeProvider>
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท

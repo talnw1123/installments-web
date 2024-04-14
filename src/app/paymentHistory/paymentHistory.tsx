@@ -61,7 +61,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'principle';
+  id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'bill';
   label: string;
   minWidth?: number;
   align?: 'right';
