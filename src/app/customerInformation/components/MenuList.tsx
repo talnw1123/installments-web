@@ -30,8 +30,8 @@ export default function MenuList() {
     { label: 'ชำระเงิน', route: '/Pay?type=ชำระเงิน' },
     { label: 'ประวัติการชำระเงิน', route: '/paymentHistory?type=ประวัติการชำระเงิน' },
     { label: 'สร้างการ์ดผ่อนสินค้า', route: '/addCard?type=สร้างการ์ดผ่อนสินค้า' },
-    { label: 'ประวัติการผ่อนสินค้า', route: '#' },
-    { label: 'ติดตามหนี้', route: '#' },
+    { label: 'ประวัติการผ่อนสินค้า', route: '/installmentHis?type=ประวัติการผ่อนสินค้า' },
+    { label: 'ติดตามหนี้', route: '/debtCollection?type=ติดตามหนี้' },
   ];
 
   return (

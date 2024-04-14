@@ -5,6 +5,7 @@ export const Users = [
     first_name: 'Emiline',
     last_name: 'McClune',
     dateOfBirth: '01/01/1990',
+    age: '34', //ระบบคำนวณมาเก็บ?
     phone: '123-456-7890',
     occupation: 'ช่างไฟฟ้า',
     currentAddress: {
@@ -14,6 +15,11 @@ export const Users = [
     homeAddress: {
       address: '456 หมู่บ้านพระราม ซอย 10 ถนนพระราม เขตบางคอแหลม กรุงเทพมหานคร',
       googleMapLink: 'https://goo.gl/maps/123456',
+    },
+
+    work: {
+      workAddress: '789 หมู่บ้านพระราม ซอย 10 ถนนพระราม เขตบางคอแหลม กรุงเทพมหานคร',
+      googleMapLink: 'https://goo.gl/maps/654321',
     },
     income: 25000,
     workPhoneNumber: '022345678',
@@ -25,10 +31,10 @@ export const Users = [
       lastName: 'สมิท',
       occupation: 'ว่างงาน',
       income: 0,
-      workPhoneNumber: '',
+      workPhoneNumber: '-',
       workAddress: {
-        address: '',
-        googleMapLink: '',
+        address: '-',
+        googleMapLink: '-',
       },
       phoneNumber: '081234567890',
     },

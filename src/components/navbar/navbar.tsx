@@ -17,10 +17,10 @@ import * as React from 'react';
 import { FC, useState } from 'react';
 
 const menuNav = [
-  { name: 'หน้าแรก', path: '/summary' },
+  { name: 'หน้าแรก', path: '/home' },
   { name: 'เพิ่มการ์ดผู้กู้', path: '/addCard' },
-  { name: 'ค้นหาผู้กู้', path: '/searchCustomer' },
-  { name: 'ประวัติการแจ้งเตือนผู้กู้', path: '/customerProfile' },
+  { name: 'ค้นหาผู้กู้', path: '/findCustomer' },
+  { name: 'ประวัติการแจ้งเตือนผู้กู้', path: '/notiHistory' },
 ];
 
 interface NavbarProps {
