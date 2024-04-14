@@ -19,7 +19,7 @@ export const Users = [
 
     work: {
       workAddress: '789 หมู่บ้านพระราม ซอย 10 ถนนพระราม เขตบางคอแหลม กรุงเทพมหานคร',
-      googleMapLink: 'https://goo.gl/maps/123456',
+      googleMapLink: 'https://goo.gl/maps/654321',
     },
     income: 25000,
     workPhoneNumber: '022345678',
@@ -31,10 +31,10 @@ export const Users = [
       lastName: 'สมิท',
       occupation: 'ว่างงาน',
       income: 0,
-      workPhoneNumber: '',
+      workPhoneNumber: '-',
       workAddress: {
-        address: '',
-        googleMapLink: '',
+        address: '-',
+        googleMapLink: '-',
       },
       phoneNumber: '081234567890',
     },

@@ -255,7 +255,7 @@ const ProfileCustomer = () => {
                   <Grid container item spacing={2}>
                     <Grid item xs={5}>
                       <Controller
-                        name="occupationSpouse"
+                        name="occupationBorrower"
                         defaultValue={Users[0].occupation}
                         control={control}
                         render={({ field }) => (
@@ -276,7 +276,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Grid>
                         <Controller
-                          name="incomeSpouse"
+                          name="incomeBorrower"
                           defaultValue={Users[0].income}
                           control={control}
                           render={({ field }) => (
@@ -561,7 +561,7 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="mapLinkCurrentBorrower"
+                    name="mapLinkWorkBorrower"
                     defaultValue={Users[0].work.googleMapLink}
                     control={control}
                     render={({ field }) => (
@@ -603,7 +603,7 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="workAddressBorrower"
+                    name="workAddressSpouse"
                     defaultValue={Users[0].spouse.workAddress.address}
                     control={control}
                     render={({ field }) => (
@@ -625,7 +625,7 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="mapLinkCurrentBorrower"
+                    name="mapLinkWorkSpouse"
                     defaultValue={Users[0].spouse.workAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
