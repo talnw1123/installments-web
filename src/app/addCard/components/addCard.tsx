@@ -13,6 +13,9 @@ import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
 
 export const DataContext = createContext<any>({});
+export function parseDateString(timestamp: string) {
+  return dayjs(timestamp).format('DD/MM/YYYY');
+}
 
 const AddCard = () => {
   const [installments, setInstallments] = useState<any[]>([]);
@@ -29,13 +32,18 @@ const AddCard = () => {
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
 
+  const navigateToProfileCustomer = useCallback(() => {
+    window.location.href = './profileCustomer';
+  }, []);
+
   const onSubmit = useCallback<SubmitHandler<StepParams>>(
     data => {
       console.log(data);
       const newData = { ...data, table: installments };
       console.log(newData);
+      navigateToProfileCustomer();
     },
-    [installments]
+    [installments, navigateToProfileCustomer]
   );
 
   const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
@@ -50,13 +58,17 @@ const AddCard = () => {
     };
   }, [setValue]);
 
-  const date = watch('birthDate');
-  const calculate = useCallback((birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
-    if (!birthDate) {
+  const parseDateStringTime = (dateString: string): string => {
+    return new Date(dateString).toISOString();
+  };
+
+  const calculateAge = useCallback((birthDate: string): number | '' => {
+    const parsedDate = parseDateStringTime(birthDate);
+    if (!parsedDate) {
       return '';
     }
     const now = dayjs();
-    const age = now.diff(birthDate, 'year');
+    const age = now.diff(parsedDate, 'year');
     return age;
   }, []);
 
@@ -80,12 +92,9 @@ const AddCard = () => {
   }, [totalLoanValue, downPaymentValue, setValue]);
 
   const handleCreateInstallments = useCallback(() => {
-    const loanAmount = parseFloat(totalLoanValue);
-    const downPayment = parseFloat(downPaymentValue);
     const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
     const interestRate = parseFloat(interestRatesValue.replace('%', ''));
-
-    const totalInstallmentAmount = loanAmount - downPayment;
+    const totalInstallmentAmount = parseFloat(totalLoanValue) - parseFloat(downPaymentValue);
     const totalInterest = (totalInstallmentAmount * interestRate) / 100;
     const monthlyInterest = totalInterest / numberOfInstallments;
     const principalPayment = totalInstallmentAmount / numberOfInstallments;
@@ -93,22 +102,22 @@ const AddCard = () => {
     const newInstallments = [];
 
     for (let i = 0; i < numberOfInstallments; i++) {
-      const roundedMonthlyPayment = Math.ceil(monthlyPayment);
-      const roundedInterestPayment = Math.ceil(monthlyInterest);
-      const roundedPrincipalPayment = roundedMonthlyPayment - roundedInterestPayment;
-
       newInstallments.push({
         id: i + 1,
         installmentNumber: i + 1,
-        date: dayjs(contractDateValue).add(i, 'month').format('DD/MM/YYYY'),
-        amountDue: roundedMonthlyPayment.toFixed(2),
-        interest: roundedInterestPayment.toFixed(2),
-        principal: roundedPrincipalPayment.toFixed(2),
+        date: parseDateString(
+          dayjs()
+            .add(i + 1, 'month')
+            .toISOString()
+        ),
+        amountDue: monthlyPayment.toFixed(2),
+        interest: monthlyInterest.toFixed(2),
+        principal: (monthlyPayment - monthlyInterest).toFixed(2),
       });
     }
 
     setInstallments(newInstallments);
-  }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue, contractDateValue]);
+  }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue]);
 
   const conTextValue = useMemo(
     () => ({
@@ -118,7 +127,7 @@ const AddCard = () => {
       statuses,
       valuetext,
       onSubmit,
-      calculate,
+      calculateAge,
       date: birthDateValue,
       setValue,
       control,
@@ -136,7 +145,7 @@ const AddCard = () => {
       statuses,
       valuetext,
       onSubmit,
-      calculate,
+      calculateAge,
       birthDateValue,
       setValue,
       control,

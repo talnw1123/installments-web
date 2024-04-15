@@ -1,8 +1,6 @@
 'use client';
 import { Button, Card, Grid, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useContext } from 'react';
 import { Controller } from 'react-hook-form';
 import { DataContext } from './addCard';
@@ -14,7 +12,7 @@ function valuetext(value: number) {
 
 const installmentColumns: GridColDef[] = [
   { field: 'installmentNumber', headerName: 'งวดที่', width: 120 },
-  { field: 'date', headerName: 'วันที่', width: 150 },
+  { field: 'date', headerName: 'วันที่ครบกำหนด', width: 150 },
   { field: 'amountDue', headerName: 'เงินที่ต้องชำระ', type: 'number', width: 180 },
   { field: 'interest', headerName: 'ดอกเบี้ย', type: 'number', width: 150 },
   { field: 'principal', headerName: 'เงินต้น', type: 'number', width: 150 },
@@ -73,7 +71,7 @@ const StepThreePage = () => {
           <Grid container spacing={2} className={classes.formContainer}>
             <Grid item>
               <Grid container spacing={3} className={classes.form}>
-                <Grid item xs={4}>
+                <Grid item xs={2.5}>
                   <Controller
                     name="billNumber"
                     defaultValue=""
@@ -90,26 +88,8 @@ const StepThreePage = () => {
                     )}
                   />
                 </Grid>
-                <Grid item xs={4}>
-                  <Controller
-                    name="dateContract"
-                    control={control}
-                    defaultValue={null}
-                    render={({ field }) => (
-                      <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DatePicker
-                          {...field}
-                          label="วันที่ทำสัญญา"
-                          onChange={newValue => {
-                            setValue('dateContract', newValue);
-                            field.onChange(newValue);
-                          }}
-                        />
-                      </LocalizationProvider>
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={4}>
+
+                <Grid item xs={2.5}>
                   <Controller
                     name="contractNumber"
                     defaultValue=""
@@ -126,10 +106,8 @@ const StepThreePage = () => {
                     )}
                   />
                 </Grid>
-              </Grid>
 
-              <Grid container spacing={3} className={classes.form}>
-                <Grid item xs={3}>
+                <Grid item xs={2.5}>
                   <Controller
                     name="totalLoan"
                     defaultValue=""
@@ -151,7 +129,7 @@ const StepThreePage = () => {
                     บาท
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
+                <Grid item xs={2.5}>
                   <Controller
                     name="downPayment"
                     defaultValue=""
@@ -173,7 +151,10 @@ const StepThreePage = () => {
                     บาท
                   </Typography>
                 </Grid>
-                <Grid item xs={3}>
+              </Grid>
+
+              <Grid container spacing={3} className={classes.form}>
+                <Grid item xs={2}>
                   <Controller
                     name="numberOfInstallments"
                     defaultValue=""
@@ -195,59 +176,57 @@ const StepThreePage = () => {
                     งวด
                   </Typography>
                 </Grid>
-              </Grid>
-            </Grid>
 
-            <Grid container spacing={3} className={classes.form}>
-              <Grid item xs={3}>
-                <Controller
-                  name="interestRates"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="อัตราดอกเบี้ย"
-                      variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={3}>
-                <Controller
-                  name="totalInstallmentAmount"
-                  defaultValue=""
-                  control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="รวมยอดเงินผ่อน"
-                      variant="standard"
-                      fullWidth
-                      margin="normal"
-                      className={classes.formField}
-                    />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={1}>
-                <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                  บาท
-                </Typography>
-              </Grid>
-              <Grid item xs={2}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  type="button"
-                  onClick={handleCreateInstallments}
-                  sx={{ marginTop: '22px' }}
-                >
-                  สร้าง
-                </Button>
+                <Grid item xs={2}>
+                  <Controller
+                    name="interestRates"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="อัตราดอกเบี้ย"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={3}>
+                  <Controller
+                    name="totalInstallmentAmount"
+                    defaultValue=""
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="รวมยอดเงินผ่อน"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                      />
+                    )}
+                  />
+                </Grid>
+                <Grid item xs={1}>
+                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                    บาท
+                  </Typography>
+                </Grid>
+                <Grid item xs={2}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    type="button"
+                    onClick={handleCreateInstallments}
+                    sx={{ marginTop: '22px' }}
+                  >
+                    สร้าง
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
 

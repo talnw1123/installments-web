@@ -63,4 +63,5 @@ export interface StepParams {
 
   table: any[];
 }
+
 export default renderStepProps;
