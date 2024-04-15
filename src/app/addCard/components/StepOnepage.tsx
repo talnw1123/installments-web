@@ -41,7 +41,7 @@ const useStyles = makeStyles({
 });
 
 const StepOnePage = () => {
-  const { control, statuses, setValue, calculate, setAge } = useContext(DataContext);
+  const { control, statuses, setValue, calculateAge, setAge } = useContext(DataContext);
   const classes = useStyles();
   return (
     <>
@@ -325,7 +325,7 @@ const StepOnePage = () => {
                               label="วันเกิด"
                               onChange={newValue => {
                                 setValue('birthDate', newValue);
-                                const age = calculate(newValue);
+                                const age = calculateAge(newValue);
                                 setValue('age', age);
                                 setAge(age);
                               }}

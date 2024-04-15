@@ -105,8 +105,8 @@ const AddCard = () => {
       newInstallments.push({
         id: i + 1,
         installmentNumber: i + 1,
-        date: parseDateString(
-          dayjs()
+        dueDate: parseDateString(
+          dayjs(contractDateValue)
             .add(i + 1, 'month')
             .toISOString()
         ),
@@ -117,7 +117,14 @@ const AddCard = () => {
     }
 
     setInstallments(newInstallments);
-  }, [totalLoanValue, downPaymentValue, numberOfInstallmentsValue, interestRatesValue]);
+  }, [
+    numberOfInstallmentsValue,
+    interestRatesValue,
+    totalLoanValue,
+    downPaymentValue,
+    contractDateValue,
+    setInstallments,
+  ]);
 
   const conTextValue = useMemo(
     () => ({
