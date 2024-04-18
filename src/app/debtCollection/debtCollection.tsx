@@ -77,7 +77,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id: 'billNo' | 'termNo' | 'due_Date' | 'dayAsk' | 'overDay' | 'paid' | 'AppointmentDate' | 'bill';
+  id: 'billNo' | 'termNo' | 'due_Date' | 'dayAsk' | 'overDay' | 'paid' | 'askCount' | 'bill';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -108,7 +108,7 @@ const columns: readonly Column[] = [
     minWidth: 100,
   },
   {
-    id: 'AppointmentDate',
+    id: 'askCount',
     label: 'ครั้งที่ทวง',
     minWidth: 100,
   },
@@ -121,7 +121,7 @@ interface Data {
   dayAsk: number;
   overDay: number;
   paid: number;
-  AppointmentDate: number;
+  askCount: number;
   bill: string;
 }
 
@@ -132,10 +132,10 @@ function createData(
   dayAsk: number,
   overDay: number,
   paid: number,
-  AppointmentDate: number,
+  askCount: number,
   bill: string
 ): Data {
-  return { billNo, termNo, due_Date, dayAsk, overDay, paid, AppointmentDate, bill };
+  return { billNo, termNo, due_Date, dayAsk, overDay, paid, askCount, bill };
 }
 
 const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
