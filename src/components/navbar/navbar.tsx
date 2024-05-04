@@ -19,6 +19,7 @@ import { FC, useState } from 'react';
 const menuNav = [
   { name: 'หน้าแรก', path: '/' },
   { name: 'เพิ่มการ์ดผู้กู้', path: '/addCard' },
+  { name: 'เพิ่มการ์ดผ่อนสินค้า', path: '/addInstallment' },
   { name: 'ค้นหาผู้กู้', path: '/findCustomer' },
   { name: 'ประวัติการแจ้งเตือนผู้กู้', path: '/notiHistory' },
 ];
