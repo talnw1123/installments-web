@@ -1,0 +1,655 @@
+'use client';
+
+import EditIcon from '@mui/icons-material/Edit';
+import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { makeStyles } from '@mui/styles';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import MenuList from 'app/customerInformation/page';
+import { Users } from 'app/users';
+import dayjs from 'dayjs';
+import { useContext } from 'react';
+import { Controller } from 'react-hook-form';
+import 'react-multi-carousel/lib/styles.css';
+import { DataContext1 } from './profileData';
+
+const useStyles = makeStyles({
+  bigContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    padding: '1rem',
+  },
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'center',
+  },
+  formContainer: {
+    // marginTop: '20px',
+    display: 'flex',
+    justifyContent: 'center',
+    // alignItems: 'center',
+  },
+  topContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  bodyContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  formBigContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  formColumn: {
+    padding: '0',
+    margin: '0',
+  },
+  formBigColumn: {
+    borderLeft: '2px solid lightgray',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  formField: {
+    marginBottom: '3rem',
+  },
+});
+
+const ProfileCustomer = () => {
+  const { control, statuses, setValue, calculate, setAge } = useContext(DataContext1);
+  const classes = useStyles();
+
+  const handleEditClick = () => {
+    navigateTo('/editProfileCustomer');
+  };
+
+  const navigateTo = (path: string) => {
+    window.location.href = path;
+  };
+
+  return (
+    <Grid container className={classes.bigContainer}>
+      <Card sx={{ padding: 3, width: '80%' }}>
+        <Grid container className={classes.topContainer}>
+          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
+            ประวัติผู้กู้
+          </Typography>
+
+          <EditIcon
+            style={{ color: '#2196f3', width: '10%', marginTop: '10px', cursor: 'pointer' }}
+            onClick={handleEditClick}
+          />
+        </Grid>
+
+        <Grid container className={classes.formContainer}>
+          <Grid className={classes.formBigContainer}>
+            <Grid>
+              <MenuList />
+            </Grid>
+            <Grid className={classes.formBigColumn}>
+              <Grid item xs={6} className={classes.formColumn} sx={{ marginLeft: '50px' }}>
+                <Grid container spacing={1}>
+                  <Grid item xs={10}>
+                    <Controller
+                      name="idBorrower"
+                      defaultValue={Users[0].id}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เลขประจำตัวประชาชน"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={10}>
+                    <Controller
+                      name="nameBorrower"
+                      defaultValue={Users[0].first_name}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="ชื่อ"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={10} sx={{ marginTop: '4px' }}>
+                    <Controller
+                      name="addressDefaultBorrower"
+                      defaultValue={Users[0].homeAddress.address}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="ที่อยู่ตามบัตรประชาชน"
+                          fullWidth
+                          margin="dense"
+                          multiline
+                          rows={4}
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={10}>
+                    <Controller
+                      name="mapLinkDefaultBorrower"
+                      defaultValue={Users[0].homeAddress.googleMapLink}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="Google Map link"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid container item spacing={2}>
+                    <Grid item xs={5}>
+                      <Controller
+                        name="statusBorrower"
+                        defaultValue={Users[0].status}
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            select
+                            label="สถานะภาพ"
+                            variant="standard"
+                            fullWidth
+                            margin="dense"
+                            className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          >
+                            {statuses.map((status: string) => (
+                              <MenuItem key={status} value={status}>
+                                {status}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <Controller
+                        name="numOfChildBorrower"
+                        defaultValue={Users[0].numOfChild}
+                        control={control}
+                        render={({ field }) => (
+                          <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
+                            <TextField
+                              {...field}
+                              label="จำนวนบุตร"
+                              variant="standard"
+                              fullWidth
+                              margin="dense"
+                              className={classes.formField}
+                              InputProps={{
+                                readOnly: true,
+                              }}
+                            />
+                            <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>คน</Typography>
+                          </Grid>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={10}>
+                    <Controller
+                      name="phoneNumberBorrower"
+                      defaultValue={Users[0].phone}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์โทรศัพท์"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid container item spacing={2}>
+                    <Grid item xs={5}>
+                      <Controller
+                        name="occupationBorrower"
+                        defaultValue={Users[0].occupation}
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="อาชีพ"
+                            variant="standard"
+                            fullWidth
+                            margin="dense"
+                            className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <Grid>
+                        <Controller
+                          name="incomeBorrower"
+                          defaultValue={Users[0].income}
+                          control={control}
+                          render={({ field }) => (
+                            <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
+                              <TextField
+                                {...field}
+                                label="รายได้"
+                                variant="standard"
+                                fullWidth
+                                margin="dense"
+                                className={classes.formField}
+                                InputProps={{
+                                  readOnly: true,
+                                }}
+                              />
+                              <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>บาท</Typography>
+                            </Grid>
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={10}>
+                    <Controller
+                      name="workPhoneNumberBorrower"
+                      defaultValue={Users[0].workPhoneNumber}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์ที่ทำงาน"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={10} sx={{ marginTop: '5px' }}>
+                    <Controller
+                      name="nameSpouse"
+                      defaultValue={Users[0].spouse.firstName}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="ชื่อคู่สมรส"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid item xs={10} sx={{ marginTop: '16px' }}>
+                    <Controller
+                      name="phoneNumberSpouse"
+                      defaultValue={Users[0].spouse.phoneNumber}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์โทรศัพท์"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+
+                  <Grid container item spacing={2}>
+                    <Grid item xs={5}>
+                      <Controller
+                        name="occupationSpouse"
+                        defaultValue={Users[0].spouse.occupation}
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="อาชีพ"
+                            variant="standard"
+                            fullWidth
+                            margin="dense"
+                            className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={5}>
+                      <Grid>
+                        <Controller
+                          name="incomeSpouse"
+                          defaultValue={Users[0].spouse.income}
+                          control={control}
+                          render={({ field }) => (
+                            <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
+                              <TextField
+                                {...field}
+                                label="รายได้"
+                                variant="standard"
+                                fullWidth
+                                margin="dense"
+                                className={classes.formField}
+                                InputProps={{
+                                  readOnly: true,
+                                }}
+                              />
+                              <Typography sx={{ marginTop: '28px', marginLeft: '10px' }}>บาท</Typography>
+                            </Grid>
+                          )}
+                        />
+                      </Grid>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={10}>
+                    <Controller
+                      name="workPhoneNumberSpouse"
+                      defaultValue={Users[0].spouse.workPhoneNumber}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="เบอร์ที่ทำงาน"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </Grid>
+
+              <Grid item xs={6} className={classes.formColumn}>
+                <Grid container spacing={1}>
+                  <Grid item xs={5}>
+                    <Controller
+                      name="birthDate"
+                      control={control}
+                      defaultValue={dayjs(Users[0].dateOfBirth)}
+                      render={({ field }) => (
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                          <DatePicker
+                            {...field}
+                            label="วันเกิด"
+                            readOnly={true}
+                            onChange={newValue => {
+                              setValue('birthDate', newValue);
+                              const age = calculate(newValue);
+                              setValue('age', age);
+                              setAge(age);
+                            }}
+                          />
+                        </LocalizationProvider>
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={5} sx={{ marginTop: '15px' }}>
+                    <Controller
+                      name="age"
+                      control={control}
+                      defaultValue={Users[0].age}
+                      render={({ field: { value } }) => (
+                        <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
+                          <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
+                          <Typography sx={{ marginLeft: '10px' }}>ปี</Typography>
+                        </Grid>
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+
+                <Grid item xs={10} sx={{ marginTop: '3px' }}>
+                  <Controller
+                    name="lastNameBorrower"
+                    defaultValue={Users[0].last_name}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="addressCurrentBorrower"
+                    defaultValue={Users[0].currentAddress.address}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="ที่อยู่ปัจจุบัน"
+                        fullWidth
+                        margin="normal"
+                        multiline
+                        rows={4}
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="mapLinkCurrentBorrower"
+                    defaultValue={Users[0].currentAddress.googleMapLink}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10} sx={{ marginTop: '48px' }}>
+                  <Controller
+                    name="workAddressBorrower"
+                    defaultValue={Users[0].work.workAddress}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="ที่อยู่ที่ทำงาน"
+                        fullWidth
+                        margin="normal"
+                        multiline
+                        rows={4}
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="mapLinkWorkBorrower"
+                    defaultValue={Users[0].work.googleMapLink}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="lastNameSpouse"
+                    defaultValue={Users[0].spouse.lastName}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="นามสกุล"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="workAddressSpouse"
+                    defaultValue={Users[0].spouse.workAddress.address}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="ที่อยู่ที่ทำงาน"
+                        fullWidth
+                        margin="normal"
+                        multiline
+                        rows={4}
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="mapLinkWorkSpouse"
+                    defaultValue={Users[0].spouse.workAddress.googleMapLink}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+              </Grid>
+            </Grid>
+          </Grid>
+        </Grid>
+      </Card>
+    </Grid>
+  );
+};
+
+export default ProfileCustomer;
