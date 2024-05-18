@@ -72,7 +72,9 @@ const AddCard = () => {
   // }, [/* dependencies */]);
 
   const onSubmit = useCallback(async (data) => {
+    console.log(data)
     try {
+
       // เรียกใช้งาน API createCard
       const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
         method: 'POST',

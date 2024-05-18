@@ -3,8 +3,10 @@ import { Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/mat
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
+import MenuList from 'app/customerInformation/page';
 import { useRouter, useSearchParams } from 'next/navigation';
+import * as React from 'react';
 import { useState } from 'react';
 
 const useStyles = makeStyles({
@@ -13,6 +15,11 @@ const useStyles = makeStyles({
     flexDirection: 'row',
     justifyContent: 'center',
     padding: '1rem',
+  },
+  topContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   container: {
     display: 'flex',
@@ -25,8 +32,9 @@ const useStyles = makeStyles({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  formSection: {
-    marginBottom: '1.5rem',
+  formBigContainer: {
+    display: 'flex',
+    flexDirection: 'row',
   },
   formColumn: {
     display: 'flex',
@@ -34,12 +42,17 @@ const useStyles = makeStyles({
     flexBasis: '50%',
     padding: '0 1rem',
   },
+  formBigColumn: {
+    borderLeft: '2px solid lightgray',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
   formField: {
     marginBottom: '3rem',
   },
   column: {
-    width: '25%',
-    padding: '10px',
+    padding: '20px',
   },
   box: {
     width: '25%',
@@ -57,116 +70,6 @@ const useStyles = makeStyles({
   },
 });
 
-const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
-
-const columns: GridColDef<(typeof row)[number]>[] = [
-  {
-    field: 'id',
-    headerName: 'งวดที่',
-    width: 100,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'date',
-    headerName: 'วันที่',
-    width: 100,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'station',
-    headerName: 'สถานะ',
-    width: 100,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'debt',
-    headerName: 'เงินที่ต้องชำระ',
-    type: 'number',
-    width: 110,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'interest',
-    headerName: 'ดอกเบี้ย',
-    type: 'number',
-    width: 90,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'principle',
-    headerName: 'เงินต้น',
-    type: 'number',
-    width: 90,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'accrued_interest',
-    headerName: 'ดอกเบี้ยสะสม',
-    type: 'number',
-    width: 110,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-  {
-    field: 'accrued_principle',
-    headerName: 'เงินต้นสะสม',
-    type: 'number',
-    width: 100,
-    sortable: false,
-    align: 'center',
-    headerAlign: 'center',
-  },
-];
-
-const row = [
-  {
-    id: 1,
-    bill: 'บิลหมายเลข 001',
-    station: 'ค้างชำระ',
-    date: '25/03/2024',
-    debt: 14,
-    interest: 2,
-    principle: 10,
-    accrued_interest: 3,
-    accrued_principle: 5,
-  },
-  {
-    id: 1,
-    bill: 'บิลหมายเลข 002',
-    station: 'ค้างชำระ',
-    date: '25/03/2024',
-    debt: 31,
-    interest: 5,
-    principle: 20,
-    accrued_interest: 8,
-    accrued_principle: 15,
-  },
-  {
-    id: 2,
-    bill: 'บิลหมายเลข 002',
-    station: 'ค้างชำระ',
-    date: '25/03/2024',
-    debt: 31,
-    interest: 5,
-    principle: 20,
-    accrued_interest: 8,
-    accrued_principle: 15,
-  },
-];
-
 export default function PayPage() {
   const [selectedBill, setSelectedBill] = useState('');
   const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +80,7 @@ export default function PayPage() {
   const searchParams = useSearchParams();
   const searchType = searchParams.get('type') || 'ชำระเงิน';
   const menuList = [
-    'ประวัติผู้กู้',
+    'ประวัติลูกหนี้',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',
@@ -185,115 +88,228 @@ export default function PayPage() {
     'ติดตามหนี้',
   ];
 
-  const [checklist, setChecklist] = useState<string[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+  const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
+
+  const [checklist, setChecklist] = useState<number[]>([]);
+  const [lateFees, setLateFees] = useState<number>(0);
 
   const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
     if (checked) {
-      setChecklist([...checklist, value]);
+      setChecklist([...checklist, Number(value)]);
     } else {
-      setChecklist(checklist.filter(item => item !== value));
+      setChecklist(checklist.filter(item => item !== Number(value)));
     }
   };
 
+  const columns: GridColDef<(typeof row)[number]>[] = [
+    {
+      field: 'checkbox',
+      headerName: '',
+      width: 100,
+      renderCell: params => {
+        return <input type="checkbox" onChange={handleChecklist} value={Number(params.row.debt)} />;
+      },
+    },
+    {
+      field: 'id',
+      headerName: 'งวดที่',
+      width: 100,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'date',
+      headerName: 'วันที่',
+      width: 100,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'station',
+      headerName: 'สถานะ',
+      width: 100,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'debt',
+      headerName: 'เงินที่ต้องชำระ',
+      type: 'number',
+      width: 110,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'interest',
+      headerName: 'ดอกเบี้ย',
+      type: 'number',
+      width: 90,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'principle',
+      headerName: 'เงินต้น',
+      type: 'number',
+      width: 90,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'accrued_interest',
+      headerName: 'ดอกเบี้ยสะสม',
+      type: 'number',
+      width: 110,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+    {
+      field: 'accrued_principle',
+      headerName: 'เงินต้นสะสม',
+      type: 'number',
+      width: 100,
+      sortable: false,
+      align: 'center',
+      headerAlign: 'center',
+    },
+  ];
+
+  const row = [
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 001',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 14,
+      interest: 2,
+      principle: 10,
+      accrued_interest: 3,
+      accrued_principle: 5,
+    },
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+    {
+      id: 2,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+  ];
+  console.log(checklist);
+  console.log(lateFees);
+
   return (
     <Grid container className={classes.bigContainer}>
-      <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
-        <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
-            <Grid item sx={{ marginTop: '2rem' }}>
-              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-                {menuList.map(item => (
-                  <Grid item key={item}>
-                    <Typography
-                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        router.push(`/Pay?type=${item}`);
-                      }}
-                      component="span"
-                    >
-                      {item.toUpperCase()}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
+      <Card sx={{ padding: 3, width: '80%' }}>
+        <Grid container className={classes.topContainer}>
+          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
+            ชำระเงิน
+          </Typography>
+        </Grid>
+        <Grid container className={classes.formContainer}>
+          <Grid className={classes.formBigContainer}>
+            <Grid>
+              <MenuList />
             </Grid>
-          </Grid>
-          <Grid item xs={9} sx={{ display: 'grid' }}>
-            <Grid container className={classes.bigContainer}>
-              <form>
-                <Grid container className={classes.formContainer}>
-                  <Grid className={classes.column}>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="standard-read-only-input"
-                        label="เลขบัตรประชาชน"
-                        defaultValue=" "
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                        variant="standard"
-                      />
-                    </Grid>
-                  </Grid>
-
-                  <Grid className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
-                      label="เบอร์โทรศัพท์"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                    />
-                  </Grid>
+            <Grid className={classes.formBigColumn}>
+              <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Grid item xs={6} className={classes.column}>
+                  <TextField
+                    id="standard-read-only-input"
+                    name="idBorrower"
+                    label="เลขบัตรประชาชน"
+                    defaultValue=" "
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    variant="standard"
+                    sx={{ width: '100%' }}
+                  />
                 </Grid>
-                <Grid container className={classes.formContainer}>
-                  <Grid className={classes.column}>
-                    <Grid item xs={12}>
-                      <TextField
-                        id="standard-read-only-input"
-                        label="ชื่อ"
-                        defaultValue=" "
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                        variant="standard"
-                      />
-                    </Grid>
-                  </Grid>
-                  <Grid className={classes.column}>
+                <Grid item xs={6} className={classes.column}>
+                  <TextField
+                    id="standard-read-only-input"
+                    name="phoneNumberBorrower"
+                    label="เบอร์โทรศัพท์"
+                    defaultValue=" "
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    variant="standard"
+                    sx={{ width: '100%' }}
+                  />
+                </Grid>
+                <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                  <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
-                      label="นามสกุล"
+                      name="name"
+                      label="ชื่อ"
                       defaultValue=" "
                       InputProps={{
                         readOnly: true,
                       }}
                       variant="standard"
+                      sx={{ width: '100%' }}
                     />
                   </Grid>
-                  <Grid className={classes.column}>
+                  <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
+                      name="birthDate"
                       label="วันเดือนปีเกิด"
                       defaultValue=" "
                       InputProps={{
                         readOnly: true,
                       }}
                       variant="standard"
+                      sx={{ width: '100%' }}
                     />
                   </Grid>
-                  <Grid className={classes.column}>
+                  <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
+                      name="age"
                       label="อายุ"
                       defaultValue=" "
                       InputProps={{
                         readOnly: true,
                       }}
                       variant="standard"
+                      sx={{ width: '100%' }}
                     />
                   </Grid>
                 </Grid>
@@ -316,54 +332,17 @@ export default function PayPage() {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid>
-                  <Box sx={{ height: 400, width: '100%' }}>
-                    <DataGrid
-                      rows={row.filter(row => row.bill === selectedBill)}
-                      columns={columns}
-                      disableColumnFilter
-                      disableColumnSelector
-                      disableColumnMenu
-                      components={{
-                        Toolbar: () => (
-                          <Typography variant="body1" sx={{ marginTop: '1rem', marginLeft: '1rem' }}>
-                            เลือกงวดที่ต้องการจ่าย
-                          </Typography>
-                        ),
-                      }}
-                      checkboxSelection
-                      disableRowSelectionOnClick
-                    />
-                  </Box>
-                </Grid>
-              </form>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
       </Card>
+
       <Grid className={classes.box}>
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           ค่าปรับ
         </Typography>
-        <ThemeProvider
-          theme={{
-            palette: {
-              primary: {
-                main: '#007FFF',
-                dark: '#0066CC',
-              },
-            },
-          }}
-        >
-          <Box
-            className={classes.showBox}
-            contentEditable
-            onInput={e => {
-              const target = e.target as HTMLDivElement;
-              console.log(target.innerText);
-            }}
-          ></Box>
-        </ThemeProvider>
+        <TextField type="number" onChange={e => setLateFees(e.target.value)} id="outlined-basic" variant="outlined" />
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท
         </Typography>
@@ -382,7 +361,7 @@ export default function PayPage() {
             },
           }}
         >
-          <Box className={classes.showBox}></Box>
+          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + Number(lateFees)}</Box>
         </ThemeProvider>
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท

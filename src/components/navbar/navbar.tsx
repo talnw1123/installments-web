@@ -19,6 +19,7 @@ import { FC, useState } from 'react';
 const menuNav = [
   { name: 'หน้าแรก', path: '/' },
   { name: 'เพิ่มการ์ดผู้กู้', path: '/addCard' },
+  { name: 'เพิ่มการ์ดผ่อนสินค้า', path: '/addInstallment' },
   { name: 'ค้นหาผู้กู้', path: '/findCustomer' },
   { name: 'ประวัติการแจ้งเตือนผู้กู้', path: '/notiHistory' },
 ];
@@ -34,7 +35,7 @@ const Navbar: FC<NavbarProps> = props => {
   const [activeLink, setActiveLink] = useRecoilState<string>(activeLinkState);
   const setAuth = useSetRecoilState<AuthState>(authState);
   // console.log(token)
-  
+
   // useEffect(() => {
   //   if (token === '') {
   //     router.push('/login'); // เพิ่มการ redirect ไปยังหน้า Login ถ้าไม่มี token

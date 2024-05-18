@@ -88,7 +88,7 @@ export default function LoginPage() {
       console.error('Error submitting form:', error);
       setOpenAlertDialogError(true);
     }
-    
+
   };
 
 

@@ -8,7 +8,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import MenuList from 'app/customerInformation/page';
 import { Users } from 'app/users';
 import dayjs from 'dayjs';
-import { useContext } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useContext, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
 import { DataContext1 } from './profileData';
@@ -60,17 +61,106 @@ const useStyles = makeStyles({
   },
 });
 
+
 const ProfileCustomer = () => {
+  // const router = useRouter();
+  // const { id } = router.isReady ? router.query : { id: undefined };
+  // const customer = id ? use(useCustomer(id)) : null;
+  const searchParams = useSearchParams(); // Destructure using square brackets
+
+  // Now you can access query parameters using searchParams.get('id')
+  const id = searchParams.get('id');
+  //console.log('id from query:', id);
+
   const { control, statuses, setValue, calculate, setAge } = useContext(DataContext1);
   const classes = useStyles();
+  const [borrowerData, setBorrowerData] = useState(null);
+
+  // console.log('id:', id); // ตรวจสอบค่า id
+
+  // if (!customer) {
+  //   return <div>Not Found Data</div>;
+  // }
 
   const handleEditClick = () => {
     navigateTo('/editProfileCustomer');
   };
 
-  const navigateTo = (path: string) => {
+  const navigateTo = (path) => {
     window.location.href = path;
   };
+
+  useEffect(() => {
+    const fetchBorrowerData = async () => {
+      try {
+        const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
+        const data = await response.json();
+        if (response.ok) {
+          setBorrowerData(data);
+          //console.log('Fetched borrowerData:', data);
+          // อัปเดตค่าใน form เมื่อได้รับข้อมูลจาก API
+          if (data && data.length > 0) {
+            const { borrower } = data[0];
+            setValue('nationID', borrower.nationID || '');
+            setValue('firstName', borrower.firstName || '');
+            setValue('lastName', borrower.lastName || '');
+            setValue('birthDate', borrower.birthDate || null);
+            setValue('job', borrower.job || '');
+            setValue('income', borrower.income || '');
+            setValue('phone', borrower.phone || '');
+            setValue('phoneInJob', borrower.phoneInJob || '');
+            setValue('status', borrower.status || '');
+            setValue('kids', borrower.kids || '');
+            setValue('addressReal', borrower.addressReal || '');
+            setValue('addressCurrent', borrower.addressCurrent || '');
+            setValue('addressJob', borrower.addressJob || '');
+            setValue('googleMapAdressReal', borrower.googleMapAdressReal || '');
+            setValue('googleMapAdressCurrent', borrower.googleMapAdressCurrent || '');
+            setValue('googleMapAdressJob', borrower.googleMapAdressJob || '');
+            setValue('firstNameOfSpouse', borrower.firstNameOfSpouse || '');
+            setValue('lastNameOfSpouse', borrower.lastNameOfSpouse || '');
+            setValue('jobOfSpouse', borrower.jobOfSpouse || '');
+            setValue('incomeOfSpouse', borrower.incomeOfSpouse || '');
+            setValue('phoneOfSpouseInJob', borrower.phoneOfSpouseInJob || '');
+            setValue('phoneOfSpouse', borrower.phoneOfSpouse || '');
+            setValue('addressOfSpouseJob', borrower.addressOfSpouseJob || '');
+            setValue('googleMapAdressJobOfSpouse', borrower.googleMapAdressJobOfSpouse || '');
+            setValue('guarantorNationID', borrower.guarantorNationID || '');
+            setValue('guarantorFirstName', borrower.guarantorFirstName || '');
+            setValue('guarantorLastName', borrower.guarantorLastName || '');
+            setValue('phoneOfGuarantor', borrower.phoneOfGuarantor || '');
+            setValue('addressOfGuarantorReal', borrower.addressOfGuarantorReal || '');
+            setValue('addressOfGuarantorCurrent', borrower.addressOfGuarantorCurrent || '');
+            setValue('addressOfGuarantorJob', borrower.addressOfGuarantorJob || '');
+            setValue('googleMapAdressRealOfGuarantor', borrower.googleMapAdressRealOfGuarantor || '');
+            setValue('googleMapAdressCurrentOfGuarantor', borrower.googleMapAdressCurrentOfGuarantor || '');
+            setValue('googleMapAdressJobOfGuarantor', borrower.googleMapAdressJobOfGuarantor || '');
+            setValue('jobOfGuarantor', borrower.jobOfGuarantor || '');
+            setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
+            setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
+          }
+        } else {
+          console.error('Error fetching data:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    if (id) {
+      fetchBorrowerData();
+    }
+  }, [id, setValue]);
+
+  // สร้างฟังก์ชันสำหรับการแสดงค่าเริ่มต้นจากข้อมูลที่ได้จาก API
+  // const getDefaultValue = (fieldName) => {
+  //   console.log(borrowerData)
+  //   if (borrowerData && borrowerData.length > 0) {
+  //     const { borrower } = borrowerData[0]; // สมมติว่าข้อมูลที่ได้จาก API มีโครงสร้างตามที่คุณระบุ
+  //     console.log(borrower[fieldName])
+  //     return borrower[fieldName]
+  //   }
+  // };
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -96,8 +186,8 @@ const ProfileCustomer = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={10}>
                     <Controller
-                      name="idBorrower"
-                      defaultValue={Users[0].id}
+                      name="nationID"
+                      defaultValue={" "}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -117,8 +207,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10}>
                     <Controller
-                      name="nameBorrower"
-                      defaultValue={Users[0].first_name}
+                      name="firstName"
+                      // defaultValue={Users[0].first_name}
+                      defaultValue={" "}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -138,8 +229,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10} sx={{ marginTop: '4px' }}>
                     <Controller
-                      name="addressDefaultBorrower"
-                      defaultValue={Users[0].homeAddress.address}
+                      name="addressReal"
+                      defaultValue={" "}
+                      // defaultValue={Users[0].homeAddress.address}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -159,8 +251,9 @@ const ProfileCustomer = () => {
                   </Grid>
                   <Grid item xs={10}>
                     <Controller
-                      name="mapLinkDefaultBorrower"
-                      defaultValue={Users[0].homeAddress.googleMapLink}
+                      name="googleMapAdressReal"
+                      defaultValue={" "}
+                      //defaultValue={Users[0].homeAddress.googleMapLink}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -181,8 +274,9 @@ const ProfileCustomer = () => {
                   <Grid container item spacing={2}>
                     <Grid item xs={5}>
                       <Controller
-                        name="statusBorrower"
-                        defaultValue={Users[0].status}
+                        name="status"
+                        defaultValue={" "}
+                        //defaultValue={Users[0].status}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -208,8 +302,9 @@ const ProfileCustomer = () => {
                     </Grid>
                     <Grid item xs={5}>
                       <Controller
-                        name="numOfChildBorrower"
-                        defaultValue={Users[0].numOfChild}
+                        name="kids"
+                        defaultValue={" "}
+                        //defaultValue={Users[0].numOfChild}
                         control={control}
                         render={({ field }) => (
                           <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -233,8 +328,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10}>
                     <Controller
-                      name="phoneNumberBorrower"
-                      defaultValue={Users[0].phone}
+                      name="phone"
+                      defaultValue={" "}
+                      //defaultValue={Users[0].phone}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -255,8 +351,9 @@ const ProfileCustomer = () => {
                   <Grid container item spacing={2}>
                     <Grid item xs={5}>
                       <Controller
-                        name="occupationBorrower"
-                        defaultValue={Users[0].occupation}
+                        name="job"
+                        defaultValue={" "}
+                        //defaultValue={Users[0].occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -276,8 +373,9 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Grid>
                         <Controller
-                          name="incomeBorrower"
-                          defaultValue={Users[0].income}
+                          name="income"
+                          defaultValue={" "}
+                          //defaultValue={Users[0].income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -302,8 +400,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10}>
                     <Controller
-                      name="workPhoneNumberBorrower"
-                      defaultValue={Users[0].workPhoneNumber}
+                      name="phoneInJob"
+                      defaultValue={" "}
+                      //defaultValue={Users[0].workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -323,8 +422,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
-                      name="nameSpouse"
-                      defaultValue={Users[0].spouse.firstName}
+                      name="firstNameOfSpouse"
+                      defaultValue={" "}
+                      //defaultValue={Users[0].spouse.firstName}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -344,8 +444,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
-                      name="phoneNumberSpouse"
-                      defaultValue={Users[0].spouse.phoneNumber}
+                      name="phoneOfSpouse"
+                      defaultValue={" "}
+                      //defaultValue={Users[0].spouse.phoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -366,8 +467,9 @@ const ProfileCustomer = () => {
                   <Grid container item spacing={2}>
                     <Grid item xs={5}>
                       <Controller
-                        name="occupationSpouse"
-                        defaultValue={Users[0].spouse.occupation}
+                        name="jobOfSpouse"
+                        defaultValue={" "}
+                        //defaultValue={Users[0].spouse.occupation}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -387,8 +489,9 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Grid>
                         <Controller
-                          name="incomeSpouse"
-                          defaultValue={Users[0].spouse.income}
+                          name="incomeOfSpouse"
+                          defaultValue={" "}
+                          //defaultValue={Users[0].spouse.income}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -413,8 +516,9 @@ const ProfileCustomer = () => {
 
                   <Grid item xs={10}>
                     <Controller
-                      name="workPhoneNumberSpouse"
-                      defaultValue={Users[0].spouse.workPhoneNumber}
+                      name="phoneOfSpouseInJob"
+                      defaultValue={" "}
+                     // defaultValue={Users[0].spouse.workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -440,7 +544,8 @@ const ProfileCustomer = () => {
                     <Controller
                       name="birthDate"
                       control={control}
-                      defaultValue={dayjs(Users[0].dateOfBirth)}
+                      defaultValue={null}
+                      //defaultValue={dayjs(Users[0].dateOfBirth)}
                       render={({ field }) => (
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                           <DatePicker
@@ -462,7 +567,8 @@ const ProfileCustomer = () => {
                     <Controller
                       name="age"
                       control={control}
-                      defaultValue={Users[0].age}
+                      defaultValue={" "}
+                      //defaultValue={Users[0].age}
                       render={({ field: { value } }) => (
                         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                           <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
@@ -475,8 +581,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
-                    name="lastNameBorrower"
-                    defaultValue={Users[0].last_name}
+                    name="lastName"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].last_name}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -496,8 +603,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="addressCurrentBorrower"
-                    defaultValue={Users[0].currentAddress.address}
+                    name="addressCurrent"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].currentAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -518,8 +626,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="mapLinkCurrentBorrower"
-                    defaultValue={Users[0].currentAddress.googleMapLink}
+                    name="googleMapAdressCurrent"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].currentAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -539,8 +648,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
-                    name="workAddressBorrower"
-                    defaultValue={Users[0].work.workAddress}
+                    name="addressJob"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].work.workAddress}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -561,8 +671,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="mapLinkWorkBorrower"
-                    defaultValue={Users[0].work.googleMapLink}
+                    name="googleMapAdressJob"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].work.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -582,8 +693,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="lastNameSpouse"
-                    defaultValue={Users[0].spouse.lastName}
+                    name="lastNameOfSpouse"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].spouse.lastName}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -603,8 +715,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="workAddressSpouse"
-                    defaultValue={Users[0].spouse.workAddress.address}
+                    name="addressOfSpouseJob"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].spouse.workAddress.address}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -625,8 +738,9 @@ const ProfileCustomer = () => {
 
                 <Grid item xs={10}>
                   <Controller
-                    name="mapLinkWorkSpouse"
-                    defaultValue={Users[0].spouse.workAddress.googleMapLink}
+                    name="googleMapAdressJobOfSpouse"
+                    defaultValue={" "}
+                    //defaultValue={Users[0].spouse.workAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField

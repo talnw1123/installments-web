@@ -4,9 +4,9 @@ import { Card, Grid, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Users } from 'app/users';
+import axios from 'axios';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -14,13 +14,6 @@ const useStyles = makeStyles({
     flexDirection: 'row',
     justifyContent: 'center',
     padding: '1rem',
-  },
-  formField: {
-    marginBottom: '3rem',
-  },
-  formContainer: {
-    display: 'flex',
-    justifyContent: 'space-between',
   },
   column: {
     width: '25%',
@@ -40,29 +33,13 @@ const useStyles = makeStyles({
   },
 });
 
-const users = Users;
-const getFullName = row => {
-  return (
-    <Link href={`/profileCustomer?id=${row.id}`} passHref>
-      <Typography component="a">{`${row.first_name || ''} ${row.last_name || ''}`}</Typography>
-    </Link>
-  );
-};
-
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'เลขประจำตัวประชาชน', width: 180, headerAlign: 'center', align: 'center' },
-  {
-    field: 'first_name',
-    headerName: 'ชื่อจริง',
-    width: 160,
-    headerAlign: 'center',
-    align: 'center',
-    renderCell: params => getFullName(params.row),
-  },
+  { field: 'first_name', headerName: 'ชื่อจริง', width: 160, headerAlign: 'center', align: 'center' },
   { field: 'last_name', headerName: 'นามสกุล', width: 160, headerAlign: 'center', align: 'center' },
   { field: 'phone', headerName: 'เบอร์โทรศัพท์', width: 140, headerAlign: 'center', align: 'center' },
   { field: 'dueDate', headerName: 'วันครบกำหนดชำระ', width: 140, headerAlign: 'center', align: 'center' },
-  { field: 'amount', headerName: 'จำนวนเงินที่ค้าง', width: 140, headerAlign: 'center', align: 'center' },
+  { field: 'totalAmount', headerName: 'จำนวนเงินที่ค้าง', width: 140, headerAlign: 'center', align: 'center' },
 ];
 
 export default function FindCustomerPage() {
@@ -73,11 +50,40 @@ export default function FindCustomerPage() {
   const [surnameQuery, setSurnameQuery] = useState('');
   const [phoneQuery, setPhoneQuery] = useState('');
   const [showTable, setShowTable] = useState(false);
+  const [borrowersData, setBorrowersData] = useState([]);
 
-  const preprocessedUsers = Users.map(user => ({
-    ...user,
-    fullNameLowerCase: `${(user.first_name || '').toLowerCase()} ${(user.last_name || '').toLowerCase()}`,
-  }));
+  const fetchBorrowers = async () => {
+    try {
+      const response = await axios.get('http://localhost:4400/api/getBorrowers');
+      const data = response.data;
+      setBorrowersData(data);
+    } catch (error) {
+      console.error('Error fetching borrowers:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBorrowers();
+  }, []);
+
+  const preprocessedBorrowers = borrowersData.map(borrowerData => {
+    const { borrower, bills } = borrowerData;
+    const totalAmount = bills.reduce((total, bill) => total + parseFloat(bill.totalInstallmentAmount), 0);
+    const dueDate = bills.length > 0 ? bills[0].dueDate : '';
+
+    if (!borrower?.nationID) return null;
+
+    return {
+      id: borrower.nationID,
+      first_name: borrower.firstName,
+      last_name: borrower.lastName,
+      phone: borrower.phone,
+      totalAmount,
+      dueDate
+    };
+  });
+
+  const filteredRows = preprocessedBorrowers.filter(row => row !== null);
 
   const handleIdChange = event => {
     setIdQuery(event.target.value);
@@ -99,15 +105,32 @@ export default function FindCustomerPage() {
     setShowTable(true);
   };
 
-  const filteredRows = showTable
-    ? preprocessedUsers.filter(
-        row =>
-          row.id.toString().includes(idQuery) &&
-          row.fullNameLowerCase.includes(nameQuery.toLowerCase()) &&
-          (row.last_name || '').toLowerCase().includes(surnameQuery.toLowerCase()) &&
-          row.phone.includes(phoneQuery)
-      )
-    : preprocessedUsers;
+  const getFullNameLink = row => (
+    <Link href={`/profileCustomer?id=${row.id}`} passHref>
+      <Typography component="a">{`${row.first_name || ''} ${row.last_name || ''}`}</Typography>
+    </Link>
+  );
+
+  const columnsWithLink = columns.map(col => ({
+    ...col,
+    renderCell: ({ row, ...params }) => ( // เพิ่ม `row` เข้ากับ props
+      <Link href={`/profileCustomer?id=${row.id}`} passHref>
+        <Typography component="div" style={{ cursor: 'pointer', pointerEvents: 'none' }}>
+          {params.value}
+        </Typography>
+      </Link>
+    ),
+  }));
+
+  const filteredRowsWithSearch = showTable
+    ? filteredRows.filter(
+      row =>
+        row.id.toString().includes(idQuery) &&
+        row.first_name.toLowerCase().includes(nameQuery.toLowerCase()) &&
+        row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
+        row.phone.includes(phoneQuery)
+    )
+    : filteredRows;
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -158,15 +181,15 @@ export default function FindCustomerPage() {
               </div>
             </Grid>
           </div>
-          {/* <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-            <Button variant="contained" color="primary">
-              ค้นหา
-            </Button>
-          </Grid> */}
         </form>
         <div className={classes.debtorListContainer}>
           <Box className={classes.debtorList}>
-            <DataGrid rows={filteredRows} columns={columns} localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }} />
+            <DataGrid
+              rows={filteredRowsWithSearch}
+              columns={columnsWithLink}
+              localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }}
+              getRowId={(row) => row.id}
+            />
           </Box>
         </div>
       </Card>
