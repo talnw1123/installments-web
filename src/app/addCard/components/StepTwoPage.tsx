@@ -40,7 +40,7 @@ const StepTwoPage = () => {
               <Grid container spacing={4} className={classes.formContainer}>
                 <Grid item xs={8}>
                   <Controller
-                    name="idGuarantor"
+                    name="guarantorNationID"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -49,7 +49,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="nameGuarantor"
+                    name="guarantorFirstName"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -58,7 +58,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="phoneNumberGuarantor"
+                    name="phoneOfGuarantor"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -67,7 +67,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="addressDefaultGuarantor"
+                    name="addressOfGuarantorReal"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -84,7 +84,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="mapLinkDefaultGuarantor"
+                    name="googleMapAdressRealOfGuarantor"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -100,7 +100,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="occupationGuarantor"
+                    name="jobOfGuarantor"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -118,7 +118,7 @@ const StepTwoPage = () => {
                   <Grid container item spacing={2}>
                     <Grid item xs={10}>
                       <Controller
-                        name="incomeGuarantor"
+                        name="incomeOfGuarantor"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -140,7 +140,7 @@ const StepTwoPage = () => {
                     </Grid>
                   </Grid>
                   <Controller
-                    name="workPhoneNumberGuarantor"
+                    name="phoneOfGuarantorInJob"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -164,7 +164,7 @@ const StepTwoPage = () => {
                   <Grid item style={{ marginTop: '70px' }}>
                     {' '}
                     <Controller
-                      name="lastNameGuarantor"
+                      name="guarantorLastName"
                       defaultValue=""
                       control={control}
                       render={({ field }) => (
@@ -176,7 +176,7 @@ const StepTwoPage = () => {
                   <Grid item style={{ marginTop: '72px' }}>
                     {' '}
                     <Controller
-                      name="addressCurrentGuarantor"
+                      name="addressOfGuarantorCurrent"
                       defaultValue=""
                       control={control}
                       render={({ field }) => (
@@ -194,7 +194,7 @@ const StepTwoPage = () => {
                   </Grid>
 
                   <Controller
-                    name="mapLinkCurrentGuarantor"
+                    name="googleMapAdressCurrentOfGuarantor"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -210,7 +210,7 @@ const StepTwoPage = () => {
                   />
 
                   <Controller
-                    name="workAddressGuarantor"
+                    name="addressOfGuarantorJob"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -226,7 +226,7 @@ const StepTwoPage = () => {
                     )}
                   />
                   <Controller
-                    name="mapLinkWorkGuarantor"
+                    name="googleMapAdressJobOfGuarantor"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

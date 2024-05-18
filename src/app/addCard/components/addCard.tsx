@@ -6,11 +6,12 @@ import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
 import StepOnePage from './StepOnepage';
 import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
+
 
 export const DataContext = createContext<any>({});
 export function parseDateString(timestamp: string) {
@@ -23,6 +24,8 @@ const AddCard = () => {
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
+  //const { borrowerID, nationID, firstName, lastName, birthDate, job, income, phone, phoneInJob, status, kids, addressReal, addressCurrent, addressJob, googleMapAdressReal, googleMapAdressCurrent, googleMapAdressJob, firstNameOfSpouse, lastNameOfSpouse, jobOfSpouse, incomeOfSpouse, phoneOfSpouseInJob, phoneOfSpouse, addressOfSpouseJob, googleMapAdressJobOfSpouse, guarantorNationID, guarantorFirstName, guarantorLastName, phoneOfGuarantor, addressOfGuarantorReal, addressOfGuarantorCurrent, addressOfGuarantorJob, googleMapAdressRealOfGuarantor, googleMapAdressCurrentOfGuarantor, googleMapAdressJobOfGuarantor, jobOfGuarantor, incomeOfGuarantor, phoneOfGuarantorInJob, bills } = watch();
+
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง', 'ม่าย'], []);
 
@@ -32,19 +35,78 @@ const AddCard = () => {
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
 
-  const navigateToProfileCustomer = useCallback(() => {
-    window.location.href = './profileCustomer';
-  }, []);
+  // const navigateToProfileCustomer = useCallback(() => {
+  //   window.location.href = './profileCustomer';
+  // }, []);
 
-  const onSubmit = useCallback<SubmitHandler<StepParams>>(
-    data => {
-      console.log(data);
-      const newData = { ...data, table: installments };
-      console.log(newData);
-      navigateToProfileCustomer();
-    },
-    [installments, navigateToProfileCustomer]
-  );
+  // const onSubmit = useCallback<SubmitHandler<StepParams>>(
+  //   data => {
+  //     console.log(data);
+  //     const newData = { ...data, table: installments };
+  //     console.log(newData);
+
+  //     // navigateToProfileCustomer();
+  //   },[installments]
+  //   // [installments, navigateToProfileCustomer]
+  // );
+
+  // const onSubmit = useCallback(async data => {
+  //   try {
+  //     const response = await fetch('http://localhost:4400/api/createCard', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+  //     });
+  //     if (!response.ok) {
+  //       console.log(data)
+  //       throw new Error('Network response was not ok');
+  //     }
+  //     const newData = await response.json(); // แปลงข้อมูลที่เซิร์ฟเวอร์ส่งกลับเป็น JSON
+  //     console.log('New card created:', newData);
+  //     // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
+  //   } catch (error) {
+  //     console.error('There was a problem with the fetch operation:', error);
+  //   }
+  // }, [/* dependencies */]);
+
+  const onSubmit = useCallback(async (data) => {
+    console.log(data)
+    try {
+
+      // เรียกใช้งาน API createCard
+      const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+      });
+
+      // เรียกใช้งาน API createBill
+      const createBillResponse = await fetch('http://localhost:4400/api/addBill', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+      });
+
+      // ตรวจสอบว่าทั้งสอง API ทำงานสำเร็จหรือไม่
+      if (createCardResponse.ok && createBillResponse.ok) {
+        const createCardData = await createCardResponse.json();
+        const createBillData = await createBillResponse.json();
+        console.log('New card created:', createCardData);
+        console.log('New bill created:', createBillData);
+        // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
+      } else {
+        throw new Error('One or more API requests failed');
+      }
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  }, []);
 
   const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
   const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);

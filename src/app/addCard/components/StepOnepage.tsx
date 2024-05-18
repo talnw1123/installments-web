@@ -55,7 +55,7 @@ const StepOnePage = () => {
               <Grid container spacing={4} className={classes.formContainer}>
                 <Grid item xs={8}>
                   <Controller
-                    name="idBorrower"
+                    name="nationID"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -71,7 +71,7 @@ const StepOnePage = () => {
                   />
 
                   <Controller
-                    name="nameBorrower"
+                    name="firstName"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -89,7 +89,7 @@ const StepOnePage = () => {
                   <Grid container item spacing={3}>
                     <Grid item xs={4}>
                       <Controller
-                        name="occupationBorrower"
+                        name="job"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -106,7 +106,7 @@ const StepOnePage = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Controller
-                        name="incomeBorrower"
+                        name="income"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -123,7 +123,7 @@ const StepOnePage = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Controller
-                        name="workPhoneNumberBorrower"
+                        name="phoneInJob"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -141,7 +141,7 @@ const StepOnePage = () => {
                   </Grid>
 
                   <Controller
-                    name="addressDefaultBorrower"
+                    name="addressReal"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -158,7 +158,7 @@ const StepOnePage = () => {
                   />
 
                   <Controller
-                    name="mapLinkDefaultBorrower"
+                    name="googleMapAdressReal"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -178,7 +178,7 @@ const StepOnePage = () => {
                     <Grid container item spacing={2}>
                       <Grid item xs={6}>
                         <Controller
-                          name="statusBorrower"
+                          name="status"
                           defaultValue=""
                           control={control}
                           render={({ field }) => (
@@ -202,7 +202,7 @@ const StepOnePage = () => {
                       </Grid>
                       <Grid item xs={6}>
                         <Controller
-                          name="numOfChildBorrower"
+                          name="kids"
                           defaultValue=""
                           control={control}
                           render={({ field }) => (
@@ -221,7 +221,7 @@ const StepOnePage = () => {
                   </Grid>
 
                   <Controller
-                    name="nameSpouse"
+                    name="nameOfSpouse"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -239,7 +239,7 @@ const StepOnePage = () => {
                   <Grid container item spacing={3}>
                     <Grid item xs={4}>
                       <Controller
-                        name="occupationSpouse"
+                        name="jobOfSpouse"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -273,7 +273,7 @@ const StepOnePage = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Controller
-                        name="workPhoneNumberSpouse"
+                        name="phoneOfSpouseInJob"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -291,7 +291,7 @@ const StepOnePage = () => {
                   </Grid>
 
                   <Controller
-                    name="phoneNumberSpouse"
+                    name="phoneOfSpouse"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -343,7 +343,7 @@ const StepOnePage = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Controller
-                        name="phoneNumberBorrower"
+                        name="phone"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -361,7 +361,7 @@ const StepOnePage = () => {
                   </Grid>
 
                   <Controller
-                    name="lastNameBorrower"
+                    name="lastName"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -377,7 +377,7 @@ const StepOnePage = () => {
                   />
 
                   <Controller
-                    name="addressCurrentBorrower"
+                    name="addressCurrent"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -393,7 +393,7 @@ const StepOnePage = () => {
                     )}
                   />
                   <Controller
-                    name="mapLinkCurrentBorrower"
+                    name="googleMapAdressCurrent"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -408,7 +408,7 @@ const StepOnePage = () => {
                     )}
                   />
                   <Controller
-                    name="workAddressBorrower"
+                    name="addressJob"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -424,7 +424,7 @@ const StepOnePage = () => {
                     )}
                   />
                   <Controller
-                    name="mapLinkWorkBorrower"
+                    name="googleMapAdressJob"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -456,7 +456,7 @@ const StepOnePage = () => {
                   />
 
                   <Controller
-                    name="workAddressSpouse"
+                    name="addressOfSpouseJob"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -472,7 +472,7 @@ const StepOnePage = () => {
                     )}
                   />
                   <Controller
-                    name="mapLinkWorkSpouse"
+                    name="googleMapAdressJobOfSpouse"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

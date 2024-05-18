@@ -1,12 +1,13 @@
 'use client';
 
+// ในไฟล์ signup.tsx (Next.js)
 import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Button, Card, Grid, Stack, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { AuthState, activeLinkState, authState, useSetRecoilState } from '@store/index';
 import { useState } from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+
 const useStyles = makeStyles({
   bigContainer: {
     display: 'flex',
@@ -16,13 +17,12 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Signup() {
+export default function Signup({ users }) {
   const classes = useStyles();
+  const { control, handleSubmit } = useForm();
 
-  const [openToast, setOpenToast] = useState<boolean>(false);
-  const [openAlertDialogError, setOpenAlertDialogError] = useState<boolean>(false);
-  const setAuth = useSetRecoilState<AuthState>(authState);
-  const setActiveLink = useSetRecoilState<string>(activeLinkState);
+  const [openToast, setOpenToast] = useState(false);
+  const [openAlertDialogError, setOpenAlertDialogError] = useState(false);
 
   const handleCloseToast = () => {
     setOpenToast(false);
@@ -32,8 +32,30 @@ export default function Signup() {
     setOpenAlertDialogError(false);
   };
 
+  const onSubmit = async (data) => {
+    try {
+      const response = await fetch('http://localhost:4400/users/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        //console.log(data)
+        setOpenToast(true);
+      } else {
+        setOpenAlertDialogError(true);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setOpenAlertDialogError(true);
+    }
+  };
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container className={classes.bigContainer}>
         <Card sx={{ padding: 3, width: '70%' }}>
           <Stack
@@ -49,22 +71,24 @@ export default function Signup() {
             </Typography>
             <Stack sx={{ width: '50%' }}>
               <Controller
-                name="firstname"
+                name="firstName"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
                   <TextField {...field} placeholder="First Name" variant="outlined" fullWidth sx={{ mb: 3 }} />
                 )}
               />
               <Controller
-                name="lastname"
+                name="lastName"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
                   <TextField {...field} placeholder="Last Name" variant="outlined" fullWidth sx={{ mb: 3 }} />
                 )}
               />
-
               <Controller
                 name="email"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
                   <TextField {...field} placeholder="Email" variant="outlined" fullWidth sx={{ mb: 3 }} />
@@ -72,36 +96,23 @@ export default function Signup() {
               />
               <Controller
                 name="password"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    type="password"
-                    placeholder="Password"
-                    variant="outlined"
-                    fullWidth
-                    sx={{ mb: 3 }}
-                  />
+                  <TextField {...field} type="password" placeholder="Password" variant="outlined" fullWidth sx={{ mb: 3 }} />
                 )}
               />
               <Controller
                 name="address"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField
-                    {...field}
-                    rows={4}
-                    multiline
-                    placeholder="Address"
-                    variant="outlined"
-                    fullWidth
-                    sx={{ mb: 3 }}
-                  />
+                  <TextField {...field} rows={4} multiline placeholder="Address" variant="outlined" fullWidth sx={{ mb: 3 }} />
                 )}
               />
-
               <Controller
                 name="phone"
+                control={control}
                 defaultValue=""
                 render={({ field }) => (
                   <TextField {...field} placeholder="Phone Number" variant="outlined" fullWidth sx={{ mb: 3 }} />
@@ -125,7 +136,7 @@ export default function Signup() {
               <ToastSuccess
                 openToast={openToast}
                 handleCloseToast={handleCloseToast}
-                text="Register Succuessfully"
+                text="Register Successfully"
                 showClose={true}
               />
               <AlertDialogError openAlertDialog={openAlertDialogError} handleOnCloseDialog={handleOnCloseDialog} />

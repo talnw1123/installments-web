@@ -1,11 +1,15 @@
 'use client';
 
+/// ในไฟล์ LoginPage.tsx (Next.js)
 import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Box, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { authState } from '@store/index'; // เพิ่ม import นี้
 import { useState } from 'react';
-import { Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
+import { useSetRecoilState } from 'recoil'; // เพิ่ม import นี้
+
 
 const useStyles = makeStyles({
   container: {
@@ -38,9 +42,13 @@ const useStyles = makeStyles({
 });
 
 export default function LoginPage() {
+
   const classes = useStyles();
-  const [openAlertDialogError, setOpenAlertDialogError] = useState<boolean>(false);
-  const [openToast, setOpenToast] = useState<boolean>(false);
+  const [openAlertDialogError, setOpenAlertDialogError] = useState(false);
+  const [openToast, setOpenToast] = useState(false);
+  const setAuth = useSetRecoilState(authState); // ใช้ setAuth จาก Recoil
+
+  const { control, handleSubmit } = useForm();
 
   const handleCloseToast = () => {
     setOpenToast(false);
@@ -50,8 +58,43 @@ export default function LoginPage() {
     setOpenAlertDialogError(false);
   };
 
+  const onSubmit = async (data) => {
+
+    const { email, password } = data; // ดึงค่า email และ password จาก form data
+
+    try {
+      const response = await fetch('http://localhost:4400/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }), // ส่งข้อมูล email และ password ไปยังเซิร์ฟเวอร์
+      });
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const { token } = responseData; // ดึงค่า token จาก responseData
+
+        // เก็บ email และ token ที่ได้จาก form และ response data ใน Recoil state
+        setAuth({ email, token });
+
+        // console.log(email, token)
+        // Redirect หน้าไปยังหน้าหลังจากล็อกอินเสร็จสิ้น
+        // เปลี่ยนเป็น URL ที่ต้องการ redirect ไป
+      } else {
+        setOpenAlertDialogError(true);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setOpenAlertDialogError(true);
+    }
+
+  };
+
+
+
   return (
-    <form>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Grid container className={classes.container}>
         <Box className={classes.pinkBox}>
           <Typography sx={{ fontSize: '40px', textAlign: 'center', mb: 3, fontWeight: 'bold' }}>
@@ -59,6 +102,7 @@ export default function LoginPage() {
           </Typography>
           <Controller
             name="email"
+            control={control}
             defaultValue=""
             render={({ field }) => (
               <TextField
@@ -79,6 +123,7 @@ export default function LoginPage() {
 
           <Controller
             name="password"
+            control={control}
             defaultValue=""
             render={({ field }) => (
               <TextField

@@ -4,6 +4,7 @@ import { atom, RecoilState } from 'recoil';
 export type AuthState = {
   email: string;
   token: string;
+  timestamp: any;
 };
 
 export const authState: RecoilState<AuthState> = atom({
@@ -11,5 +12,6 @@ export const authState: RecoilState<AuthState> = atom({
   default: {
     email: '',
     token: '',
+    timestamp: '',
   } as AuthState,
 });

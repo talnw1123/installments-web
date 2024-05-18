@@ -1,53 +1,53 @@
 export interface StepParams {
-  idBorrower: string;
-  idGuarantor: string;
+  nationID: string;
+  guarantorNationID: string;
 
-  nameBorrower: string;
+  firstName: string;
   nameGuarantor: string;
-  nameSpouse: string;
+  firstNameOfSpouse: string;
 
-  lastNameBorrower: string;
+  lastName: string;
   lastNameGuarantor: string;
-  lastNameSpouse: string;
+  lastNameOfSpouse: string;
 
-  phoneNumberBorrower: string;
+  phone: string;
   phoneNumberGuarantor: string;
   phoneNumberSpouse: string;
 
-  workPhoneNumberBorrower: string;
-  workPhoneNumberGuarantor: string;
-  workPhoneNumberSpouse: string;
+  phoneInJob: string;
+  phoneOfGuarantorInJob: string;
+  phoneOfSpouseInJob: string;
 
-  addressDefaultBorrower: string;
-  addressDefaultGuarantor: string;
+  addressReal: string;
+  addressOfGuarantorReal: string;
 
-  addressCurrentBorrower: string;
-  addressCurrentGuarantor: string;
+  addressCurrent: string;
+  addressOfGuarantorCurrent: string;
 
-  workAddressBorrower: string;
-  workAddressGuarantor: string;
-  workAddressSpouse: string;
+  addressJob: string;
+  addressOfGuarantorJob: string;
+  addressOfSpouseJob: string;
 
-  mapLinkWorkBorrower: string;
-  mapLinkWorkGuarantor: string;
-  mapLinkWorkSpouse: string;
+  googleMapAdressJob: string;
+  googleMapAdressJobOfGuarantor: string;
+  googleMapAdressJobOfSpouse: string;
 
-  mapLinkDefaultBorrower: string;
-  mapLinkDefaultGuarantor: string;
+  googleMapAdressReal: string;
+  googleMapAdressRealOfGuarantor: string;
 
-  mapLinkCurrentBorrower: string;
-  mapLinkCurrentGuarantor: string;
+  googleMapAdressCurrent: string;
+  googleMapAdressCurrentOfGuarantor: string;
 
-  statusBorrower: any;
-  numOfChildBorrower: string;
+  status: any;
+  kids: string;
 
-  occupationBorrower: string;
-  occupationGuarantor: string;
-  occupationSpouse: string;
+  job: string;
+  jobOfGuarantor: string;
+  jobOfSpouse: string;
 
-  incomeBorrower: string;
+  income: string;
   incomeGuarantor: string;
-  incomeSpouse: string;
+  incomeOfSpouse: string;
 
   birthDate: dayjs.Dayjs | null;
   age?: number;
