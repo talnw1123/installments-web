@@ -4,10 +4,11 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { GridColDef } from '@mui/x-data-grid';
+import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -71,16 +72,13 @@ const useStyles = makeStyles({
 });
 
 export default function PayPage() {
-  const [selectedBill, setSelectedBill] = useState('');
-  const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedBill(event.target.value);
-  };
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const nationID = searchParams.get('nationID') || 'defaultID';
   const searchType = searchParams.get('type') || 'ชำระเงิน';
   const menuList = [
-    'ประวัติลูกหนี้',
+    'ประวัติผู้กู้',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',
@@ -88,21 +86,29 @@ export default function PayPage() {
     'ติดตามหนี้',
   ];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-  const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
-
+  const [borrowerData, setBorrowerData] = useState(null);
+  const [selectedBill, setSelectedBill] = useState('');
   const [checklist, setChecklist] = useState<number[]>([]);
   const [lateFees, setLateFees] = useState<number>(0);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
+        const data = await response.json();
+        console.log(data)
+        setBorrowerData(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchData();
+  }, [nationID]);
+  const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedBill(event.target.value);
+  };
 
   const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -113,7 +119,15 @@ export default function PayPage() {
     }
   };
 
-  const columns: GridColDef<(typeof row)[number]>[] = [
+  if (!borrowerData) {
+    return <div>Loading...</div>;
+  }
+
+  const data = borrowerData[0] || {}; // เพิ่มการตรวจสอบเผื่อว่าข้อมูลเป็น array ว่าง
+  const { borrower, bills } = data;
+  console.log(borrower, bills);
+  
+  const columns: GridColDef[] = [
     {
       field: 'checkbox',
       headerName: '',
@@ -193,43 +207,17 @@ export default function PayPage() {
     },
   ];
 
-  const row = [
-    {
-      id: 1,
-      bill: 'บิลหมายเลข 001',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 14,
-      interest: 2,
-      principle: 10,
-      accrued_interest: 3,
-      accrued_principle: 5,
-    },
-    {
-      id: 1,
-      bill: 'บิลหมายเลข 002',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 31,
-      interest: 5,
-      principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
-    },
-    {
-      id: 2,
-      bill: 'บิลหมายเลข 002',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 31,
-      interest: 5,
-      principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
-    },
-  ];
-  console.log(checklist);
-  console.log(lateFees);
+  const rows = Array.isArray(bills) ? bills.map((bill, index) => ({
+    id: index + 1,
+    bill: bill.billNumber,
+    station: bill.station,
+    date: bill.date,
+    debt: bill.debt,
+    interest: bill.interest,
+    principle: bill.principle,
+    accrued_interest: bill.accrued_interest,
+    accrued_principle: bill.accrued_principle,
+  })) : [];
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -247,74 +235,85 @@ export default function PayPage() {
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="idBorrower"
-                    label="เลขบัตรประชาชน"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
-                  />
+                  {borrower && (
+                    <TextField
+                      id="nationID"
+                      name="idBorrower"
+                      label="เลขบัตรประชาชน"
+                      value={borrower.nationID}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  )}
                 </Grid>
                 <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="phoneNumberBorrower"
-                    label="เบอร์โทรศัพท์"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
-                  />
+                  {borrower && (
+                    <TextField
+                      id="phone"
+                      name="phoneNumberBorrower"
+                      label="เบอร์โทรศัพท์"
+                      value={borrower.phone}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  )}
                 </Grid>
                 <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                   <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
-                      name="name"
-                      label="ชื่อ"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
-                    />
+                    {borrower && (
+                      <TextField
+                        id="firstName"
+                        name="name"
+                        label="ชื่อ"
+                        value={borrower.firstName}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
-                      name="birthDate"
-                      label="วันเดือนปีเกิด"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
-                    />
+                    {borrower && (
+                      <TextField
+                        id="birthDate"
+                        name="birthDate"
+                        label="วันเดือนปีเกิด"
+                        value={borrower.birthDate}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
                   </Grid>
                   <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
-                      name="age"
-                      label="อายุ"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
-                    />
+                    {borrower && (
+                      <TextField
+                        id="age"
+                        name="age"
+                        label="อายุ"
+                        value={borrower.age}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
                   </Grid>
                 </Grid>
                 <Grid>
                   <TextField
+                    id="billNumber"
                     label="เลือกบิลที่ต้องการจ่าย"
                     variant="standard"
                     select
@@ -325,9 +324,9 @@ export default function PayPage() {
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >
-                    {bill.map(option => (
-                      <MenuItem key={option} value={option}>
-                        {option}
+                    {Array.isArray(bills) && bills.map(bill => (
+                      <MenuItem key={bill.billNumber} value={bill.billNumber}>
+                        {bill.billNumber}
                       </MenuItem>
                     ))}
                   </TextField>
@@ -342,7 +341,7 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           ค่าปรับ
         </Typography>
-        <TextField type="number" onChange={e => setLateFees(e.target.value)} id="outlined-basic" variant="outlined" />
+        <TextField type="number" onChange={e => setLateFees(Number(e.target.value))} id="outlined-basic" variant="outlined" />
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท
         </Typography>
@@ -361,7 +360,7 @@ export default function PayPage() {
             },
           }}
         >
-          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + Number(lateFees)}</Box>
+          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + lateFees}</Box>
         </ThemeProvider>
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท

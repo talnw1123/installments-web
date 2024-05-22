@@ -5,9 +5,8 @@ import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import { Users } from 'app/users';
-import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
@@ -76,6 +75,8 @@ const ProfileCustomer = () => {
   const classes = useStyles();
   const [borrowerData, setBorrowerData] = useState(null);
 
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+
   // console.log('id:', id); // ตรวจสอบค่า id
 
   // if (!customer) {
@@ -95,6 +96,12 @@ const ProfileCustomer = () => {
       try {
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
         const data = await response.json();
+        if (id) {
+          fetchBorrowerData();
+          // อัปเดตค่า id ลงใน userState
+          setUserInfo({ userNationID: id });
+          //console.log(userInfo)
+        }
         if (response.ok) {
           setBorrowerData(data);
           //console.log('Fetched borrowerData:', data);
@@ -139,6 +146,7 @@ const ProfileCustomer = () => {
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
           }
+
         } else {
           console.error('Error fetching data:', data.message);
         }
@@ -518,7 +526,7 @@ const ProfileCustomer = () => {
                     <Controller
                       name="phoneOfSpouseInJob"
                       defaultValue={" "}
-                     // defaultValue={Users[0].spouse.workPhoneNumber}
+                      // defaultValue={Users[0].spouse.workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField

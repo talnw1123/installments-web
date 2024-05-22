@@ -1,6 +1,7 @@
 'use client';
 import { Grid, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { useRecoilState, userState } from '@store/index';
 import { useRouter, useSearchParams } from 'next/navigation';
 import 'react-multi-carousel/lib/styles.css';
 
@@ -24,16 +25,18 @@ export default function MenuList() {
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  // Now you can access query parameters using searchParams.get('id')
+  const id = searchParams.get('id');
   const searchType = searchParams.get('type') || 'ประวัติผู้กู้';
   const menuList = [
-    { label: 'ประวัติผู้กู้', route: '/profileCustomer?type=ประวัติผู้กู้' },
-    { label: 'ชำระเงิน', route: '/Pay?type=ชำระเงิน' },
-    { label: 'ประวัติการชำระเงิน', route: '/paymentHistory?type=ประวัติการชำระเงิน' },
-    { label: 'สร้างการ์ดผ่อนสินค้า', route: '/addCard?type=สร้างการ์ดผ่อนสินค้า' },
-    { label: 'ประวัติการผ่อนสินค้า', route: '/installmentHis?type=ประวัติการผ่อนสินค้า' },
-    { label: 'ติดตามหนี้', route: '/debtCollection?type=ติดตามหนี้' },
+    { label: 'ประวัติผู้กู้', route: `/profileCustomer?id=${userInfo.userNationID}` },
+    { label: 'ชำระเงิน', route: `/Pay?type=${userInfo.userNationID}` },
+    { label: 'ประวัติการชำระเงิน', route: `/paymentHistory?type=ประวัติการชำระเงิน` },
+    { label: 'สร้างการ์ดผ่อนสินค้า', route: `/addCard?type=สร้างการ์ดผ่อนสินค้า` },
+    { label: 'ประวัติการผ่อนสินค้า', route: `/installmentHis?type=ประวัติการผ่อนสินค้า` },
+    { label: 'ติดตามหนี้', route: `/debtCollection?type=ติดตามหนี้` },
   ];
-
   return (
     <>
       <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
