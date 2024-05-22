@@ -2,7 +2,7 @@
 import {
   Card,
   Grid,
-  Paper,
+  MenuItem,
   Table,
   TableBody,
   TableCell,
@@ -10,10 +10,14 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TextField,
+  Paper,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { useRouter, useSearchParams } from 'next/navigation';
+import MenuList from 'app/customerInformation/page';
+import dayjs from 'dayjs';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 const useStyles = makeStyles({
@@ -29,13 +33,28 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  topContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   formContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  formBigContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   formSection: {
     marginBottom: '1.5rem',
+  },
+  formBigColumn: {
+    borderLeft: '2px solid lightgray',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   formColumn: {
     display: 'flex',
@@ -57,111 +76,19 @@ const useStyles = makeStyles({
   },
 });
 
-interface Column {
-  id: 'billNo' | 'status' | 'principle' | 'payment_term' | 'payment' | 'interest' | 'date' | 'paid' | 'balance';
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
-}
-
-const columns: readonly Column[] = [
-  { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
-  { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
-  {
-    id: 'principle',
-    label: 'ราคาเต็ม',
-    minWidth: 100,
-  },
-  {
-    id: 'payment_term',
-    label: 'ผ่อนทั้งหมด',
-    minWidth: 100,
-  },
-  {
-    id: 'payment',
-    label: 'ยอดผ่อนต่องวด',
-    minWidth: 100,
-  },
-  {
-    id: 'interest',
-    label: 'ดอกเบี้ยทั้งหมด',
-    minWidth: 100,
-  },
-  {
-    id: 'date',
-    label: 'วันที่เริ่มผ่อน',
-    minWidth: 100,
-  },
-  {
-    id: 'paid',
-    label: 'ชำระแล้ว',
-    minWidth: 100,
-  },
-  {
-    id: 'balance',
-    label: 'ยอดคงเหลือ',
-    minWidth: 100,
-  },
-];
-
-interface Data {
-  billNo: string;
-  status: string;
-  principle: number;
-  payment_term: number;
-  payment: number;
-  interest: number;
-  date: string;
-  paid: number;
-  balance: number;
-}
-
-function createData(
-  billNo: string,
-  status: string,
-  principle: number,
-  payment_term: number,
-  payment: number,
-  interest: number,
-  date: string,
-  paid: number,
-  balance: number
-): Data {
-  return { billNo, status, principle, payment_term, payment, interest, date, paid, balance };
-}
-
-const rows = [
-  createData('1', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('2', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('3', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('4', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('5', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('6', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('7', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
-  createData('8', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
-  createData('9', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
-  createData('10', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-  createData('11', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-  createData('12', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-  createData('13', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-  createData('14', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-  createData('15', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-];
-
 export default function InstallmentHisPage() {
   const classes = useStyles();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
-  const menuList = [
-    'ประวัติลูกหนี้',
-    'ชำระเงิน',
-    'ประวัติการชำระเงิน',
-    'สร้างการ์ดผ่อนสินค้า',
-    'ประวัติการผ่อนสินค้า',
-    'ติดตามหนี้',
-  ];
+  // const searchParams = useSearchParams();
+  // const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
+  // const menuList = [
+  //   'ประวัติลูกหนี้',
+  //   'ชำระเงิน',
+  //   'ประวัติการชำระเงิน',
+  //   'สร้างการ์ดผ่อนสินค้า',
+  //   'ประวัติการผ่อนสินค้า',
+  //   'ติดตามหนี้',
+  // ];
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -175,33 +102,114 @@ export default function InstallmentHisPage() {
     setPage(0);
   };
 
+  interface Column {
+    id: 'billNo' | 'status' | 'principle' | 'payment_term' | 'payment' | 'interest' | 'date' | 'paid' | 'balance';
+    label: string;
+    minWidth?: number;
+    align?: 'right';
+    format?: (value: number) => string;
+  }
+
+  const columns: readonly Column[] = [
+    { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
+    { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
+    {
+      id: 'principle',
+      label: 'ราคาเต็ม',
+      minWidth: 100,
+    },
+    {
+      id: 'payment_term',
+      label: 'ผ่อนทั้งหมด',
+      minWidth: 100,
+    },
+    {
+      id: 'payment',
+      label: 'ยอดผ่อนต่องวด',
+      minWidth: 100,
+    },
+    {
+      id: 'interest',
+      label: 'ดอกเบี้ยทั้งหมด',
+      minWidth: 100,
+    },
+    {
+      id: 'date',
+      label: 'วันที่เริ่มผ่อน',
+      minWidth: 100,
+    },
+    {
+      id: 'paid',
+      label: 'ชำระแล้ว',
+      minWidth: 100,
+    },
+    {
+      id: 'balance',
+      label: 'ยอดคงเหลือ',
+      minWidth: 100,
+    },
+  ];
+
+  interface Data {
+    billNo: string;
+    status: string;
+    principle: number;
+    payment_term: number;
+    payment: number;
+    interest: number;
+    date: string;
+    paid: number;
+    balance: number;
+  }
+
+  function createData(
+    billNo: string,
+    status: string,
+    principle: number,
+    payment_term: number,
+    payment: number,
+    interest: number,
+    date: string,
+    paid: number,
+    balance: number
+  ): Data {
+    return { billNo, status, principle, payment_term, payment, interest, date, paid, balance };
+  }
+
+  const rows = [
+    createData('1', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('2', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('3', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('4', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('5', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('6', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('7', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
+    createData('8', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
+    createData('9', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
+    createData('10', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+    createData('11', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+    createData('12', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+    createData('13', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+    createData('14', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+    createData('15', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+  ];
+
   return (
     <Grid container className={classes.bigContainer}>
-      <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
-        <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
-            <Grid item sx={{ marginTop: '2rem' }}>
-              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-                {menuList.map(item => (
-                  <Grid item key={item}>
-                    <Typography
-                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        router.push(`/installmentHis?type=${item}`);
-                      }}
-                      component="span"
-                    >
-                      {item.toUpperCase()}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
+      <Card sx={{ padding: 3, width: '80%' }}>
+        <Grid container className={classes.topContainer}>
+          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
+            ประวัติการผ่อนสินค้า
+          </Typography>
+        </Grid>
+        <Grid container className={classes.formContainer}>
+          <Grid className={classes.formBigContainer}>
+            <Grid>
+              <MenuList />
             </Grid>
-          </Grid>
-          <Grid item xs={9} sx={{ display: 'grid' }}>
-            <Grid container className={classes.bigContainer}>
-              <form>
-                <Grid>
+            <Grid className={classes.formBigColumn}>
+              <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Grid item xs={12} className={classes.column}>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
                       ประวัติการผ่อนสินค้า
@@ -256,7 +264,7 @@ export default function InstallmentHisPage() {
                     />
                   </Paper>
                 </Grid>
-              </form>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>

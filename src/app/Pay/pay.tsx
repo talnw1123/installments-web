@@ -1,11 +1,10 @@
 'use client';
-import { Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Box, Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import MenuList from 'app/customerInformation/page';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useState } from 'react';
 
@@ -77,30 +76,32 @@ export default function PayPage() {
   };
   const classes = useStyles();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchType = searchParams.get('type') || 'ชำระเงิน';
-  const menuList = [
-    'ประวัติลูกหนี้',
-    'ชำระเงิน',
-    'ประวัติการชำระเงิน',
-    'สร้างการ์ดผ่อนสินค้า',
-    'ประวัติการผ่อนสินค้า',
-    'ติดตามหนี้',
-  ];
+  // const searchParams = useSearchParams();
+  // const searchType = searchParams.get('type') || 'ชำระเงิน';
+  // const menuList = [
+  //   'ประวัติลูกหนี้',
+  //   'ชำระเงิน',
+  //   'ประวัติการชำระเงิน',
+  //   'สร้างการ์ดผ่อนสินค้า',
+  //   'ประวัติการผ่อนสินค้า',
+  //   'ติดตามหนี้',
+  // ];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  // const [page, setPage] = React.useState(0);
+  // const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  // const handleChangePage = (event: unknown, newPage: number) => {
+  //   setPage(newPage);
+  // };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
+  // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   setRowsPerPage(+event.target.value);
+  //   setPage(0);
+  // };
+
   const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
 
+  //checkbox
   const [checklist, setChecklist] = useState<number[]>([]);
   const [lateFees, setLateFees] = useState<number>(0);
 
@@ -113,6 +114,7 @@ export default function PayPage() {
     }
   };
 
+  //column
   const columns: GridColDef<(typeof row)[number]>[] = [
     {
       field: 'checkbox',
@@ -193,6 +195,7 @@ export default function PayPage() {
     },
   ];
 
+  //data
   const row = [
     {
       id: 1,
@@ -244,6 +247,8 @@ export default function PayPage() {
             <Grid>
               <MenuList />
             </Grid>
+
+            {/* data */}
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid item xs={6} className={classes.column}>
@@ -313,7 +318,7 @@ export default function PayPage() {
                     />
                   </Grid>
                 </Grid>
-                <Grid>
+                <Grid item xs={12} className={classes.column}>
                   <TextField
                     label="เลือกบิลที่ต้องการจ่าย"
                     variant="standard"
@@ -321,7 +326,7 @@ export default function PayPage() {
                     fullWidth
                     margin="normal"
                     className={classes.formField}
-                    sx={{ width: '30%' }}
+                    sx={{ width: '50%' }}
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >
@@ -331,6 +336,27 @@ export default function PayPage() {
                       </MenuItem>
                     ))}
                   </TextField>
+                </Grid>
+                {/* table */}
+                <Grid item xs={12} className={classes.column}>
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    {/* select data */}
+                    <DataGrid
+                      rows={row.filter(row => row.bill === selectedBill)}
+                      columns={columns}
+                      disableColumnFilter
+                      disableColumnSelector
+                      disableColumnMenu
+                      components={{
+                        Toolbar: () => (
+                          <Typography variant="body1" sx={{ marginTop: '1rem', marginLeft: '1rem' }}>
+                            เลือกงวดที่ต้องการจ่าย
+                          </Typography>
+                        ),
+                      }}
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
                 </Grid>
               </Grid>
             </Grid>
@@ -342,7 +368,13 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           ค่าปรับ
         </Typography>
-        <TextField type="number" onChange={e => setLateFees(e.target.value)} id="outlined-basic" variant="outlined" />
+        <TextField
+          type="number"
+          onChange={e => setLateFees(e.target.value)}
+          id="outlined-basic"
+          variant="outlined"
+          sx={{ bgcolor: '#FFFFFF' }}
+        />
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท
         </Typography>

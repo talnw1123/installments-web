@@ -3,7 +3,6 @@ import {
   Card,
   Grid,
   MenuItem,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -12,11 +11,13 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Paper,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
+import MenuList from 'app/customerInformation/page';
 import dayjs from 'dayjs';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 const useStyles = makeStyles({
@@ -32,13 +33,28 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
+  topContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   formContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
+  formBigContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+  },
   formSection: {
     marginBottom: '1.5rem',
+  },
+  formBigColumn: {
+    borderLeft: '2px solid lightgray',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   formColumn: {
     display: 'flex',
@@ -60,104 +76,22 @@ const useStyles = makeStyles({
   },
 });
 
-interface Column {
-  id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'bill';
-  label: string;
-  minWidth?: number;
-  align?: 'right';
-  format?: (value: number) => string;
-}
-
-const columns: readonly Column[] = [
-  { id: 'number', label: 'งวดที่', minWidth: 70 },
-  { id: 'due_Date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
-  {
-    id: 'due_Paid',
-    label: 'วันที่จ่าย',
-    minWidth: 100,
-  },
-  {
-    id: 'overDay',
-    label: 'จำนวนเกินกำหนด',
-    minWidth: 100,
-  },
-  {
-    id: 'totalPay',
-    label: 'เงินที่ต้องชำระ',
-    minWidth: 100,
-  },
-  {
-    id: 'interest',
-    label: 'ดอกเบี้ย',
-    minWidth: 100,
-  },
-  {
-    id: 'principle',
-    label: 'เงินต้น',
-    minWidth: 100,
-  },
-];
-
-interface Data {
-  number: string;
-  due_Date: string;
-  due_Paid: string;
-  overDay: number;
-  totalPay: number;
-  interest: number;
-  principle: number;
-  bill: string;
-}
-
-function createData(
-  number: string,
-  due_Date: string,
-  due_Paid: string,
-  overDay: number,
-  totalPay: number,
-  interest: number,
-  principle: number,
-  bill: string
-): Data {
-  return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
-}
-
-const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
-
-const bill1Rows = [
-  createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-  createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-  createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-];
-
-const bill2Rows = [
-  createData('1', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-  createData('2', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-  createData('3', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-];
-
-const rows = [...bill1Rows, ...bill2Rows];
-
-export default function PaymentHistoryPage() {
-  const [selectedBill, setSelectedBill] = React.useState<string>('');
-  const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedBill(event.target.value);
-  };
+export default function InstallmentHisPage() {
   const classes = useStyles();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchType = searchParams.get('type') || 'ประวัติการชำระเงิน';
-  const menuList = [
-    'ประวัติลูกหนี้',
-    'ชำระเงิน',
-    'ประวัติการชำระเงิน',
-    'สร้างการ์ดผ่อนสินค้า',
-    'ประวัติการผ่อนสินค้า',
-    'ติดตามหนี้',
-  ];
+  // const searchParams = useSearchParams();
+  // const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
+  // const menuList = [
+  //   'ประวัติลูกหนี้',
+  //   'ชำระเงิน',
+  //   'ประวัติการชำระเงิน',
+  //   'สร้างการ์ดผ่อนสินค้า',
+  //   'ประวัติการผ่อนสินค้า',
+  //   'ติดตามหนี้',
+  // ];
 
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -167,6 +101,89 @@ export default function PaymentHistoryPage() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  const [selectedBill, setSelectedBill] = React.useState<string>('');
+  const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedBill(event.target.value);
+  };
+
+  interface Column {
+    id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'bill';
+    label: string;
+    minWidth?: number;
+    align?: 'right';
+    format?: (value: number) => string;
+  }
+
+  const columns: readonly Column[] = [
+    { id: 'number', label: 'งวดที่', minWidth: 70 },
+    { id: 'due_Date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
+    {
+      id: 'due_Paid',
+      label: 'วันที่จ่าย',
+      minWidth: 100,
+    },
+    {
+      id: 'overDay',
+      label: 'จำนวนเกินกำหนด',
+      minWidth: 100,
+    },
+    {
+      id: 'totalPay',
+      label: 'เงินที่ต้องชำระ',
+      minWidth: 100,
+    },
+    {
+      id: 'interest',
+      label: 'ดอกเบี้ย',
+      minWidth: 100,
+    },
+    {
+      id: 'principle',
+      label: 'เงินต้น',
+      minWidth: 100,
+    },
+  ];
+
+  interface Data {
+    number: string;
+    due_Date: string;
+    due_Paid: string;
+    overDay: number;
+    totalPay: number;
+    interest: number;
+    principle: number;
+    bill: string;
+  }
+
+  function createData(
+    number: string,
+    due_Date: string,
+    due_Paid: string,
+    overDay: number,
+    totalPay: number,
+    interest: number,
+    principle: number,
+    bill: string
+  ): Data {
+    return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
+  }
+
+  const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
+
+  const bill1Rows = [
+    createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+    createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+    createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
+  ];
+
+  const bill2Rows = [
+    createData('1', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+    createData('2', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+    createData('3', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
+  ];
+
+  const rows = [...bill1Rows, ...bill2Rows];
 
   const calculateDaysOverdue = (dueDate: string, paidDate: string): string => {
     const dueDateObj = dayjs(dueDate, 'DD/MM/YYYY');
@@ -181,31 +198,20 @@ export default function PaymentHistoryPage() {
 
   return (
     <Grid container className={classes.bigContainer}>
-      <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
-        <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-          <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
-            <Grid item sx={{ marginTop: '2rem' }}>
-              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-                {menuList.map(item => (
-                  <Grid item key={item}>
-                    <Typography
-                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        router.push(`/paymentHistory?type=${item}`);
-                      }}
-                      component="span"
-                    >
-                      {item.toUpperCase()}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
+      <Card sx={{ padding: 3, width: '80%' }}>
+        <Grid container className={classes.topContainer}>
+          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
+            ประวัติการชำระเงิน
+          </Typography>
+        </Grid>
+        <Grid container className={classes.formContainer}>
+          <Grid className={classes.formBigContainer}>
+            <Grid>
+              <MenuList />
             </Grid>
-          </Grid>
-          <Grid item xs={9} sx={{ display: 'grid' }}>
-            <Grid container className={classes.bigContainer}>
-              <form>
-                <Grid>
+            <Grid className={classes.formBigColumn}>
+              <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                <Grid item xs={12} className={classes.column}>
                   <TextField
                     label="เลือกบิลที่ต้องการดู"
                     variant="standard"
@@ -224,7 +230,7 @@ export default function PaymentHistoryPage() {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid>
+                <Grid item xs={12} className={classes.column}>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
                       ประวัติการชำระหนี้
@@ -290,7 +296,7 @@ export default function PaymentHistoryPage() {
                     />
                   </Paper>
                 </Grid>
-              </form>
+              </Grid>
             </Grid>
           </Grid>
         </Grid>
