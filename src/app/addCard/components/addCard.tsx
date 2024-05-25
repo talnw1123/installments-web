@@ -7,7 +7,6 @@ import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import router from 'next/router';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
@@ -207,10 +206,6 @@ const AddCard = () => {
         console.log('New card created:', createCardData);
         console.log('New bill created:', createBillData);
         // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
-        setTimeout(() => {
-          router.push(`/profileCustomer`);
-          setActiveLink('profileCustomer');
-        }, 1000);
       } else {
         throw new Error('One or more API requests failed');
       }
