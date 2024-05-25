@@ -1,12 +1,11 @@
 'use client';
-import { Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
-import Box from '@mui/material/Box';
+import { Box, Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { GridColDef } from '@mui/x-data-grid';
 import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -236,17 +235,43 @@ export default function PayPage() {
     },
   ];
 
-  const rows = Array.isArray(bills) ? bills.map((bill, index) => ({
-    id: index + 1,
-    bill: bill.billNumber,
-    station: bill.station,
-    date: bill.date,
-    debt: bill.debt,
-    interest: bill.interest,
-    principle: bill.principle,
-    accrued_interest: bill.accrued_interest,
-    accrued_principle: bill.accrued_principle,
-  })) : [];
+  const row = [
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 001',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 14,
+      interest: 2,
+      principle: 10,
+      accrued_interest: 3,
+      accrued_principle: 5,
+    },
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+    {
+      id: 2,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+  ];
+  console.log(checklist);
+  console.log(lateFees);
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -261,6 +286,8 @@ export default function PayPage() {
             <Grid>
               <MenuList />
             </Grid>
+
+            {/* data */}
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid item xs={6} className={classes.column}>
@@ -340,7 +367,7 @@ export default function PayPage() {
                     )}
                   </Grid>
                 </Grid>
-                <Grid>
+                <Grid item xs={12} className={classes.column}>
                   <TextField
                     id="billNumber"
                     label="เลือกบิลที่ต้องการจ่าย"
@@ -349,7 +376,7 @@ export default function PayPage() {
                     fullWidth
                     margin="normal"
                     className={classes.formField}
-                    sx={{ width: '30%' }}
+                    sx={{ width: '50%' }}
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >
@@ -359,6 +386,27 @@ export default function PayPage() {
                       </MenuItem>
                     ))}
                   </TextField>
+                </Grid>
+                {/* table */}
+                <Grid item xs={12} className={classes.column}>
+                  <Box sx={{ height: 400, width: '100%' }}>
+                    {/* select data */}
+                    <DataGrid
+                      rows={row.filter(row => row.bill === selectedBill)}
+                      columns={columns}
+                      disableColumnFilter
+                      disableColumnSelector
+                      disableColumnMenu
+                      components={{
+                        Toolbar: () => (
+                          <Typography variant="body1" sx={{ marginTop: '1rem', marginLeft: '1rem' }}>
+                            เลือกงวดที่ต้องการจ่าย
+                          </Typography>
+                        ),
+                      }}
+                      disableRowSelectionOnClick
+                    />
+                  </Box>
                 </Grid>
               </Grid>
             </Grid>
@@ -370,7 +418,7 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           ค่าปรับ
         </Typography>
-        <TextField type="number" onChange={e => setLateFees(Number(e.target.value))} id="outlined-basic" variant="outlined" />
+        <TextField type="number" onChange={e => setLateFees(e.target.value)} id="outlined-basic" variant="outlined" />
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท
         </Typography>
