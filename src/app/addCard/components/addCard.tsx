@@ -426,8 +426,3 @@ const AddCard = () => {
     </>
   );
 };
-
-export default AddCard;
-function setActiveLink(arg0: string) {
-  throw new Error('Function not implemented.');
-}
