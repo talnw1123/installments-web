@@ -1,17 +1,19 @@
 'use client';
+import ToastSuccess from '@components/toast';
 import { Button, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
+import axios from 'axios';
 import dayjs from 'dayjs';
+import router from 'next/router';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
 import StepOnePage from './StepOnepage';
 import StepThreePage from './StepThreePage';
 import StepTwoPage from './StepTwoPage';
-
 
 export const DataContext = createContext<any>({});
 export function parseDateString(timestamp: string) {
@@ -34,6 +36,82 @@ const AddCard = () => {
 
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
+
+  const [openToast, setOpenToast] = useState(false);
+  const [creditScoreText, setCreditScoreText] = useState('');
+
+  const handleOpenToast = async () => {
+    const age = Number(calculateAge(birthDateValue));
+    const income = Number(watch('income'));
+    const maritalStatus = watch('status');
+    const children = Number(watch('kids'));
+
+    let newMaritalStatus = '';
+
+    switch (maritalStatus) {
+      case 'โสด':
+        newMaritalStatus = 'Single';
+        break;
+      case 'แต่งงาน':
+        newMaritalStatus = 'Married';
+        break;
+      case 'หย่าร้าง':
+        newMaritalStatus = 'Single';
+        break;
+      case 'ม่าย':
+        newMaritalStatus = 'Single';
+        break;
+      default:
+        newMaritalStatus = 'Single';
+    }
+
+    try {
+      const response = await axios.post(
+        'http://localhost:4400/api/creditScrolling',
+        {
+          age,
+          income,
+          maritalStatus: newMaritalStatus,
+          children: children,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const creditScore = response.data.creditScore;
+      let creditScoreText;
+
+      switch (creditScore) {
+        case 'High':
+          creditScoreText = 'สูง';
+          break;
+        case 'Average':
+          creditScoreText = 'กลาง';
+          break;
+        case 'Low':
+          creditScoreText = 'ต่ำ';
+          break;
+        default:
+          creditScoreText = 'ไม่สามารถประเมินได้';
+      }
+
+      setCreditScoreText(creditScoreText);
+    } catch (error) {
+      console.error('Error predicting credit score:', error);
+      setCreditScoreText('เกิดข้อผิดพลาดในการประเมินความสามารถในการผ่อนชำระ');
+    } finally {
+      setOpenToast(true);
+    }
+  };
+
+  const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenToast(false);
+  };
 
   // const navigateToProfileCustomer = useCallback(() => {
   //   window.location.href = './profileCustomer';
@@ -71,10 +149,9 @@ const AddCard = () => {
   //   }
   // }, [/* dependencies */]);
 
-  const onSubmit = useCallback(async (data) => {
-    console.log(data)
+  const onSubmit = useCallback(async (data: any) => {
+    console.log(data);
     try {
-
       // เรียกใช้งาน API createCard
       const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
         method: 'POST',
@@ -93,6 +170,36 @@ const AddCard = () => {
         body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
       });
 
+      //pdf
+      const downloadPdfResponse = await fetch('http://localhost:4400/api/downloadPdf', {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const blob = await downloadPdfResponse.blob();
+
+      // Create a link element
+      const link = document.createElement('a');
+
+      // Create a URL for the blob and set it as the href attribute of the link
+      const url = window.URL.createObjectURL(blob);
+      link.href = url;
+
+      // Set the download attribute of the link
+      link.download = 'Installment contract.pdf';
+
+      // Append the link to the body (necessary for Firefox)
+      document.body.appendChild(link);
+
+      // Programmatically click the link to trigger the download
+      link.click();
+
+      // Remove the link from the document
+      document.body.removeChild(link);
+
       // ตรวจสอบว่าทั้งสอง API ทำงานสำเร็จหรือไม่
       if (createCardResponse.ok && createBillResponse.ok) {
         const createCardData = await createCardResponse.json();
@@ -100,6 +207,10 @@ const AddCard = () => {
         console.log('New card created:', createCardData);
         console.log('New bill created:', createBillData);
         // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
+        setTimeout(() => {
+          router.push(`/profileCustomer`);
+          setActiveLink('profileCustomer');
+        }, 1000);
       } else {
         throw new Error('One or more API requests failed');
       }
@@ -243,7 +354,10 @@ const AddCard = () => {
           {step === 0 && (
             <>
               <StepOnePage />
-              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
+              <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+                <Button variant="outlined" color="primary" type="button" onClick={handleOpenToast}>
+                  ตรวจสอบ Credit
+                </Button>
                 <Button
                   variant="contained"
                   color="primary"
@@ -308,8 +422,17 @@ const AddCard = () => {
           )}
         </DataContext.Provider>
       </form>
+      <ToastSuccess
+        openToast={openToast}
+        handleCloseToast={handleCloseToast}
+        text={`ความสามารถในการผ่อนชำระ: ${creditScoreText}`}
+        showClose={true}
+      />
     </>
   );
 };
 
 export default AddCard;
+function setActiveLink(arg0: string) {
+  throw new Error('Function not implemented.');
+}
