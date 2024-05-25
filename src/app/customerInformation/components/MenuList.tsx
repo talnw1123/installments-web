@@ -32,10 +32,10 @@ export default function MenuList() {
   const menuList = [
     { label: 'ประวัติผู้กู้', route: `/profileCustomer?id=${userInfo.userNationID}` },
     { label: 'ชำระเงิน', route: `/Pay?type=${userInfo.userNationID}` },
-    { label: 'ประวัติการชำระเงิน', route: `/paymentHistory?type=ประวัติการชำระเงิน` },
-    { label: 'สร้างการ์ดผ่อนสินค้า', route: `/addCard?type=สร้างการ์ดผ่อนสินค้า` },
-    { label: 'ประวัติการผ่อนสินค้า', route: `/installmentHis?type=ประวัติการผ่อนสินค้า` },
-    { label: 'ติดตามหนี้', route: `/debtCollection?type=ติดตามหนี้` },
+    { label: 'ประวัติการชำระเงิน', route: `/paymentHistory?type=${userInfo.userNationID}` },
+    { label: 'สร้างการ์ดผ่อนสินค้า', route: `/addCard?type=${userInfo.userNationID}` },
+    { label: 'ประวัติการผ่อนสินค้า', route: `/installmentHis?type=${userInfo.userNationID}` },
+    { label: 'ติดตามหนี้', route: `/debtCollection?type=${userInfo.userNationID}` },
   ];
   return (
     <>

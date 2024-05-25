@@ -106,6 +106,7 @@ export default function PayPage() {
 
     fetchData();
   }, [nationID]);
+
   const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedBill(event.target.value);
   };
@@ -119,14 +120,42 @@ export default function PayPage() {
     }
   };
 
+  const handleConfirm = async () => {
+    const totalAmount = checklist.reduce((acc, curr) => acc + curr, 0) + lateFees;
+
+    try {
+      const response = await fetch('http://localhost:4400/api/addPayment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          billNumber: selectedBill,
+          amount: totalAmount,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // Redirect or perform other actions if needed
+      router.push('/installmentHis');
+    } catch (error) {
+      console.error('Error sending payment data:', error);
+    }
+  };
+
   if (!borrowerData) {
     return <div>Loading...</div>;
   }
 
   const data = borrowerData[0] || {}; // เพิ่มการตรวจสอบเผื่อว่าข้อมูลเป็น array ว่าง
   const { borrower, bills } = data;
-  console.log(borrower, bills);
-  
+
   const columns: GridColDef[] = [
     {
       field: 'checkbox',
@@ -367,7 +396,7 @@ export default function PayPage() {
         </Typography>
         <Button
           variant="contained"
-          onClick={() => router.push('/installmentHis')}
+          onClick={handleConfirm}
           sx={{
             backgroundColor: '#718171',
             borderRadius: '1 px',

@@ -156,7 +156,7 @@ const StepThreePage = () => {
               <Grid container spacing={3} className={classes.form}>
                 <Grid item xs={2}>
                   <Controller
-                    name="numberOfInstallments"
+                    name="numberOfInstallment"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

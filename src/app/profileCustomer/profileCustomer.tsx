@@ -96,16 +96,10 @@ const ProfileCustomer = () => {
       try {
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
         const data = await response.json();
-        if (id) {
-          fetchBorrowerData();
-          // อัปเดตค่า id ลงใน userState
-          setUserInfo({ userNationID: id });
-          //console.log(userInfo)
-        }
+
         if (response.ok) {
           setBorrowerData(data);
-          //console.log('Fetched borrowerData:', data);
-          // อัปเดตค่าใน form เมื่อได้รับข้อมูลจาก API
+
           if (data && data.length > 0) {
             const { borrower } = data[0];
             setValue('nationID', borrower.nationID || '');
@@ -145,8 +139,13 @@ const ProfileCustomer = () => {
             setValue('jobOfGuarantor', borrower.jobOfGuarantor || '');
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
-          }
 
+            // อัปเดตค่า id ลงใน userState
+            setUserInfo(prevState => ({
+              ...prevState,
+              userNationID: id
+            }));
+          }
         } else {
           console.error('Error fetching data:', data.message);
         }
@@ -158,7 +157,7 @@ const ProfileCustomer = () => {
     if (id) {
       fetchBorrowerData();
     }
-  }, [id, setValue]);
+  }, [id, setValue, setUserInfo]);
 
   // สร้างฟังก์ชันสำหรับการแสดงค่าเริ่มต้นจากข้อมูลที่ได้จาก API
   // const getDefaultValue = (fieldName) => {

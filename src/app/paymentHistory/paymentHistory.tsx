@@ -15,9 +15,12 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
+import { userState } from '@store/index';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
+import { useRecoilState } from 'recoil';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -109,40 +112,14 @@ interface Data {
   bill: string;
 }
 
-function createData(
-  number: string,
-  due_Date: string,
-  due_Paid: string,
-  overDay: number,
-  totalPay: number,
-  interest: number,
-  principle: number,
-  bill: string
-): Data {
-  return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
-}
 
-const billOptions = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
-
-const bill1Rows = [
-  createData('1', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-  createData('2', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-  createData('3', '11/11/2011', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 001'),
-];
-
-const bill2Rows = [
-  createData('1', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-  createData('2', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-  createData('3', '11/11/2012', '12/12/2011', 0, 0, 100, 900, 'บิลหมายเลข 002'),
-];
-
-const rows = [...bill1Rows, ...bill2Rows];
 
 export default function PaymentHistoryPage() {
   const [selectedBill, setSelectedBill] = React.useState<string>('');
-  const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedBill(event.target.value);
-  };
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const [billOptions, setBillOptions] = React.useState<string[]>([]);
+  const [rows, setRows] = React.useState<Data[]>([]);
+  
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -158,6 +135,43 @@ export default function PaymentHistoryPage() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
+        const data = response.data;
+        const options = data.flatMap((borrower: any) =>
+          borrower.bills.map((bill: any) => `หมายเลข ${bill.billNumber}`)
+        );
+        setBillOptions(options);
+
+        const allRows = data.flatMap((borrower: any) =>
+          borrower.bills.flatMap((bill: any) =>
+            bill.paymentHistory.map((payment: any, index: number) => createData(
+              (index + 1).toString(),
+              dayjs(bill.createdAt).format('DD/MM/YYYY'),
+              dayjs(payment.paymentDate).format('DD/MM/YYYY'),
+              dayjs(payment.paymentDate).diff(dayjs(bill.createdAt), 'day'),
+              bill.totalLoan * (1 + bill.interestRates / 100),
+              bill.interestRates,
+              bill.totalLoan,
+              `หมายเลข ${bill.billNumber}`
+            ))
+          )
+        );
+        setRows(allRows);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [userInfo.userNationID]);
+
+  const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedBill(event.target.value);
+  };
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -175,10 +189,24 @@ export default function PaymentHistoryPage() {
     return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
   };
 
-  const calculateAmountToPay = (interest: number, principle: number): number => {
-    return interest + principle;
+  const calculateAmountToPay = (interest: string, principle: string): number => {
+    const interestRate = parseFloat(interest);
+    const principleAmount = parseFloat(principle);
+    return principleAmount * (1 + interestRate / 100);
   };
-
+  function createData(
+    number: string,
+    due_Date: string,
+    due_Paid: string,
+    overDay: number,
+    totalLoan: string, // เปลี่ยนจาก totalPay เป็น totalLoan
+    interest: string, // เปลี่ยนให้เป็น string
+    principle: string, // เปลี่ยนให้เป็น string
+    bill: string
+  ): Data {
+    const totalPay = calculateAmountToPay(interest, principle); // คำนวณ totalPay ใหม่
+    return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
+  }
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
