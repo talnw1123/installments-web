@@ -39,6 +39,7 @@ const ProfileData = () => {
   }, [setValue]);
 
   const date = watch('birthDate');
+
   const calculate = useCallback((birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
     if (!birthDate) {
       return '';

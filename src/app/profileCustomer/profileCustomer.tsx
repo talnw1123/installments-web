@@ -13,6 +13,12 @@ import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
 import { DataContext1 } from './profileData';
 
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+// เพิ่ม plugin สำหรับการจัดการเวลา zone
+dayjs.extend(utc);
+
 const useStyles = makeStyles({
   bigContainer: {
     display: 'flex',
@@ -105,7 +111,10 @@ const ProfileCustomer = () => {
             setValue('nationID', borrower.nationID || '');
             setValue('firstName', borrower.firstName || '');
             setValue('lastName', borrower.lastName || '');
-            setValue('birthDate', borrower.birthDate || null);
+            setValue('birthDate', dayjs(borrower.birthDate) || null);
+            //console.log(dayjs(borrower.birthDate))
+            const now = dayjs();
+            setValue('age', now.diff(borrower.birthDate,'year') || '');
             setValue('job', borrower.job || '');
             setValue('income', borrower.income || '');
             setValue('phone', borrower.phone || '');
