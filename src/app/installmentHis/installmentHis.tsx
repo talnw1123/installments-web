@@ -19,6 +19,10 @@ import MenuList from 'app/customerInformation/page';
 import dayjs from 'dayjs';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { useRecoilState } from 'recoil';
+import { userState } from '@store/index';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -162,37 +166,84 @@ export default function InstallmentHisPage() {
     balance: number;
   }
 
-  function createData(
-    billNo: string,
-    status: string,
-    principle: number,
-    payment_term: number,
-    payment: number,
-    interest: number,
-    date: string,
-    paid: number,
-    balance: number
-  ): Data {
-    return { billNo, status, principle, payment_term, payment, interest, date, paid, balance };
-  }
+function createData(
+  billNo: string,
+  status: string,
+  principle: number,
+  payment_term: number,
+  payment: number,
+  interest: number,
+  date: string,
+  paid: number,
+  balance: number
+): Data {
+  return { billNo, status, principle, payment_term, payment, interest, date, paid, balance };
+}
 
-  const rows = [
-    createData('1', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('2', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('3', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('4', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('5', 'ผ่อนชำระเสร็จสิ้น', 10000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('6', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('7', 'ผ่อนชำระเสร็จสิ้น', 20000, 10, 0, 100, '11/11/2011', 0, 0),
-    createData('8', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
-    createData('9', 'ผ่อนชำระเสร็จสิ้น', 20000, 5, 0, 100, '11/11/2011', 0, 0),
-    createData('10', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-    createData('11', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-    createData('12', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-    createData('13', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-    createData('14', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
-    createData('15', 'กำลังผ่อนชำระ', 10000, 0, 0, 100, '11/11/2011', 0, 0),
+export default function InstallmentHisPage() {
+  const classes = useStyles();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
+  const menuList = [
+    'ประวัติผู้กู้',
+    'ชำระเงิน',
+    'ประวัติการชำระเงิน',
+    'สร้างการ์ดผ่อนสินค้า',
+    'ประวัติการผ่อนสินค้า',
+    'ติดตามหนี้',
   ];
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [rows, setRows] = React.useState<Data[]>([]);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.get(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
+      const data = response.data;
+
+      const newRows = data.flatMap((borrower: any) =>
+        borrower.bills.map((bill: any) => {
+          const totalLoan = parseFloat(bill.totalLoan);
+          const interestRates = parseFloat(bill.interestRates);
+          const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
+          const numberOfInstallment = parseInt(bill.numberOfInstallment, 10);
+          const paymentPerTerm = totalLoan / numberOfInstallment;
+          const interest = totalLoan * interestRates / 100;
+          const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
+          const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
+          const balance = totalPaymentWithInterest - paid;
+          const status = balance === 0 ? 'ผ่อนชำระเสร็จสิ้น' : 'กำลังผ่อนชำระ';
+
+          return createData(
+            bill.billNumber,
+            status,
+            totalLoan,
+            numberOfInstallment,
+            paymentPerTerm,
+            interest,
+            date,
+            paid,
+            balance
+          );
+        })
+      );
+
+      setRows(newRows);
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <Grid container className={classes.bigContainer}>

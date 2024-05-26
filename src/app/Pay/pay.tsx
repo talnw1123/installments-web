@@ -3,14 +3,19 @@
 import { Box, Button, Card, Grid, MenuItem, TextField, ThemeProvider, createTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
+import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
+<<<<<<< HEAD
 import { useContext, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
 import { DataContext1 } from '../profileCustomer/profileData';
+=======
+import { useEffect, useState } from 'react';
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -92,11 +97,49 @@ const theme = createTheme({
 });
 
 export default function PayPage() {
+<<<<<<< HEAD
   //select bill
+=======
+  const classes = useStyles();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const nationID = searchParams.get('nationID') || 'defaultID';
+  const searchType = searchParams.get('type') || 'ชำระเงิน';
+  const menuList = [
+    'ประวัติผู้กู้',
+    'ชำระเงิน',
+    'ประวัติการชำระเงิน',
+    'สร้างการ์ดผ่อนสินค้า',
+    'ประวัติการผ่อนสินค้า',
+    'ติดตามหนี้',
+  ];
+
+  const [borrowerData, setBorrowerData] = useState(null);
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
   const [selectedBill, setSelectedBill] = useState('');
+  const [checklist, setChecklist] = useState<number[]>([]);
+  const [lateFees, setLateFees] = useState<number>(0);
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
+        const data = await response.json();
+        console.log(data)
+        setBorrowerData(data);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    fetchData();
+  }, [nationID]);
+
   const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedBill(event.target.value);
   };
+<<<<<<< HEAD
 
   const classes = useStyles();
   const router = useRouter();
@@ -104,6 +147,8 @@ export default function PayPage() {
   // checkbox
   const [checklist, setChecklist] = useState<number[]>([]);
   const [lateFees, setLateFees] = useState<number>(0);
+=======
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
 
   const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
@@ -114,6 +159,7 @@ export default function PayPage() {
     }
   };
 
+<<<<<<< HEAD
   const [bills, setBills] = useState([]);
   const searchParams = useSearchParams(); // Destructure using square brackets
   const id = searchParams.get('id');
@@ -163,6 +209,45 @@ export default function PayPage() {
 
   // columns
   const paymentColumn: GridColDef[] = [
+=======
+  const handleConfirm = async () => {
+    const totalAmount = checklist.reduce((acc, curr) => acc + curr, 0) + lateFees;
+
+    try {
+      const response = await fetch('http://localhost:4400/api/addPayment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          billNumber: selectedBill,
+          amount: totalAmount,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      // Redirect or perform other actions if needed
+      router.push('/installmentHis');
+    } catch (error) {
+      console.error('Error sending payment data:', error);
+    }
+  };
+
+  if (!borrowerData) {
+    return <div>Loading...</div>;
+  }
+
+  const data = borrowerData[0] || {}; // เพิ่มการตรวจสอบเผื่อว่าข้อมูลเป็น array ว่าง
+  const { borrower, bills } = data;
+
+  const columns: GridColDef[] = [
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
     {
       field: 'checkbox',
       headerName: '',
@@ -215,6 +300,47 @@ export default function PayPage() {
     },
   ];
 
+<<<<<<< HEAD
+=======
+  const row = [
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 001',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 14,
+      interest: 2,
+      principle: 10,
+      accrued_interest: 3,
+      accrued_principle: 5,
+    },
+    {
+      id: 1,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+    {
+      id: 2,
+      bill: 'บิลหมายเลข 002',
+      station: 'ค้างชำระ',
+      date: '25/03/2024',
+      debt: 31,
+      interest: 5,
+      principle: 20,
+      accrued_interest: 8,
+      accrued_principle: 15,
+    },
+  ];
+  console.log(checklist);
+  console.log(lateFees);
+
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
@@ -231,6 +357,7 @@ export default function PayPage() {
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid item xs={6} className={classes.column}>
+<<<<<<< HEAD
                   <Controller
                     name="nationID"
                     defaultValue={' '}
@@ -344,10 +471,87 @@ export default function PayPage() {
                         </Grid>
                       )}
                     />
+=======
+                  {borrower && (
+                    <TextField
+                      id="nationID"
+                      name="idBorrower"
+                      label="เลขบัตรประชาชน"
+                      value={borrower.nationID}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  )}
+                </Grid>
+                <Grid item xs={6} className={classes.column}>
+                  {borrower && (
+                    <TextField
+                      id="phone"
+                      name="phoneNumberBorrower"
+                      label="เบอร์โทรศัพท์"
+                      value={borrower.phone}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  )}
+                </Grid>
+                <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    {borrower && (
+                      <TextField
+                        id="firstName"
+                        name="name"
+                        label="ชื่อ"
+                        value={borrower.firstName}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    {borrower && (
+                      <TextField
+                        id="birthDate"
+                        name="birthDate"
+                        label="วันเดือนปีเกิด"
+                        value={borrower.birthDate}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    {borrower && (
+                      <TextField
+                        id="age"
+                        name="age"
+                        label="อายุ"
+                        value={borrower.age}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                        variant="standard"
+                        sx={{ width: '100%' }}
+                      />
+                    )}
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
                   </Grid>
                 </Grid>
                 <Grid item xs={12} className={classes.column}>
                   <TextField
+                    id="billNumber"
                     label="เลือกบิลที่ต้องการจ่าย"
                     variant="standard"
                     select
@@ -358,9 +562,15 @@ export default function PayPage() {
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >
+<<<<<<< HEAD
                     {bills.map(option => (
                       <MenuItem key={option} value={option}>
                         {option}
+=======
+                    {Array.isArray(bills) && bills.map(bill => (
+                      <MenuItem key={bill.billNumber} value={bill.billNumber}>
+                        {bill.billNumber}
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
                       </MenuItem>
                     ))}
                   </TextField>
@@ -396,6 +606,7 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           ค่าปรับ
         </Typography>
+<<<<<<< HEAD
         <TextField
           type="number"
           onChange={e => setLateFees(Number(e.target.value))}
@@ -403,6 +614,9 @@ export default function PayPage() {
           variant="outlined"
           sx={{ bgcolor: '#FFFFFF' }}
         />
+=======
+        <TextField type="number" onChange={e => setLateFees(e.target.value)} id="outlined-basic" variant="outlined" />
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
         <Typography variant="body1" sx={{ marginLeft: '10px' }}>
           บาท
         </Typography>
@@ -411,16 +625,30 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           รวมเป็นเงิน
         </Typography>
+<<<<<<< HEAD
         <ThemeProvider theme={theme}>
           <Box className={classes.showBox}>
             <Typography variant="body1">
               {checklist.reduce((acc, curr) => acc + curr, 0) + Number(lateFees)} บาท
             </Typography>
           </Box>
+=======
+        <ThemeProvider
+          theme={{
+            palette: {
+              primary: {
+                main: '#007FFF',
+                dark: '#0066CC',
+              },
+            },
+          }}
+        >
+          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + lateFees}</Box>
+>>>>>>> efb7ef737cba61662dbcf84edbc5d6b2f1f5a3d0
         </ThemeProvider>
         <Button
           variant="contained"
-          onClick={() => router.push('/installmentHis')}
+          onClick={handleConfirm}
           sx={{
             backgroundColor: '#718171',
             borderRadius: '1px',

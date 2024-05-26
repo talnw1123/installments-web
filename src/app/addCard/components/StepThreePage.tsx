@@ -59,8 +59,6 @@ const StepThreePage = () => {
   const { control, setValue, handleCreateInstallments, installments } = useContext(DataContext);
   const classes = useStyles();
 
-  console.log(installments);
-
   return (
     <>
       <Grid container className={classes.bigContainer}>

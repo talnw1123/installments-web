@@ -114,19 +114,20 @@ const initialRows: Data[] = [];
 
 export default function DebtCollectionPage() {
   const classes = useStyles();
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [rows, setRows] = useState<Data[]>(initialRows);
-  const [selectedBill, setSelectedBill] = useState<string>('');
-  const [installmentsNumber, setInstallmentsNumber] = useState<number>(0);
-  const [interest, setInterest] = useState<number>(0);
-  const [lateFees, setLateFees] = useState<number>(0);
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchType = searchParams.get('type') || 'ติดตามหนี้';
+  const menuList = [
+    'ประวัติผู้กู้',
+    'ชำระเงิน',
+    'ประวัติการชำระเงิน',
+    'สร้างการ์ดผ่อนสินค้า',
+    'ประวัติการผ่อนสินค้า',
+    'ติดตามหนี้',
+  ];
 
-  const numberOptions = Array.from({ length: 100 }, (_, index) => ({
-    label: `${index + 1}`,
-    value: index + 1,
-  }));
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

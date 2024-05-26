@@ -5,8 +5,8 @@ import { Card, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import { Users } from 'app/users';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
@@ -61,7 +61,6 @@ const useStyles = makeStyles({
   },
 });
 
-
 const ProfileCustomer = () => {
   // const router = useRouter();
   // const { id } = router.isReady ? router.query : { id: undefined };
@@ -76,6 +75,8 @@ const ProfileCustomer = () => {
   const classes = useStyles();
   const [borrowerData, setBorrowerData] = useState(null);
 
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+
   // console.log('id:', id); // ตรวจสอบค่า id
 
   // if (!customer) {
@@ -86,7 +87,7 @@ const ProfileCustomer = () => {
     navigateTo('/editProfileCustomer');
   };
 
-  const navigateTo = (path) => {
+  const navigateTo = (path: any) => {
     window.location.href = path;
   };
 
@@ -95,16 +96,16 @@ const ProfileCustomer = () => {
       try {
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
         const data = await response.json();
+
         if (response.ok) {
           setBorrowerData(data);
-          //console.log('Fetched borrowerData:', data);
-          // อัปเดตค่าใน form เมื่อได้รับข้อมูลจาก API
           if (data && data.length > 0) {
             const { borrower } = data[0];
             setValue('nationID', borrower.nationID || '');
             setValue('firstName', borrower.firstName || '');
             setValue('lastName', borrower.lastName || '');
-            setValue('birthDate', borrower.birthDate || null);
+            setValue('birthDate', dayjs(borrower.birthDate) || null);
+            setValue('age', calculate(dayjs(borrower.birthDate)) || '');
             setValue('job', borrower.job || '');
             setValue('income', borrower.income || '');
             setValue('phone', borrower.phone || '');
@@ -138,6 +139,12 @@ const ProfileCustomer = () => {
             setValue('jobOfGuarantor', borrower.jobOfGuarantor || '');
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
+
+            // อัปเดตค่า id ลงใน userState
+            setUserInfo(prevState => ({
+              ...prevState,
+              userNationID: id as string,
+            }));
           }
         } else {
           console.error('Error fetching data:', data.message);
@@ -150,7 +157,7 @@ const ProfileCustomer = () => {
     if (id) {
       fetchBorrowerData();
     }
-  }, [id, setValue]);
+  }, [id, setValue, setUserInfo, calculate]);
 
   // สร้างฟังก์ชันสำหรับการแสดงค่าเริ่มต้นจากข้อมูลที่ได้จาก API
   // const getDefaultValue = (fieldName) => {
@@ -187,7 +194,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="nationID"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -209,7 +216,7 @@ const ProfileCustomer = () => {
                     <Controller
                       name="firstName"
                       // defaultValue={Users[0].first_name}
-                      defaultValue={" "}
+                      defaultValue={' '}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -230,7 +237,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '4px' }}>
                     <Controller
                       name="addressReal"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       // defaultValue={Users[0].homeAddress.address}
                       control={control}
                       render={({ field }) => (
@@ -252,7 +259,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="googleMapAdressReal"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].homeAddress.googleMapLink}
                       control={control}
                       render={({ field }) => (
@@ -275,7 +282,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="status"
-                        defaultValue={" "}
+                        defaultValue={' '}
                         //defaultValue={Users[0].status}
                         control={control}
                         render={({ field }) => (
@@ -303,7 +310,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="kids"
-                        defaultValue={" "}
+                        defaultValue={' '}
                         //defaultValue={Users[0].numOfChild}
                         control={control}
                         render={({ field }) => (
@@ -329,7 +336,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phone"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].phone}
                       control={control}
                       render={({ field }) => (
@@ -352,7 +359,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="job"
-                        defaultValue={" "}
+                        defaultValue={' '}
                         //defaultValue={Users[0].occupation}
                         control={control}
                         render={({ field }) => (
@@ -374,7 +381,7 @@ const ProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="income"
-                          defaultValue={" "}
+                          defaultValue={' '}
                           //defaultValue={Users[0].income}
                           control={control}
                           render={({ field }) => (
@@ -401,7 +408,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneInJob"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].workPhoneNumber}
                       control={control}
                       render={({ field }) => (
@@ -423,7 +430,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
                       name="firstNameOfSpouse"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].spouse.firstName}
                       control={control}
                       render={({ field }) => (
@@ -445,7 +452,7 @@ const ProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
                       name="phoneOfSpouse"
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].spouse.phoneNumber}
                       control={control}
                       render={({ field }) => (
@@ -468,7 +475,7 @@ const ProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="jobOfSpouse"
-                        defaultValue={" "}
+                        defaultValue={' '}
                         //defaultValue={Users[0].spouse.occupation}
                         control={control}
                         render={({ field }) => (
@@ -490,7 +497,7 @@ const ProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="incomeOfSpouse"
-                          defaultValue={" "}
+                          defaultValue={' '}
                           //defaultValue={Users[0].spouse.income}
                           control={control}
                           render={({ field }) => (
@@ -517,8 +524,8 @@ const ProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneOfSpouseInJob"
-                      defaultValue={" "}
-                     // defaultValue={Users[0].spouse.workPhoneNumber}
+                      defaultValue={' '}
+                      // defaultValue={Users[0].spouse.workPhoneNumber}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -567,7 +574,7 @@ const ProfileCustomer = () => {
                     <Controller
                       name="age"
                       control={control}
-                      defaultValue={" "}
+                      defaultValue={' '}
                       //defaultValue={Users[0].age}
                       render={({ field: { value } }) => (
                         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -582,7 +589,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
                     name="lastName"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].last_name}
                     control={control}
                     render={({ field }) => (
@@ -604,7 +611,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressCurrent"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].currentAddress.address}
                     control={control}
                     render={({ field }) => (
@@ -627,7 +634,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressCurrent"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].currentAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (
@@ -649,7 +656,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
                     name="addressJob"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].work.workAddress}
                     control={control}
                     render={({ field }) => (
@@ -672,7 +679,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressJob"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].work.googleMapLink}
                     control={control}
                     render={({ field }) => (
@@ -694,7 +701,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="lastNameOfSpouse"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].spouse.lastName}
                     control={control}
                     render={({ field }) => (
@@ -716,7 +723,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressOfSpouseJob"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].spouse.workAddress.address}
                     control={control}
                     render={({ field }) => (
@@ -739,7 +746,7 @@ const ProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressJobOfSpouse"
-                    defaultValue={" "}
+                    defaultValue={' '}
                     //defaultValue={Users[0].spouse.workAddress.googleMapLink}
                     control={control}
                     render={({ field }) => (

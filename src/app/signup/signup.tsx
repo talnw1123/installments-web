@@ -32,7 +32,7 @@ export default function Signup({ users }) {
     setOpenAlertDialogError(false);
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async data => {
     try {
       const response = await fetch('http://localhost:4400/users/register', {
         method: 'POST',
@@ -99,7 +99,14 @@ export default function Signup({ users }) {
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField {...field} type="password" placeholder="Password" variant="outlined" fullWidth sx={{ mb: 3 }} />
+                  <TextField
+                    {...field}
+                    type="password"
+                    placeholder="Password"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                  />
                 )}
               />
               <Controller
@@ -107,7 +114,15 @@ export default function Signup({ users }) {
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField {...field} rows={4} multiline placeholder="Address" variant="outlined" fullWidth sx={{ mb: 3 }} />
+                  <TextField
+                    {...field}
+                    rows={4}
+                    multiline
+                    placeholder="Address"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                  />
                 )}
               />
               <Controller
