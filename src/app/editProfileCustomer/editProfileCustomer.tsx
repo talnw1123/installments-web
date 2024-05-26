@@ -479,7 +479,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
                     name="workAddressBorrower"
-                    defaultValue={Users[0].work.workAddress}
+                    defaultValue={Users[0]?.work?.workAddress}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -498,7 +498,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="mapLinkWorkBorrower"
-                    defaultValue={Users[0].work.googleMapLink}
+                    defaultValue={Users[0]?.work?.googleMapLink}
                     control={control}
                     render={({ field }) => (
                       <TextField

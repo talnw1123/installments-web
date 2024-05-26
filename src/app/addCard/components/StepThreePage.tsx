@@ -59,8 +59,6 @@ const StepThreePage = () => {
   const { control, setValue, handleCreateInstallments, installments } = useContext(DataContext);
   const classes = useStyles();
 
-  console.log(installments);
-
   return (
     <>
       <Grid container className={classes.bigContainer}>
@@ -156,7 +154,7 @@ const StepThreePage = () => {
               <Grid container spacing={3} className={classes.form}>
                 <Grid item xs={2}>
                   <Controller
-                    name="numberOfInstallment"
+                    name="numberOfInstallments"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

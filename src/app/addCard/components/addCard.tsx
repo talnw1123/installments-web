@@ -28,7 +28,7 @@ const AddCard = () => {
   //const { borrowerID, nationID, firstName, lastName, birthDate, job, income, phone, phoneInJob, status, kids, addressReal, addressCurrent, addressJob, googleMapAdressReal, googleMapAdressCurrent, googleMapAdressJob, firstNameOfSpouse, lastNameOfSpouse, jobOfSpouse, incomeOfSpouse, phoneOfSpouseInJob, phoneOfSpouse, addressOfSpouseJob, googleMapAdressJobOfSpouse, guarantorNationID, guarantorFirstName, guarantorLastName, phoneOfGuarantor, addressOfGuarantorReal, addressOfGuarantorCurrent, addressOfGuarantorJob, googleMapAdressRealOfGuarantor, googleMapAdressCurrentOfGuarantor, googleMapAdressJobOfGuarantor, jobOfGuarantor, incomeOfGuarantor, phoneOfGuarantorInJob, bills } = watch();
 
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง', 'ม่าย'], []);
+  const statuses = useMemo(() => ['โสด', 'แต่งงาน'], []);
 
   const totalLoanValue = watch('totalLoan');
   const downPaymentValue = watch('downPayment');
@@ -54,12 +54,7 @@ const AddCard = () => {
       case 'แต่งงาน':
         newMaritalStatus = 'Married';
         break;
-      case 'หย่าร้าง':
-        newMaritalStatus = 'Single';
-        break;
-      case 'ม่าย':
-        newMaritalStatus = 'Single';
-        break;
+
       default:
         newMaritalStatus = 'Single';
     }

@@ -2,7 +2,7 @@
 import { atom, RecoilState } from 'recoil';
 
 export type usersInfo = {
-  userNationID : string;
+  userNationID: string;
 };
 
 export const userState: RecoilState<usersInfo> = atom({
