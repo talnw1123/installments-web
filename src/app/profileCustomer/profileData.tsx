@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../typings/renderStepProps';
+// import PayPage from '../Pay/Pay';
 import ProfileCustomer from './profileCustomer';
 
 export const DataContext1 = createContext<any>({});
@@ -123,6 +124,11 @@ const ProfileData = () => {
               <ProfileCustomer />
             </>
           )}
+          {/* {step === 0 && (
+            <>
+              <PayPage />
+            </>
+          )} */}
         </DataContext1.Provider>
       </form>
     </>

@@ -1,7 +1,6 @@
 'use client';
 import {
   Autocomplete,
-  Box,
   Button,
   Card,
   Grid,
@@ -14,7 +13,6 @@ import {
   TablePagination,
   TableRow,
   TextField,
-  ThemeProvider,
   Typography,
 } from '@mui/material';
 import { makeStyles } from '@mui/styles';
@@ -161,7 +159,6 @@ export default function DebtCollectionPage() {
         totalPay: interest + lateFees,
         numberOfDebt: rows.filter(row => row.billNumber === selectedBill).length + 1,
         paymentDate: duePaid,
-        noteDebt: 'N/A', // Default note, update as needed
       };
 
       setRows(prevRows => [...prevRows, newRow]);
@@ -177,7 +174,6 @@ export default function DebtCollectionPage() {
     'totalPay',
     'numberOfDebt',
     'paymentDate',
-    'noteDebt',
   ];
 
   const columnLabels: { [key in keyof Data]: string } = {
@@ -189,7 +185,6 @@ export default function DebtCollectionPage() {
     totalPay: 'จำนวนเกินกำหนด',
     numberOfDebt: 'ครั้งที่ทวง',
     paymentDate: 'วันที่นัดชำระ',
-    noteDebt: 'บันทึกการทวง',
   };
 
   return (
@@ -207,44 +202,46 @@ export default function DebtCollectionPage() {
             </Grid>
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-                <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="idBorrower"
-                    label="เลขบัตรประชาชน"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
-                  />
-                </Grid>
-                <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="contractNumber"
-                    label="หมายเลขสัญญา"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
-                  />
-                </Grid>
-                <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="phoneNumberBorrower"
-                    label="เบอร์โทรศัพท์"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '60%' }}
-                  />
+                <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    <TextField
+                      id="standard-read-only-input"
+                      name="name"
+                      label="เลขประจำตัวประชาชน"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    <TextField
+                      id="standard-read-only-input"
+                      name="lastNameBorrower"
+                      label="หมายเลขสัญญา"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={4} className={classes.column}>
+                    <TextField
+                      id="standard-read-only-input"
+                      name="mapLinkDefaultBorrower"
+                      label="เบอร์โทรศัพท์"
+                      defaultValue=" "
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      variant="standard"
+                      sx={{ width: '100%' }}
+                    />
+                  </Grid>
                 </Grid>
                 <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                   <Grid item xs={12} sm={4} className={classes.column}>
@@ -289,64 +286,34 @@ export default function DebtCollectionPage() {
                 </Grid>
                 <Grid item xs={12} className={classes.column} container direction="row">
                   <Grid className={classes.box}>
-                    <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                      รวมยอดเงินกู้
-                    </Typography>
-                    <ThemeProvider
-                      theme={{
-                        palette: {
-                          primary: {
-                            main: '#007FFF',
-                            dark: '#0066CC',
-                          },
-                        },
+                    <TextField
+                      label="รวมยอดเงินกู้"
+                      type="number"
+                      variant="standard"
+                      InputProps={{
+                        readOnly: true,
                       }}
-                    >
-                      <Box className={classes.showBox}>hello</Box>
-                    </ThemeProvider>
-                    <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-                      บาท
-                    </Typography>
+                    />
                   </Grid>
                   <Grid className={classes.box}>
-                    <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                      เงินดาวน์
-                    </Typography>
-                    <ThemeProvider
-                      theme={{
-                        palette: {
-                          primary: {
-                            main: '#007FFF',
-                            dark: '#0066CC',
-                          },
-                        },
+                    <TextField
+                      label="เงินดาวน์"
+                      type="number"
+                      variant="standard"
+                      InputProps={{
+                        readOnly: true,
                       }}
-                    >
-                      <Box className={classes.showBox}>hello</Box>
-                    </ThemeProvider>
-                    <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-                      บาท
-                    </Typography>
+                    />
                   </Grid>
                   <Grid className={classes.box}>
-                    <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                      จำนวน
-                    </Typography>
-                    <ThemeProvider
-                      theme={{
-                        palette: {
-                          primary: {
-                            main: '#007FFF',
-                            dark: '#0066CC',
-                          },
-                        },
+                    <TextField
+                      label="จำนวนงวด"
+                      type="number"
+                      variant="standard"
+                      InputProps={{
+                        readOnly: true,
                       }}
-                    >
-                      <Box className={classes.showBox}>hello</Box>
-                    </ThemeProvider>
-                    <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-                      งวด
-                    </Typography>
+                    />
                   </Grid>
                 </Grid>
                 <Grid item xs={12}>

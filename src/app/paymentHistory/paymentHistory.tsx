@@ -79,16 +79,6 @@ const useStyles = makeStyles({
 export default function InstallmentHisPage() {
   const classes = useStyles();
   const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
-  // const menuList = [
-  //   'ประวัติลูกหนี้',
-  //   'ชำระเงิน',
-  //   'ประวัติการชำระเงิน',
-  //   'สร้างการ์ดผ่อนสินค้า',
-  //   'ประวัติการผ่อนสินค้า',
-  //   'ติดตามหนี้',
-  // ];
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);

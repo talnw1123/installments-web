@@ -1,12 +1,16 @@
 'use client';
-import { Box, Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/material';
+
+import { Box, Button, Card, Grid, MenuItem, TextField, ThemeProvider, createTheme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import MenuList from 'app/customerInformation/page';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import { Controller } from 'react-hook-form';
+import 'react-multi-carousel/lib/styles.css';
+import { DataContext1 } from '../profileCustomer/profileData';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -66,42 +70,38 @@ const useStyles = makeStyles({
     marginTop: 5,
     marginBottom: 5,
     boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+  },
+});
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#007FFF',
+      dark: '#0066CC',
+    },
+  },
+  typography: {
+    body1: {
+      fontSize: '1rem',
+    },
   },
 });
 
 export default function PayPage() {
+  //select bill
   const [selectedBill, setSelectedBill] = useState('');
   const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedBill(event.target.value);
   };
+
   const classes = useStyles();
   const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const searchType = searchParams.get('type') || 'ชำระเงิน';
-  // const menuList = [
-  //   'ประวัติลูกหนี้',
-  //   'ชำระเงิน',
-  //   'ประวัติการชำระเงิน',
-  //   'สร้างการ์ดผ่อนสินค้า',
-  //   'ประวัติการผ่อนสินค้า',
-  //   'ติดตามหนี้',
-  // ];
 
-  // const [page, setPage] = React.useState(0);
-  // const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-  // const handleChangePage = (event: unknown, newPage: number) => {
-  //   setPage(newPage);
-  // };
-
-  // const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   setRowsPerPage(+event.target.value);
-  //   setPage(0);
-  // };
-
-  const bill = ['บิลหมายเลข 001', 'บิลหมายเลข 002', 'บิลหมายเลข 003', 'บิลหมายเลข 004'];
-
-  //checkbox
+  // checkbox
   const [checklist, setChecklist] = useState<number[]>([]);
   const [lateFees, setLateFees] = useState<number>(0);
 
@@ -114,18 +114,63 @@ export default function PayPage() {
     }
   };
 
-  //column
-  const columns: GridColDef<(typeof row)[number]>[] = [
+  const [bills, setBills] = useState([]);
+  const searchParams = useSearchParams(); // Destructure using square brackets
+  const id = searchParams.get('id');
+  const { control, setValue, setAge } = useContext(DataContext1);
+
+  useEffect(() => {
+    // ตรวจสอบว่า control ไม่เป็น null และมีค่าตรงกับที่คาดหวัง
+    if (control !== null && typeof control === 'object') {
+      // ทำงานกับค่า control ได้ตามปกติ
+    }
+  }, [control]); // อัพเดท effect เมื่อค่า control เปลี่ยน
+
+  const [borrowerData, setBorrowerData] = useState(null);
+  useEffect(() => {
+    console.log('DataContext1:', DataContext1);
+    console.log('control:', control);
+    const fetchBorrowerData = async () => {
+      try {
+        const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
+        const data = await response.json();
+        if (response.ok) {
+          setBorrowerData(data);
+          // เก็บข้อมูลบิล
+          if (data && data.length > 0) {
+            const { bills } = data[0]; // ดึงข้อมูลบิลจากอ็อบเจกต์ data
+            setBills(bills); // เก็บข้อมูลบิลใน state
+            // อัปเดตค่าใน form เมื่อได้รับข้อมูลจาก API
+            const { borrower } = data[0];
+            setValue('nationID', borrower.nationID || '');
+            setValue('phone', borrower.phone || '');
+            setValue('firstName', borrower.firstName || '');
+            setValue('lastName', borrower.lastName || '');
+            setValue('birthDate', borrower.birthDate || null);
+          }
+        } else {
+          console.error('Error fetching data:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    if (id) {
+      fetchBorrowerData();
+    }
+  }, [id, setValue]);
+
+  // columns
+  const paymentColumn: GridColDef[] = [
     {
       field: 'checkbox',
       headerName: '',
       width: 100,
-      renderCell: params => {
-        return <input type="checkbox" onChange={handleChecklist} value={Number(params.row.debt)} />;
-      },
+      renderCell: params => <input type="checkbox" onChange={handleChecklist} value={Number(params.row.amountDue)} />,
     },
     {
-      field: 'id',
+      field: 'numberOfInstallment',
       headerName: 'งวดที่',
       width: 100,
       sortable: false,
@@ -133,23 +178,16 @@ export default function PayPage() {
       headerAlign: 'center',
     },
     {
-      field: 'date',
-      headerName: 'วันที่',
+      field: 'dueDate',
+      headerName: 'วันที่ครบกำหนด',
       width: 100,
       sortable: false,
       align: 'center',
       headerAlign: 'center',
     },
+    { field: 'status', headerName: 'สถานะ', width: 100, sortable: false, align: 'center', headerAlign: 'center' },
     {
-      field: 'station',
-      headerName: 'สถานะ',
-      width: 100,
-      sortable: false,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'debt',
+      field: 'amountDue',
       headerName: 'เงินที่ต้องชำระ',
       type: 'number',
       width: 110,
@@ -175,64 +213,7 @@ export default function PayPage() {
       align: 'center',
       headerAlign: 'center',
     },
-    {
-      field: 'accrued_interest',
-      headerName: 'ดอกเบี้ยสะสม',
-      type: 'number',
-      width: 110,
-      sortable: false,
-      align: 'center',
-      headerAlign: 'center',
-    },
-    {
-      field: 'accrued_principle',
-      headerName: 'เงินต้นสะสม',
-      type: 'number',
-      width: 100,
-      sortable: false,
-      align: 'center',
-      headerAlign: 'center',
-    },
   ];
-
-  //data
-  const row = [
-    {
-      id: 1,
-      bill: 'บิลหมายเลข 001',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 14,
-      interest: 2,
-      principle: 10,
-      accrued_interest: 3,
-      accrued_principle: 5,
-    },
-    {
-      id: 1,
-      bill: 'บิลหมายเลข 002',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 31,
-      interest: 5,
-      principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
-    },
-    {
-      id: 2,
-      bill: 'บิลหมายเลข 002',
-      station: 'ค้างชำระ',
-      date: '25/03/2024',
-      debt: 31,
-      interest: 5,
-      principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
-    },
-  ];
-  console.log(checklist);
-  console.log(lateFees);
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -247,74 +228,121 @@ export default function PayPage() {
             <Grid>
               <MenuList />
             </Grid>
-
-            {/* data */}
             <Grid className={classes.formBigColumn}>
               <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
                 <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="idBorrower"
-                    label="เลขบัตรประชาชน"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
+                  <Controller
+                    name="nationID"
+                    defaultValue={' '}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="เลขประจำตัวประชาชน"
+                        variant="standard"
+                        fullWidth
+                        margin="dense"
+                        // className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid item xs={6} className={classes.column}>
-                  <TextField
-                    id="standard-read-only-input"
-                    name="phoneNumberBorrower"
-                    label="เบอร์โทรศัพท์"
-                    defaultValue=" "
-                    InputProps={{
-                      readOnly: true,
-                    }}
-                    variant="standard"
-                    sx={{ width: '100%' }}
+                  <Controller
+                    name="phone"
+                    defaultValue={' '}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="เบอร์โทรศัพท์"
+                        variant="standard"
+                        fullWidth
+                        margin="dense"
+                        // className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
                   />
                 </Grid>
                 <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-                  <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
-                      name="name"
-                      label="ชื่อ"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
+                  <Grid item xs={12} sm={3} className={classes.column}>
+                    <Controller
+                      name="firstName"
+                      defaultValue={' '}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="ชื่อ"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          // className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
+                  <Grid item xs={12} sm={3} className={classes.column}>
+                    <Controller
+                      name="lastName"
+                      defaultValue={' '}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="นามสกุล"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          //className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={3} className={classes.column}>
+                    <Controller
                       name="birthDate"
-                      label="วันเดือนปีเกิด"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
+                      defaultValue={' '}
+                      control={control}
+                      render={({ field }) => (
+                        <TextField
+                          {...field}
+                          label="วันเดือนปีเกิด"
+                          variant="standard"
+                          fullWidth
+                          margin="dense"
+                          // className={classes.formField}
+                          InputProps={{
+                            readOnly: true,
+                          }}
+                        />
+                      )}
                     />
                   </Grid>
-                  <Grid item xs={12} sm={4} className={classes.column}>
-                    <TextField
-                      id="standard-read-only-input"
+                  <Grid item xs={12} sm={3} className={classes.column}>
+                    <Controller
                       name="age"
-                      label="อายุ"
-                      defaultValue=" "
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                      variant="standard"
-                      sx={{ width: '100%' }}
+                      control={control}
+                      defaultValue={''}
+                      //defaultValue={Users[0].age}
+                      render={({ field: { value } }) => (
+                        <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
+                          <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
+                          <Typography sx={{ marginLeft: '10px' }}>ปี</Typography>
+                        </Grid>
+                      )}
                     />
                   </Grid>
                 </Grid>
@@ -330,7 +358,7 @@ export default function PayPage() {
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >
-                    {bill.map(option => (
+                    {bills.map(option => (
                       <MenuItem key={option} value={option}>
                         {option}
                       </MenuItem>
@@ -343,7 +371,7 @@ export default function PayPage() {
                     {/* select data */}
                     <DataGrid
                       rows={row.filter(row => row.bill === selectedBill)}
-                      columns={columns}
+                      columns={paymentColumn}
                       disableColumnFilter
                       disableColumnSelector
                       disableColumnMenu
@@ -370,7 +398,7 @@ export default function PayPage() {
         </Typography>
         <TextField
           type="number"
-          onChange={e => setLateFees(e.target.value)}
+          onChange={e => setLateFees(Number(e.target.value))}
           id="outlined-basic"
           variant="outlined"
           sx={{ bgcolor: '#FFFFFF' }}
@@ -383,27 +411,19 @@ export default function PayPage() {
         <Typography variant="body1" sx={{ marginRight: '10px' }}>
           รวมเป็นเงิน
         </Typography>
-        <ThemeProvider
-          theme={{
-            palette: {
-              primary: {
-                main: '#007FFF',
-                dark: '#0066CC',
-              },
-            },
-          }}
-        >
-          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + Number(lateFees)}</Box>
+        <ThemeProvider theme={theme}>
+          <Box className={classes.showBox}>
+            <Typography variant="body1">
+              {checklist.reduce((acc, curr) => acc + curr, 0) + Number(lateFees)} บาท
+            </Typography>
+          </Box>
         </ThemeProvider>
-        <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-          บาท
-        </Typography>
         <Button
           variant="contained"
           onClick={() => router.push('/installmentHis')}
           sx={{
             backgroundColor: '#718171',
-            borderRadius: '1 px',
+            borderRadius: '1px',
             marginLeft: '10px',
             padding: '10px 20px',
           }}
