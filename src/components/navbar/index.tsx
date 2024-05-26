@@ -13,7 +13,7 @@ const Navigation = () => {
   const router = useRouter();
 
   // useEffect(() => {
-  //   // เมื่อ auth.email หรือ auth.token เปลี่ยนแปลง
+
   //   localStorage.setItem('auth', JSON.stringify(auth));
   // }, [auth]);
 
@@ -47,7 +47,6 @@ const Navigation = () => {
     };
   }, []);
 
-  // ฟังก์ชันเก็บข้อมูลการ login ลงใน localStorage
   const saveLoginDataToStorage = (email: string, token: string) => {
     const loginData = {
       email,

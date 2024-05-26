@@ -151,22 +151,22 @@ const AddCard = () => {
   const onSubmit = useCallback(async (data: any) => {
     console.log(data);
     try {
-      // เรียกใช้งาน API createCard
+
       const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+        body: JSON.stringify(data),
       });
 
-      // เรียกใช้งาน API createBill
+
       const createBillResponse = await fetch('http://localhost:4400/api/addBill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+        body: JSON.stringify(data),
       });
 
       //pdf
@@ -180,32 +180,32 @@ const AddCard = () => {
 
       const blob = await downloadPdfResponse.blob();
 
-      // Create a link element
+
       const link = document.createElement('a');
 
-      // Create a URL for the blob and set it as the href attribute of the link
+
       const url = window.URL.createObjectURL(blob);
       link.href = url;
 
-      // Set the download attribute of the link
+
       link.download = 'Installment contract.pdf';
 
-      // Append the link to the body (necessary for Firefox)
+
       document.body.appendChild(link);
 
-      // Programmatically click the link to trigger the download
+
       link.click();
 
-      // Remove the link from the document
+
       document.body.removeChild(link);
 
-      // ตรวจสอบว่าทั้งสอง API ทำงานสำเร็จหรือไม่
+
       if (createCardResponse.ok && createBillResponse.ok) {
         const createCardData = await createCardResponse.json();
         const createBillData = await createBillResponse.json();
-        console.log('New card created:', createCardData);
-        console.log('New bill created:', createBillData);
-        // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
+        //console.log('New card created:', createCardData);
+        //console.log('New bill created:', createBillData);
+
       } else {
         throw new Error('One or more API requests failed');
       }

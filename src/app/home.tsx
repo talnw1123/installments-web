@@ -23,7 +23,6 @@ const useStyles = makeStyles({
   },
   topContainer: {
     display: 'flex',
-    //flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: '1rem',

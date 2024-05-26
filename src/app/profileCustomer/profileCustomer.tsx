@@ -16,7 +16,7 @@ import { DataContext1 } from './profileData';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
-// เพิ่ม plugin สำหรับการจัดการเวลา zone
+
 dayjs.extend(utc);
 
 const useStyles = makeStyles({
@@ -68,14 +68,12 @@ const useStyles = makeStyles({
 
 
 const ProfileCustomer = () => {
-  // const router = useRouter();
-  // const { id } = router.isReady ? router.query : { id: undefined };
-  // const customer = id ? use(useCustomer(id)) : null;
-  const searchParams = useSearchParams(); // Destructure using square brackets
 
-  // Now you can access query parameters using searchParams.get('id')
+  const searchParams = useSearchParams();
+
+
   const id = searchParams.get('id');
-  //console.log('id from query:', id);
+
 
   const { control, statuses, setValue, calculate, setAge } = useContext(DataContext1);
   const classes = useStyles();
@@ -149,7 +147,7 @@ const ProfileCustomer = () => {
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
 
-            // อัปเดตค่า id ลงใน userState
+            
             setUserInfo(prevState => ({
               ...prevState,
               userNationID: id

@@ -71,7 +71,7 @@ export default function NotiHistoryPage() {
 
   const handleDateChange = (newValue: dayjs.Dayjs | null) => {
     setSelectedDate(newValue);
-    // Filter rows based on the selected date
+    
     const filteredRows = newValue
       ? Users.filter(row => dayjs(row.notiDate, 'DD/MM/YYYY').isSame(newValue, 'date'))
       : Users;

@@ -198,12 +198,12 @@ export default function PaymentHistoryPage() {
     due_Date: string,
     due_Paid: string,
     overDay: number,
-    totalLoan: string, // เปลี่ยนจาก totalPay เป็น totalLoan
-    interest: string, // เปลี่ยนให้เป็น string
-    principle: string, // เปลี่ยนให้เป็น string
+    totalLoan: string,
+    interest: string,
+    principle: string,
     bill: string
   ): Data {
-    const totalPay = calculateAmountToPay(interest, principle); // คำนวณ totalPay ใหม่
+    const totalPay = calculateAmountToPay(interest, principle);
     return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
   }
 

@@ -26,7 +26,7 @@ export default function MenuList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  // Now you can access query parameters using searchParams.get('id')
+
   const id = searchParams.get('id');
   const searchType = searchParams.get('type') || 'ประวัติผู้กู้';
   const menuList = [

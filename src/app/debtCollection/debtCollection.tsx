@@ -162,7 +162,7 @@ export default function DebtCollectionPage() {
         totalPay: interest + lateFees,
         numberOfDebt: rows.filter(row => row.billNumber === selectedBill).length + 1,
         paymentDate: duePaid,
-        noteDebt: 'N/A', // Default note, update as needed
+        noteDebt: 'N/A', 
       };
 
       setRows(prevRows => [...prevRows, newRow]);

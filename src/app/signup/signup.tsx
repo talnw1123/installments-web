@@ -1,6 +1,5 @@
 'use client';
 
-// ในไฟล์ signup.tsx (Next.js)
 import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Button, Card, Grid, Stack, TextField, Typography } from '@mui/material';

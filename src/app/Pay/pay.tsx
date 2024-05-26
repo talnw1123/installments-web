@@ -142,7 +142,7 @@ export default function PayPage() {
       const data = await response.json();
       console.log(data);
 
-      // Redirect or perform other actions if needed
+     
       router.push('/installmentHis');
     } catch (error) {
       console.error('Error sending payment data:', error);
@@ -153,7 +153,7 @@ export default function PayPage() {
     return <div>Loading...</div>;
   }
 
-  const data = borrowerData[0] || {}; // เพิ่มการตรวจสอบเผื่อว่าข้อมูลเป็น array ว่าง
+  const data = borrowerData[0] || {};
   const { borrower, bills } = data;
 
   const columns: GridColDef[] = [
