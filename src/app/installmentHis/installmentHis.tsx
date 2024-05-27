@@ -2,7 +2,7 @@
 import {
   Card,
   Grid,
-  MenuItem,
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -10,19 +10,16 @@ import {
   TableHead,
   TablePagination,
   TableRow,
-  TextField,
-  Paper,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
+import { userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import dayjs from 'dayjs';
-import { useRouter } from 'next/navigation';
-import * as React from 'react';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import * as React from 'react';
 import { useRecoilState } from 'recoil';
-import { userState } from '@store/index';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -80,91 +77,65 @@ const useStyles = makeStyles({
   },
 });
 
-export default function InstallmentHisPage() {
-  const classes = useStyles();
-  const router = useRouter();
-  // const searchParams = useSearchParams();
-  // const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
-  // const menuList = [
-  //   'ประวัติลูกหนี้',
-  //   'ชำระเงิน',
-  //   'ประวัติการชำระเงิน',
-  //   'สร้างการ์ดผ่อนสินค้า',
-  //   'ประวัติการผ่อนสินค้า',
-  //   'ติดตามหนี้',
-  // ];
+interface Column {
+  id: 'billNo' | 'status' | 'principle' | 'payment_term' | 'payment' | 'interest' | 'date' | 'paid' | 'balance';
+  label: string;
+  minWidth?: number;
+  align?: 'right';
+  format?: (value: number) => string;
+}
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+const columns: readonly Column[] = [
+  { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
+  { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
+  {
+    id: 'principle',
+    label: 'ราคาเต็ม',
+    minWidth: 100,
+  },
+  {
+    id: 'payment_term',
+    label: 'ผ่อนทั้งหมด',
+    minWidth: 100,
+  },
+  {
+    id: 'payment',
+    label: 'ยอดผ่อนต่องวด',
+    minWidth: 100,
+  },
+  {
+    id: 'interest',
+    label: 'ดอกเบี้ยทั้งหมด',
+    minWidth: 100,
+  },
+  {
+    id: 'date',
+    label: 'วันที่เริ่มผ่อน',
+    minWidth: 100,
+  },
+  {
+    id: 'paid',
+    label: 'ชำระแล้ว',
+    minWidth: 100,
+  },
+  {
+    id: 'balance',
+    label: 'ยอดคงเหลือ',
+    minWidth: 100,
+  },
+];
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
-  interface Column {
-    id: 'billNo' | 'status' | 'principle' | 'payment_term' | 'payment' | 'interest' | 'date' | 'paid' | 'balance';
-    label: string;
-    minWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
-  }
-
-  const columns: readonly Column[] = [
-    { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
-    { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
-    {
-      id: 'principle',
-      label: 'ราคาเต็ม',
-      minWidth: 100,
-    },
-    {
-      id: 'payment_term',
-      label: 'ผ่อนทั้งหมด',
-      minWidth: 100,
-    },
-    {
-      id: 'payment',
-      label: 'ยอดผ่อนต่องวด',
-      minWidth: 100,
-    },
-    {
-      id: 'interest',
-      label: 'ดอกเบี้ยทั้งหมด',
-      minWidth: 100,
-    },
-    {
-      id: 'date',
-      label: 'วันที่เริ่มผ่อน',
-      minWidth: 100,
-    },
-    {
-      id: 'paid',
-      label: 'ชำระแล้ว',
-      minWidth: 100,
-    },
-    {
-      id: 'balance',
-      label: 'ยอดคงเหลือ',
-      minWidth: 100,
-    },
-  ];
-
-  interface Data {
-    billNo: string;
-    status: string;
-    principle: number;
-    payment_term: number;
-    payment: number;
-    interest: number;
-    date: string;
-    paid: number;
-    balance: number;
-  }
+interface Data {
+  billNo: string;
+  status: string;
+  principle: number;
+  payment_term: number;
+  payment: number;
+  interest: number;
+  date: string;
+  paid: number;
+  balance: number;
+}
 
 function createData(
   billNo: string,
@@ -219,7 +190,7 @@ export default function InstallmentHisPage() {
           const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
           const numberOfInstallment = parseInt(bill.numberOfInstallment, 10);
           const paymentPerTerm = totalLoan / numberOfInstallment;
-          const interest = totalLoan * interestRates / 100;
+          const interest = (totalLoan * interestRates) / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
           const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
           const balance = totalPaymentWithInterest - paid;
@@ -243,7 +214,7 @@ export default function InstallmentHisPage() {
     };
 
     fetchData();
-  }, []);
+  }, [userInfo.userNationID]);
 
   return (
     <Grid container className={classes.bigContainer}>
