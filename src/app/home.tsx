@@ -1,161 +1,136 @@
 'use client';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Card, Grid, TextField, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { LineChart } from '@mui/x-charts/LineChart';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { Data } from 'app/data';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { LineChart } from '@mui/x-charts/LineChart';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import 'react-multi-carousel/lib/styles.css';
+import utc from 'dayjs/plugin/utc';
 
-const useStyles = makeStyles({
-  bigContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    padding: '1rem',
-  },
-  formField: {
-    marginBottom: '0',
-  },
-  topContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: '1rem',
-    marginTop: '1rem',
-  },
-  column: {
-    width: '25%',
-    padding: '10px',
-  },
-  debtorListContainer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    marginTop: '1rem',
-  },
-  debtorList: {
-    width: '100%',
-    minWidth: '500px',
-    maxWidth: '750px',
-  },
-});
 
-const data = Data;
+dayjs.extend(utc);
 
-export default function HomePage() {
-  const classes = useStyles();
-  const [startDate, setStartDate] = useState<dayjs.Dayjs | null>(null);
-  const [endDate, setEndDate] = useState<dayjs.Dayjs | null>(null);
-  const [graphData, setGraphData] = useState<any[]>([]);
-  const [totalPaidInRange, setTotalPaidInRange] = useState<number>(0);
-  const [totalDeptInRange, setTotalDeptInRange] = useState<number>(0);
+const HomePage = () => {
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
+  const [graphData, setGraphData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [totalPaidInRange, setTotalPaidInRange] = useState(0);
+  const [totalDeptInRange, setTotalDeptInRange] = useState(0);
 
-  const handleStartDateChange = (date: dayjs.Dayjs | null) => {
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:4400/api/dailyLogs');
+        const dataWithConvertedDates = response.data.map(item => ({
+          ...item,
+          date: dayjs(item.date)
+        }));
+        setGraphData(dataWithConvertedDates);
+      } catch (error) {
+        console.error('Error fetching data', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    updateGraphData(startDate, endDate);
+  }, [startDate, endDate, graphData]);
+
+  const handleStartDateChange = (date) => {
     setStartDate(date);
-    updateGraphData(date, endDate);
   };
 
-  const handleEndDateChange = (date: dayjs.Dayjs | null) => {
+  const handleEndDateChange = (date) => {
     setEndDate(date);
-    updateGraphData(startDate, date);
   };
 
-  const updateGraphData = (start: dayjs.Dayjs | null, end: dayjs.Dayjs | null) => {
+  const updateGraphData = (start, end) => {
     if (start && end) {
-      const filteredData = data.filter(item => {
-        const currentDate = dayjs(item.date, 'DD/MM/YYYY');
+      const filtered = graphData.filter(item => {
+        const currentDate = dayjs(item.date);
         return currentDate.isAfter(start.startOf('day').subtract(1, 'day')) && currentDate.isBefore(end.endOf('day'));
       });
 
-      const step = Math.ceil(filteredData.length / 8);
-      const averagedData = filteredData.reduce((result, item, index) => {
-        if (index % step === 0) {
-          result.push({
-            paid: filteredData.slice(index, index + step).reduce((sum, item) => sum + item.paid, 0) / step,
-            dept: filteredData.slice(index, index + step).reduce((sum, item) => sum + item.dept, 0) / step,
-          });
-        }
-        return result;
-      }, []);
+      setFilteredData(filtered);
 
-      setGraphData(averagedData);
+      const totalPaid = filtered.reduce((sum, item) => sum + item.totalPaid, 0);
+      const totalDept = filtered.reduce((sum, item) => sum + item.totalDept, 0);
 
-      const totalPaidInRange = filteredData.reduce((sum, item) => sum + item.paid, 0);
-      const totalDeptInRange = filteredData.reduce((sum, item) => sum + item.dept, 0);
-      setTotalPaidInRange(totalPaidInRange);
-      setTotalDeptInRange(totalDeptInRange);
+      setTotalPaidInRange(totalPaid);
+      setTotalDeptInRange(totalDept);
     } else {
-      setGraphData([]);
+      setFilteredData([]);
       setTotalPaidInRange(0);
       setTotalDeptInRange(0);
     }
   };
 
   return (
-    <Grid container className={classes.bigContainer} sx={{ display: '' }}>
+    <Grid container justifyContent="center" padding="1rem">
       <Card sx={{ padding: 3, width: '80%' }}>
-        <form>
-          <Typography variant="h4">สรุปการผ่อนชำระสินค้า</Typography>
-
-          <Grid container className={classes.topContainer}>
-            <Grid item sx={{ marginRight: '1rem' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* Start Date Picker */}
-                <DatePicker
-                  label="วันที่เริ่มต้น"
-                  value={startDate}
-                  onChange={handleStartDateChange}
-                  renderInput={params => (
-                    <TextField {...params} variant="standard" fullWidth margin="normal" className={classes.formField} />
-                  )}
-                />
-              </LocalizationProvider>
-            </Grid>
-
-            <Grid item sx={{ marginRight: '1rem' }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                {/* End Date Picker */}
-                <DatePicker
-                  label="วันที่สิ้นสุด"
-                  value={endDate}
-                  onChange={handleEndDateChange}
-                  renderInput={params => (
-                    <TextField {...params} variant="standard" fullWidth margin="normal" className={classes.formField} />
-                  )}
-                />
-              </LocalizationProvider>
-            </Grid>
-
-            {/* <Button variant="contained" color="primary">
-              ค้นหา
-            </Button> */}
+        <Typography variant="h4">สรุปการผ่อนชำระสินค้า</Typography>
+        <Grid container justifyContent="center" alignItems="center" marginBottom="1rem" marginTop="1rem">
+          <Grid item marginRight="1rem">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="วันที่เริ่มต้น"
+                value={startDate}
+                onChange={handleStartDateChange}
+                renderInput={(params) => <TextField {...params} variant="standard" fullWidth margin="normal" />}
+              />
+            </LocalizationProvider>
           </Grid>
-        </form>
-
-        <Grid sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid item marginRight="1rem">
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="วันที่สิ้นสุด"
+                value={endDate}
+                onChange={handleEndDateChange}
+                renderInput={(params) => <TextField {...params} variant="standard" fullWidth margin="normal" />}
+              />
+            </LocalizationProvider>
+          </Grid>
+        </Grid>
+        <Grid container justifyContent="center">
           <Card sx={{ height: '300px', width: '80%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <LineChart
-              series={[
-                { curve: 'linear', data: graphData.map(item => item.paid) },
-                { curve: 'linear', data: graphData.map(item => item.dept) },
+              xAxis={[
+                {
+                  data: filteredData.map(item => item.date),
+                  scaleType: 'time',
+                  label: 'วันที่'
+                }
               ]}
+              series={[
+                {
+                  label: 'ยอดจ่ายแล้ว',
+                  data: filteredData.map(item => item.totalPaid),
+                  color: '#2196f3'
+                },
+                {
+                  label: 'ยอดค้าง',
+                  data: filteredData.map(item => item.totalDept),
+                  color: '#4caf50'
+                }
+              ]}
+              height={300}
+              width={600}
             />
           </Card>
         </Grid>
-
-        <Grid sx={{ display: 'block', marginTop: '20px', marginLeft: '9.5%' }}>
-          <Grid sx={{ display: 'flex' }}>
+        <Grid container marginTop="20px" marginLeft="9.5%">
+          <Grid item display="flex">
             <CircleIcon style={{ color: '#2196f3', marginRight: '10px' }} />
             <Typography style={{ color: '#2196f3', marginRight: '27px' }}>ยอดจ่ายแล้ว</Typography>
             <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{totalPaidInRange.toFixed(2)}</Typography>
             <Typography style={{ color: '#2196f3' }}>บาท</Typography>
           </Grid>
-          <Grid sx={{ display: 'flex', marginTop: '5px' }}>
+          <Grid item display="flex" marginTop="5px">
             <CircleIcon style={{ color: '#4caf50', marginRight: '10px' }} />
             <Typography style={{ color: '#4caf50', marginRight: '55px' }}>ยอดค้าง</Typography>
             <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{totalDeptInRange.toFixed(2)}</Typography>
@@ -165,4 +140,6 @@ export default function HomePage() {
       </Card>
     </Grid>
   );
-}
+};
+
+export default HomePage;

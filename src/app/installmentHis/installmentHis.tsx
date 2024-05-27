@@ -173,7 +173,7 @@ export default function InstallmentHisPage() {
           const interestRates = parseFloat(bill.interestRates);
           const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
           const numberOfInstallments = parseInt(bill.numberOfInstallments, 10);
-          const paymentPerTerm = totalLoan / numberOfInstallments;
+          const paymentPerTerm = Math.ceil(totalPaymentWithInterest / numberOfInstallments);
           const interest = totalLoan * interestRates / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
           const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);

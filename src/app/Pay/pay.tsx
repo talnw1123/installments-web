@@ -9,6 +9,7 @@ import MenuList from 'app/customerInformation/page';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -142,7 +143,7 @@ export default function PayPage() {
       const data = await response.json();
       console.log(data);
 
-     
+
       router.push('/installmentHis');
     } catch (error) {
       console.error('Error sending payment data:', error);
@@ -315,7 +316,7 @@ export default function PayPage() {
                         id="birthDate"
                         name="birthDate"
                         label="วันเดือนปีเกิด"
-                        value={borrower.birthDate}
+                        value={dayjs(borrower.birthDate)}
                         InputProps={{
                           readOnly: true,
                         }}
