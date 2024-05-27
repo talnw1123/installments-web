@@ -69,7 +69,7 @@ export default function FindCustomerPage() {
     fetchBorrowers();
   }, []);
 
-  const calculateTotalPaid = (paymentHistory) => {
+  const calculateTotalPaid = paymentHistory => {
     return paymentHistory.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
   };
 
@@ -133,9 +133,9 @@ export default function FindCustomerPage() {
 
   const columnsWithLink = columns.map(col => ({
     ...col,
-    renderCell: ({ row, ...params }) => (
-      <Link href={`/profileCustomer?id=${row.id}`} passHref>
-        <Typography style={{ cursor: 'pointer', pointerEvents: 'none' }}>{params.value}</Typography>
+    renderCell: params => (
+      <Link href={`/profileCustomer?id=${params.row.id}`} passHref>
+        <Typography style={{ cursor: 'pointer', pointerEvents: 'auto' }}>{params.value}</Typography>
       </Link>
     ),
   }));

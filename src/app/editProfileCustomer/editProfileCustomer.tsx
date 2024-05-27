@@ -71,7 +71,7 @@ const EditProfileCustomer = () => {
   const [borrowerData, setBorrowerData] = useState(null);
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const handleEditClick = () => {
-    navigateTo('/profileCustomer');
+    navigateTo('/profileCustomer?id=${id}');
   };
 
   const navigateTo = (path: string) => {
@@ -381,7 +381,7 @@ const EditProfileCustomer = () => {
 
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
-                      name="phoneNumberSpouse"
+                      name="phoneOfSpouse"
                       defaultValue={""}
                       control={control}
                       render={({ field }) => (

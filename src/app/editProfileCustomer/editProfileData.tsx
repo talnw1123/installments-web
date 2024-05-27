@@ -20,21 +20,22 @@ const EditProfileData = () => {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   //console.log(userInfo.userNationID)
   const statuses = useMemo(() => ['โสด', 'สมรส', 'หย่าร้าง', 'หม้าย'], []);
-  const id = userInfo.userNationID
+  const id = userInfo.userNationID;
 
-  const onSubmit = useCallback(async (data: any) => {
-    //console.log(data);
-    const newData = { ...data, table: installments };
+  const onSubmit = useCallback(
+    async (data: any) => {
+      //console.log(data);
+      const newData = { ...data, table: installments };
 
-    try {
-      const response = await axios.post(`http://localhost:4400/api/updateCard/${id}`, newData);
-      //console.log(response.data);
-
-    } catch (error) {
-      console.error('Error updating data:', error);
-
-    }
-  }, [installments, id]);
+      try {
+        const response = await axios.post(`http://localhost:4400/api/updateCard/${id}`, newData);
+        //console.log(response.data);
+      } catch (error) {
+        console.error('Error updating data:', error);
+      }
+    },
+    [installments, id]
+  );
 
   const valuetext = useCallback((value: number) => `${value}%`, []);
 
@@ -77,10 +78,9 @@ const EditProfileData = () => {
   const handleEditClick = async () => {
     try {
       await handleSubmit(onSubmit)();
-      navigateTo('/profileCustomer');
+      navigateTo(`/profileCustomer?id=${id}&updated=true`);
     } catch (error) {
       console.error('Error handling submit:', error);
-
     }
   };
 
