@@ -221,7 +221,7 @@ const StepOnePage = () => {
                   </Grid>
 
                   <Controller
-                    name="nameOfSpouse"
+                    name="firstNameOfSpouse"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (
@@ -256,7 +256,7 @@ const StepOnePage = () => {
                     </Grid>
                     <Grid item xs={4}>
                       <Controller
-                        name="incomeSpouse"
+                        name="incomeOfSpouse"
                         defaultValue=""
                         control={control}
                         render={({ field }) => (
@@ -440,7 +440,7 @@ const StepOnePage = () => {
                   />
 
                   <Controller
-                    name="lastNameSpouse"
+                    name="lastNameOfSpouse"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

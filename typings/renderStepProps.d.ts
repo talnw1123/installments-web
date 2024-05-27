@@ -60,6 +60,7 @@ export interface StepParams {
   numberOfInstallments: string;
   interestRates: string;
   totalInstallmentAmount: string;
+  dueDate: dayjs.Dayjs | null;
 
   table: any[];
 }

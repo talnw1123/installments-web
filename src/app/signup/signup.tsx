@@ -4,6 +4,8 @@ import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Button, Card, Grid, Stack, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+import { AuthState, activeLinkState, authState, useSetRecoilState } from '@store/index';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -16,22 +18,25 @@ const useStyles = makeStyles({
   },
 });
 
-export default function Signup({ users }) {
+export default function Signup() {
   const classes = useStyles();
   const { control, handleSubmit } = useForm();
-
-  const [openToast, setOpenToast] = useState(false);
-  const [openAlertDialogError, setOpenAlertDialogError] = useState(false);
+  const [openToast, setOpenToast] = useState<boolean>(false);
+  const [openAlertDialogError, setOpenAlertDialogError] = useState<boolean>(false);
+  const setAuth = useSetRecoilState<AuthState>(authState);
+  const setActiveLink = useSetRecoilState<string>(activeLinkState);
+  const router = useRouter();
 
   const handleCloseToast = () => {
     setOpenToast(false);
+    router.push('/');
   };
 
   const handleOnCloseDialog = () => {
     setOpenAlertDialogError(false);
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       const response = await fetch('http://localhost:4400/users/register', {
         method: 'POST',
@@ -41,9 +46,13 @@ export default function Signup({ users }) {
         body: JSON.stringify(data),
       });
 
+      //console.log(data)
       if (response.ok) {
-        //console.log(data)
+        setActiveLink('Home');
         setOpenToast(true);
+        setTimeout(() => {
+          handleCloseToast();
+        }, 1000);
       } else {
         setOpenAlertDialogError(true);
       }
@@ -98,7 +107,14 @@ export default function Signup({ users }) {
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField {...field} type="password" placeholder="Password" variant="outlined" fullWidth sx={{ mb: 3 }} />
+                  <TextField
+                    {...field}
+                    type="password"
+                    placeholder="Password"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                  />
                 )}
               />
               <Controller
@@ -106,7 +122,15 @@ export default function Signup({ users }) {
                 control={control}
                 defaultValue=""
                 render={({ field }) => (
-                  <TextField {...field} rows={4} multiline placeholder="Address" variant="outlined" fullWidth sx={{ mb: 3 }} />
+                  <TextField
+                    {...field}
+                    rows={4}
+                    multiline
+                    placeholder="Address"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                  />
                 )}
               />
               <Controller
