@@ -12,7 +12,7 @@ function valuetext(value: number) {
 
 const installmentColumns: GridColDef[] = [
   { field: 'installmentNumber', headerName: 'งวดที่', width: 120 },
-  { field: 'dueDate', headerName: 'วันที่ครบกำหนด', width: 150 },
+  { field: 'dueDate', headerName: 'วันที่ครบกำหนดขำระ', width: 150 },
   { field: 'amountDue', headerName: 'เงินที่ต้องชำระ', type: 'number', width: 180 },
   { field: 'interest', headerName: 'ดอกเบี้ย', type: 'number', width: 150 },
   { field: 'principal', headerName: 'เงินต้น', type: 'number', width: 150 },

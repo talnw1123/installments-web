@@ -5,11 +5,12 @@ import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Box, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { authState } from '@store/index'; // เพิ่ม import นี้
+
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil'; // เพิ่ม import นี้
 
+import { AuthState, activeLinkState, authState, useSetRecoilState } from '@store/index';
+import { useRouter } from 'next/navigation';
 
 const useStyles = makeStyles({
   container: {
@@ -42,24 +43,25 @@ const useStyles = makeStyles({
 });
 
 export default function LoginPage() {
-
   const classes = useStyles();
-  const [openAlertDialogError, setOpenAlertDialogError] = useState(false);
-  const [openToast, setOpenToast] = useState(false);
-  const setAuth = useSetRecoilState(authState); // ใช้ setAuth จาก Recoil
+  const [openToast, setOpenToast] = useState<boolean>(false);
+  const [openAlertDialogError, setOpenAlertDialogError] = useState<boolean>(false);
+  const setAuth = useSetRecoilState<AuthState>(authState);
+  const setActiveLink = useSetRecoilState<string>(activeLinkState);
+  const router = useRouter();
 
   const { control, handleSubmit } = useForm();
 
   const handleCloseToast = () => {
     setOpenToast(false);
+    router.push('/');
   };
 
   const handleOnCloseDialog = () => {
     setOpenAlertDialogError(false);
   };
 
-  const onSubmit = async (data) => {
-
+  const onSubmit = async (data: any) => {
     const { email, password } = data; // ดึงค่า email และ password จาก form data
 
     try {
@@ -81,6 +83,11 @@ export default function LoginPage() {
         // console.log(email, token)
         // Redirect หน้าไปยังหน้าหลังจากล็อกอินเสร็จสิ้น
         // เปลี่ยนเป็น URL ที่ต้องการ redirect ไป
+        setActiveLink('Home');
+        setOpenToast(true);
+        setTimeout(() => {
+          handleCloseToast();
+        }, 5000);
       } else {
         setOpenAlertDialogError(true);
       }
@@ -88,10 +95,7 @@ export default function LoginPage() {
       console.error('Error submitting form:', error);
       setOpenAlertDialogError(true);
     }
-
   };
-
-
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>

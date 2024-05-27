@@ -8,7 +8,6 @@ import axios from 'axios';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
-
 const useStyles = makeStyles({
   bigContainer: {
     display: 'flex',
@@ -69,44 +68,44 @@ export default function FindCustomerPage() {
 
   const preprocessedBorrowers = borrowersData.map(borrowerData => {
     const { borrower, bills } = borrowerData;
-    const totalAmount = bills.reduce((total, bill) => total + parseFloat(bill.totalInstallmentAmount), 0);
-    const dueDate = bills.length > 0 ? bills[0].dueDate : '';
+    const totalAmount = bills?.reduce((total, bill) => total + parseFloat(bill.totalInstallmentAmount), 0);
+    const dueDate = bills?.length > 0 ? bills[0]?.dueDate : '';
 
     if (!borrower?.nationID) return null;
 
     return {
-      id: borrower.nationID,
-      first_name: borrower.firstName,
-      last_name: borrower.lastName,
-      phone: borrower.phone,
+      id: borrower?.nationID,
+      first_name: borrower?.firstName,
+      last_name: borrower?.lastName,
+      phone: borrower?.phone,
       totalAmount,
-      dueDate
+      dueDate,
     };
   });
 
   const filteredRows = preprocessedBorrowers.filter(row => row !== null);
 
-  const handleIdChange = event => {
+  const handleIdChange = (event: any) => {
     setIdQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handleNameChange = event => {
+  const handleNameChange = (event: any) => {
     setNameQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handleSurnameChange = event => {
+  const handleSurnameChange = (event: any) => {
     setSurnameQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handlePhoneChange = event => {
+  const handlePhoneChange = (event: any) => {
     setPhoneQuery(event.target.value);
     setShowTable(true);
   };
 
-  const getFullNameLink = row => (
+  const getFullNameLink = (row: any) => (
     <Link href={`/profileCustomer?id=${row.id}`} passHref>
       <Typography component="a">{`${row.first_name || ''} ${row.last_name || ''}`}</Typography>
     </Link>
@@ -114,23 +113,24 @@ export default function FindCustomerPage() {
 
   const columnsWithLink = columns.map(col => ({
     ...col,
-    renderCell: ({ row, ...params }) => ( // เพิ่ม `row` เข้ากับ props
+    renderCell: (
+      { row, ...params } // เพิ่ม `row` เข้ากับ props
+    ) => (
       <Link href={`/profileCustomer?id=${row.id}`} passHref>
-        <Typography component="div" style={{ cursor: 'pointer', pointerEvents: 'none' }}>
-          {params.value}
-        </Typography>
+        <Typography style={{ cursor: 'pointer', pointerEvents: 'none' }}>{params.value}</Typography>
       </Link>
     ),
   }));
 
   const filteredRowsWithSearch = showTable
     ? filteredRows.filter(
-      row =>
-        row.id.toString().includes(idQuery) &&
-        row.first_name.toLowerCase().includes(nameQuery.toLowerCase()) &&
-        row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
-        row.phone.includes(phoneQuery)
-    )
+        row =>
+          row &&
+          row.id.toString().includes(idQuery) &&
+          row.first_name.toLowerCase().includes(nameQuery.toLowerCase()) &&
+          row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
+          row.phone.includes(phoneQuery)
+      )
     : filteredRows;
 
   return (
@@ -138,9 +138,9 @@ export default function FindCustomerPage() {
       <Card sx={{ padding: 3, width: '80%' }}>
         <form>
           <Typography variant="h4">ค้นหาผู้กู้</Typography>
-          <div>
-            <Grid container className={classes.formContainer}>
-              <div className={classes.column}>
+          <Grid>
+            <Grid container>
+              <Grid className={classes.column}>
                 <TextField
                   label="เลขประจำตัวประชาชน"
                   variant="standard"
@@ -149,8 +149,8 @@ export default function FindCustomerPage() {
                   value={idQuery}
                   onChange={handleIdChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="ชื่อ"
                   variant="standard"
@@ -159,8 +159,8 @@ export default function FindCustomerPage() {
                   value={nameQuery}
                   onChange={handleNameChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="นามสกุล"
                   variant="standard"
@@ -169,8 +169,8 @@ export default function FindCustomerPage() {
                   value={surnameQuery}
                   onChange={handleSurnameChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="เบอร์โทรศัพท์"
                   variant="standard"
@@ -179,20 +179,20 @@ export default function FindCustomerPage() {
                   value={phoneQuery}
                   onChange={handlePhoneChange}
                 />
-              </div>
+              </Grid>
             </Grid>
-          </div>
+          </Grid>
         </form>
-        <div className={classes.debtorListContainer}>
+        <Grid className={classes.debtorListContainer}>
           <Box className={classes.debtorList}>
             <DataGrid
               rows={filteredRowsWithSearch}
               columns={columnsWithLink}
               localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }}
-              getRowId={(row) => row.id}
+              getRowId={row => row.id}
             />
           </Box>
-        </div>
+        </Grid>
       </Card>
     </Grid>
   );

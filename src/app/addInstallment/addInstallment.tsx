@@ -333,6 +333,15 @@ const AddInstallmentPage = () => {
               />
             </Grid>
           </Grid>
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            onClick={handleCreateInstallments}
+            sx={{ marginTop: '22px' }}
+          >
+            สร้าง
+          </Button>
         </Card>
       </Grid>
       <DataContext.Provider value={conTextValue}></DataContext.Provider>
