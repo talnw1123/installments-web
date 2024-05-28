@@ -35,12 +35,6 @@ const Navbar: FC<NavbarProps> = props => {
   const setAuth = useSetRecoilState<AuthState>(authState);
   // console.log(token)
 
-  // useEffect(() => {
-  //   if (token === '') {
-  //     router.push('/login'); // เพิ่มการ redirect ไปยังหน้า Login ถ้าไม่มี token
-  //   }
-  // }, [token, router]);
-
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };

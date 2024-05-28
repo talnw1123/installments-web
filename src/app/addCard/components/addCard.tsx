@@ -112,42 +112,6 @@ const AddCard = () => {
     setOpenToast(false);
   };
 
-  // const navigateToProfileCustomer = useCallback(() => {
-  //   window.location.href = './profileCustomer';
-  // }, []);
-
-  // const onSubmit = useCallback<SubmitHandler<StepParams>>(
-  //   data => {
-  //     console.log(data);
-  //     const newData = { ...data, table: installments };
-  //     console.log(newData);
-
-  //     // navigateToProfileCustomer();
-  //   },[installments]
-  //   // [installments, navigateToProfileCustomer]
-  // );
-
-  // const onSubmit = useCallback(async data => {
-  //   try {
-  //     const response = await fetch('http://localhost:4400/api/createCard', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
-  //     });
-  //     if (!response.ok) {
-  //       console.log(data)
-  //       throw new Error('Network response was not ok');
-  //     }
-  //     const newData = await response.json(); // แปลงข้อมูลที่เซิร์ฟเวอร์ส่งกลับเป็น JSON
-  //     console.log('New card created:', newData);
-  //     // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
-  //   } catch (error) {
-  //     console.error('There was a problem with the fetch operation:', error);
-  //   }
-  // }, [/* dependencies */]);
-
   const onSubmit = useCallback(async (data: any) => {
     console.log(data);
     try {
@@ -203,9 +167,7 @@ const AddCard = () => {
       if (createCardResponse.ok && createBillResponse.ok) {
         const createCardData = await createCardResponse.json();
         const createBillData = await createBillResponse.json();
-        //console.log('New card created:', createCardData);
-        //console.log('New bill created:', createBillData);
-
+        
       } else {
         throw new Error('One or more API requests failed');
       }

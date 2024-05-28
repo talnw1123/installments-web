@@ -71,7 +71,7 @@ const EditProfileCustomer = () => {
   const [borrowerData, setBorrowerData] = useState(null);
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const handleEditClick = () => {
-    navigateTo('/profileCustomer');
+    navigateTo('/');
   };
 
   const navigateTo = (path: string) => {

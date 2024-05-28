@@ -28,7 +28,7 @@ const EditProfileData = () => {
 
     try {
       const response = await axios.post(`http://localhost:4400/api/updateCard/${id}`, newData);
-      //console.log(response.data);
+      console.log(response.data);
 
     } catch (error) {
       console.error('Error updating data:', error);

@@ -21,7 +21,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import MenuList from 'app/customerInformation/page';
 import dayjs, { Dayjs } from 'dayjs';
-import { useState } from 'react';
+
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -126,8 +128,8 @@ export default function DebtCollectionPage() {
     'ติดตามหนี้',
   ];
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);

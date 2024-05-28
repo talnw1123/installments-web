@@ -110,7 +110,7 @@ const ProfileCustomer = () => {
             setValue('birthDate', dayjs(borrower.birthDate) || null);
             //console.log(dayjs(borrower.birthDate))
             const now = dayjs();
-            setValue('age', now.diff(borrower.birthDate,'year') || '');
+            setValue('age', now.diff(borrower.birthDate, 'year') || '');
             setValue('job', borrower.job || '');
             setValue('income', borrower.income || '');
             setValue('phone', borrower.phone || '');
