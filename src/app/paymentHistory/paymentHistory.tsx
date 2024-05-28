@@ -64,7 +64,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id: 'number' | 'due_Date' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'bill';
+  id: 'number' | 'dueDate' | 'due_Paid' | 'overDay' | 'totalPay' | 'interest' | 'principle' | 'bill';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -73,7 +73,7 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'number', label: 'งวดที่', minWidth: 70 },
-  { id: 'due_Date', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
+  { id: 'dueDate', label: 'วันที่ครบกำหนดจ่าย', minWidth: 100 },
   {
     id: 'due_Paid',
     label: 'วันที่จ่าย',
@@ -103,7 +103,7 @@ const columns: readonly Column[] = [
 
 interface Data {
   number: string;
-  due_Date: string;
+  dueDate: string;
   due_Paid: string;
   overDay: number;
   totalPay: number;
@@ -146,16 +146,18 @@ export default function PaymentHistoryPage() {
 
         const allRows = data.flatMap((borrower: any) =>
           borrower.bills.flatMap((bill: any) =>
-            bill.paymentHistory.map((payment: any, index: number) => createData(
-              (index + 1).toString(),
-              dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
-              dayjs(payment.paymentDate).format('DD/MM/YYYY'),
-              dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
-              bill.totalLoan * (1 + bill.interestRates / 100),
-              bill.interestRates,
-              bill.totalLoan,
-              `หมายเลข ${bill.billNumber}`
-            ))
+            bill.paymentHistory.map((payment: any, index: number) =>
+              createData(
+                (index + 1).toString(),
+                dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
+                dayjs(payment.paymentDate).format('DD/MM/YYYY'),
+                dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
+                bill.totalLoan * (1 + bill.interestRates / 100),
+                bill.interestRates,
+                bill.totalLoan,
+                `หมายเลข ${bill.billNumber}`
+              )
+            )
           )
         );
         setRows(allRows);
@@ -195,7 +197,7 @@ export default function PaymentHistoryPage() {
 
   function createData(
     number: string,
-    due_Date: string,
+    dueDate: string,
     due_Paid: string,
     overDay: number,
     totalLoan: string,
@@ -204,7 +206,7 @@ export default function PaymentHistoryPage() {
     bill: string
   ): Data {
     const totalPay = calculateAmountToPay(interest, principle);
-    return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
+    return { number, dueDate, due_Paid, overDay, totalPay, interest, principle, bill };
   }
 
   return (
@@ -277,7 +279,7 @@ export default function PaymentHistoryPage() {
                             .filter(row => row.bill === selectedBill)
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map(row => {
-                              const daysOverdue = calculateDaysOverdue(row.due_Date, row.due_Paid);
+                              const daysOverdue = calculateDaysOverdue(row.dueDate, row.due_Paid);
                               return (
                                 <TableRow hover role="checkbox" tabIndex={-1} key={row.number}>
                                   {columns.map(column => {
@@ -287,7 +289,7 @@ export default function PaymentHistoryPage() {
                                         {column.format && typeof value === 'number'
                                           ? column.format(value)
                                           : column.id === 'overDay'
-                                            ? calculateDaysOverdue(row.due_Date, row.due_Paid)
+                                            ? calculateDaysOverdue(row.dueDate, row.due_Paid)
                                             : column.id === 'totalPay'
                                               ? calculateAmountToPay(row.interest, row.principle)
                                               : value}
