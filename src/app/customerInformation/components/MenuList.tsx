@@ -26,14 +26,13 @@ export default function MenuList() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [userInfo, setUserInfo] = useRecoilState(userState);
-  // Now you can access query parameters using searchParams.get('id')
+
   const id = searchParams.get('id');
   const searchType = searchParams.get('type') || 'ประวัติผู้กู้';
   const menuList = [
     { label: 'ประวัติผู้กู้', route: `/profileCustomer?id=${userInfo.userNationID}` },
     { label: 'ชำระเงิน', route: `/Pay?type=${userInfo.userNationID}` },
     { label: 'ประวัติการชำระเงิน', route: `/paymentHistory?type=${userInfo.userNationID}` },
-    { label: 'สร้างการ์ดผ่อนสินค้า', route: `/addCard?type=${userInfo.userNationID}` },
     { label: 'ประวัติการผ่อนสินค้า', route: `/installmentHis?type=${userInfo.userNationID}` },
     { label: 'ติดตามหนี้', route: `/debtCollection?type=${userInfo.userNationID}` },
   ];

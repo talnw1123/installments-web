@@ -13,13 +13,12 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { userState } from '@store/index';
-import MenuList from 'app/customerInformation/page';
-import axios from 'axios';
-import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { useRecoilState } from 'recoil';
+import { userState } from '@store/index';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -34,28 +33,13 @@ const useStyles = makeStyles({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
-  topContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
   formContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  formBigContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
   formSection: {
     marginBottom: '1.5rem',
-  },
-  formBigColumn: {
-    borderLeft: '2px solid lightgray',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
   },
   formColumn: {
     display: 'flex',
@@ -90,7 +74,7 @@ const columns: readonly Column[] = [
   { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
   {
     id: 'principle',
-    label: 'ราคาเต็ม',
+    label: 'รวมเงินต้องจ่ายทั้งหมด',
     minWidth: 100,
   },
   {
@@ -188,9 +172,9 @@ export default function InstallmentHisPage() {
           const totalLoan = parseFloat(bill.totalLoan);
           const interestRates = parseFloat(bill.interestRates);
           const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
-          const numberOfInstallment = parseInt(bill.numberOfInstallment, 10);
-          const paymentPerTerm = totalLoan / numberOfInstallment;
-          const interest = (totalLoan * interestRates) / 100;
+          const numberOfInstallments = parseInt(bill.numberOfInstallments, 10);
+          const paymentPerTerm = Math.ceil(totalPaymentWithInterest / numberOfInstallments);
+          const interest = totalLoan * interestRates / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
           const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
           const balance = totalPaymentWithInterest - paid;
@@ -199,8 +183,8 @@ export default function InstallmentHisPage() {
           return createData(
             bill.billNumber,
             status,
-            totalLoan,
-            numberOfInstallment,
+            totalPaymentWithInterest,
+            numberOfInstallments,
             paymentPerTerm,
             interest,
             date,
@@ -214,24 +198,35 @@ export default function InstallmentHisPage() {
     };
 
     fetchData();
-  }, [userInfo.userNationID]);
+  }, []);
 
   return (
     <Grid container className={classes.bigContainer}>
-      <Card sx={{ padding: 3, width: '80%' }}>
-        <Grid container className={classes.topContainer}>
-          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
-            ประวัติการผ่อนสินค้า
-          </Typography>
-        </Grid>
-        <Grid container className={classes.formContainer}>
-          <Grid className={classes.formBigContainer}>
-            <Grid>
-              <MenuList />
+      <Card sx={{ padding: 3, minHeight: 800, width: '80%' }}>
+        <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
+          <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
+            <Grid item sx={{ marginTop: '2rem' }}>
+              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
+                {menuList.map(item => (
+                  <Grid item key={item}>
+                    <Typography
+                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
+                      onClick={() => {
+                        router.push(`/installmentHis?type=${item}`);
+                      }}
+                      component="span"
+                    >
+                      {item.toUpperCase()}
+                    </Typography>
+                  </Grid>
+                ))}
+              </Grid>
             </Grid>
-            <Grid className={classes.formBigColumn}>
-              <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
-                <Grid item xs={12} className={classes.column}>
+          </Grid>
+          <Grid item xs={9} sx={{ display: 'grid' }}>
+            <Grid container className={classes.bigContainer}>
+              <form>
+                <Grid>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
                       ประวัติการผ่อนสินค้า
@@ -286,7 +281,7 @@ export default function InstallmentHisPage() {
                     />
                   </Paper>
                 </Grid>
-              </Grid>
+              </form>
             </Grid>
           </Grid>
         </Grid>

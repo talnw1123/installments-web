@@ -1,12 +1,15 @@
 'use client';
-
 import { Card, Grid, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import axios from 'axios';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+
+dayjs.extend(customParseFormat);
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -66,11 +69,28 @@ export default function FindCustomerPage() {
     fetchBorrowers();
   }, []);
 
+  const calculateTotalPaid = paymentHistory => {
+    return paymentHistory.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+  };
+
+  const calculateDueDate = (createdAt, numberOfInstallments) => {
+    const date = dayjs(createdAt);
+    if (!date.isValid()) {
+      return 'Invalid Date';
+    }
+    const installmentMonths = parseInt(numberOfInstallments, 10);
+    return date.add(installmentMonths, 'month').format('DD/MM/YYYY');
+  };
+
   const preprocessedBorrowers = borrowersData.map(borrowerData => {
     const { borrower, bills } = borrowerData;
-    const totalAmount = bills?.reduce((total, bill) => total + parseFloat(bill.totalInstallmentAmount), 0);
-    const dueDate = bills?.length > 0 ? bills[0]?.dueDate : '';
-
+    const totalAmount = bills.reduce((total, bill) => {
+      const totalPaymentWithInterest = parseFloat(bill.totalPaymentWithInterest);
+      const totalPaid = calculateTotalPaid(bill.paymentHistory);
+      return total + (totalPaymentWithInterest - totalPaid);
+    }, 0);
+    const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].numberOfInstallments) : '';
+    //console.log(bills[0].createdAt, bills[0].numberOfInstallments)
     if (!borrower?.nationID) return null;
 
     return {
@@ -113,11 +133,9 @@ export default function FindCustomerPage() {
 
   const columnsWithLink = columns.map(col => ({
     ...col,
-    renderCell: (
-      { row, ...params } // เพิ่ม `row` เข้ากับ props
-    ) => (
-      <Link href={`/profileCustomer?id=${row.id}`} passHref>
-        <Typography style={{ cursor: 'pointer', pointerEvents: 'none' }}>{params.value}</Typography>
+    renderCell: params => (
+      <Link href={`/profileCustomer?id=${params.row.id}`} passHref>
+        <Typography style={{ cursor: 'pointer', pointerEvents: 'auto' }}>{params.value}</Typography>
       </Link>
     ),
   }));

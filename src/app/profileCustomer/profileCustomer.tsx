@@ -7,12 +7,16 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import dayjs from 'dayjs';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
 import 'react-multi-carousel/lib/styles.css';
 import { DataContext1 } from './profileData';
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -62,14 +66,9 @@ const useStyles = makeStyles({
 });
 
 const ProfileCustomer = () => {
-  // const router = useRouter();
-  // const { id } = router.isReady ? router.query : { id: undefined };
-  // const customer = id ? use(useCustomer(id)) : null;
-  const searchParams = useSearchParams(); // Destructure using square brackets
+  const searchParams = useSearchParams();
 
-  // Now you can access query parameters using searchParams.get('id')
   const id = searchParams.get('id');
-  //console.log('id from query:', id);
 
   const { control, statuses, setValue, calculate, setAge } = useContext(DataContext1);
   const classes = useStyles();
@@ -84,7 +83,7 @@ const ProfileCustomer = () => {
   // }
 
   const handleEditClick = () => {
-    navigateTo('/editProfileCustomer');
+    navigateTo(`/editProfileCustomer?id=${id}`);
   };
 
   const navigateTo = (path: any) => {
@@ -94,6 +93,7 @@ const ProfileCustomer = () => {
   useEffect(() => {
     const fetchBorrowerData = async () => {
       try {
+        console.log(`Fetching data for ID: ${id}`);
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
         const data = await response.json();
 
@@ -105,7 +105,8 @@ const ProfileCustomer = () => {
             setValue('firstName', borrower.firstName || '');
             setValue('lastName', borrower.lastName || '');
             setValue('birthDate', dayjs(borrower.birthDate) || null);
-            setValue('age', calculate(dayjs(borrower.birthDate)) || '');
+            const now = dayjs();
+            setValue('age', now.diff(borrower.birthDate, 'year') || '');
             setValue('job', borrower.job || '');
             setValue('income', borrower.income || '');
             setValue('phone', borrower.phone || '');
@@ -139,8 +140,8 @@ const ProfileCustomer = () => {
             setValue('jobOfGuarantor', borrower.jobOfGuarantor || '');
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
+            setValue('creditScoreText', borrower.creditScoreText || '');
 
-            // อัปเดตค่า id ลงใน userState
             setUserInfo(prevState => ({
               ...prevState,
               userNationID: id as string,
@@ -753,6 +754,27 @@ const ProfileCustomer = () => {
                       <TextField
                         {...field}
                         label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="creditScoreText"
+                    defaultValue={' '}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="creditScore"
                         variant="standard"
                         fullWidth
                         margin="normal"

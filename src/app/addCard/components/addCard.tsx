@@ -1,15 +1,12 @@
 'use client';
-import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Button, Grid } from '@mui/material';
 import Box from '@mui/material/Box';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Stepper from '@mui/material/Stepper';
-import { AuthState, activeLinkState, authState, useSetRecoilState } from '@store/index';
 import axios from 'axios';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/navigation';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../../typings/renderStepProps';
@@ -31,7 +28,7 @@ const AddCard = () => {
   //const { borrowerID, nationID, firstName, lastName, birthDate, job, income, phone, phoneInJob, status, kids, addressReal, addressCurrent, addressJob, googleMapAdressReal, googleMapAdressCurrent, googleMapAdressJob, firstNameOfSpouse, lastNameOfSpouse, jobOfSpouse, incomeOfSpouse, phoneOfSpouseInJob, phoneOfSpouse, addressOfSpouseJob, googleMapAdressJobOfSpouse, guarantorNationID, guarantorFirstName, guarantorLastName, phoneOfGuarantor, addressOfGuarantorReal, addressOfGuarantorCurrent, addressOfGuarantorJob, googleMapAdressRealOfGuarantor, googleMapAdressCurrentOfGuarantor, googleMapAdressJobOfGuarantor, jobOfGuarantor, incomeOfGuarantor, phoneOfGuarantorInJob, bills } = watch();
 
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['โสด', 'แต่งงาน'], []);
+  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง'], []);
 
   const totalLoanValue = watch('totalLoan');
   const downPaymentValue = watch('downPayment');
@@ -39,18 +36,8 @@ const AddCard = () => {
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
 
+  const [openToast, setOpenToast] = useState(false);
   const [creditScoreText, setCreditScoreText] = useState('');
-
-  const [openToastSubmit, setOpenToastSubmit] = useState<boolean>(false);
-  const [openToast, setOpenToast] = useState<boolean>(false);
-  const [openAlertDialogError, setOpenAlertDialogError] = useState<boolean>(false);
-  const setAuth = useSetRecoilState<AuthState>(authState);
-  const setActiveLink = useSetRecoilState<string>(activeLinkState);
-  const router = useRouter();
-
-  const handleCloseToast = () => {
-    setOpenToast(false);
-  };
 
   const handleOpenToast = async () => {
     const age = Number(calculateAge(birthDateValue));
@@ -66,6 +53,9 @@ const AddCard = () => {
         break;
       case 'แต่งงาน':
         newMaritalStatus = 'Married';
+        break;
+      case 'หย่าร้าง':
+        newMaritalStatus = 'Single';
         break;
 
       default:
@@ -103,17 +93,24 @@ const AddCard = () => {
         default:
           creditScoreText = 'ไม่สามารถประเมินได้';
       }
-      setOpenToast(true);
-      setTimeout(() => {
-        handleCloseToast();
-      }, 3000);
+
       setCreditScoreText(creditScoreText);
     } catch (error) {
       console.error('Error predicting credit score:', error);
       setCreditScoreText('เกิดข้อผิดพลาดในการประเมินความสามารถในการผ่อนชำระ');
     } finally {
       setOpenToast(true);
+      setTimeout(() => {
+        setOpenToast(false);
+      }, 2000);
     }
+  };
+
+  const handleCloseToast = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenToast(false);
   };
 
   // const navigateToProfileCustomer = useCallback(() => {
@@ -152,34 +149,23 @@ const AddCard = () => {
   //   }
   // }, [/* dependencies */]);
 
-  // const handleCloseToastSubmit = () => {
-  //   setOpenToast(false);
-  // };
-
-  const handleOnCloseDialog = () => {
-    setOpenAlertDialogError(false);
-  };
-
   const onSubmit = useCallback(
     async (data: any) => {
-      console.log(data);
       try {
-        // เรียกใช้งาน API createCard
         const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+          body: JSON.stringify({ ...data, creditScoreText }),
         });
 
-        // เรียกใช้งาน API createBill
         const createBillResponse = await fetch('http://localhost:4400/api/addBill', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
+          body: JSON.stringify(data),
         });
 
         //pdf
@@ -193,34 +179,24 @@ const AddCard = () => {
 
         const blob = await downloadPdfResponse.blob();
 
-        // Create a link element
         const link = document.createElement('a');
 
-        // Create a URL for the blob and set it as the href attribute of the link
         const url = window.URL.createObjectURL(blob);
         link.href = url;
 
-        // Set the download attribute of the link
         link.download = 'Installment contract.pdf';
 
-        // Append the link to the body (necessary for Firefox)
         document.body.appendChild(link);
 
-        // Programmatically click the link to trigger the download
         link.click();
 
-        // Remove the link from the document
         document.body.removeChild(link);
 
-        // ตรวจสอบว่าทั้งสอง API ทำงานสำเร็จหรือไม่
         if (createCardResponse.ok && createBillResponse.ok) {
           const createCardData = await createCardResponse.json();
           const createBillData = await createBillResponse.json();
-          console.log('New card created:', createCardData);
-          console.log('New bill created:', createBillData);
-          // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
-
-          // setOpenToast(true);
+          //console.log('New card created:', createCardData);
+          //console.log('New bill created:', createBillData);
         } else {
           throw new Error('One or more API requests failed');
         }
@@ -228,7 +204,7 @@ const AddCard = () => {
         console.error('There was a problem with the fetch operation:', error);
       }
     },
-    [setActiveLink]
+    [creditScoreText]
   );
 
   const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
@@ -433,22 +409,13 @@ const AddCard = () => {
             </>
           )}
         </DataContext.Provider>
-        <ToastSuccess
-          openToast={openToast}
-          handleCloseToast={handleCloseToast}
-          text={`ความสามารถในการผ่อนชำระ: ${creditScoreText}`}
-          showClose={true}
-        />
-        {/*
-        <ToastSuccess
-          openToast={openToastSubmit}
-          handleCloseToast={handleCloseToastSubmit}
-          text="Register Successfully"
-          showClose={true}
-        /> */}
-
-        <AlertDialogError openAlertDialog={openAlertDialogError} handleOnCloseDialog={handleOnCloseDialog} />
       </form>
+      <ToastSuccess
+        openToast={openToast}
+        handleCloseToast={handleCloseToast}
+        text={`ความสามารถในการผ่อนชำระ: ${creditScoreText}`}
+        showClose={true}
+      />
     </>
   );
 };

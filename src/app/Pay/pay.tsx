@@ -129,7 +129,7 @@ export default function PayPage() {
     },
     {
       field: 'dueDate',
-      headerName: 'วันที่ครบกำหนด',
+      headerName: 'วันครบกำหนดชำระ',
       width: 100,
       sortable: false,
       align: 'center',
@@ -176,8 +176,6 @@ export default function PayPage() {
       amountDue: 14,
       interest: 2,
       principle: 10,
-      accrued_interest: 3,
-      accrued_principle: 5,
     },
     {
       id: 2,
@@ -188,8 +186,6 @@ export default function PayPage() {
       amountDue: 31,
       interest: 5,
       principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
     },
     {
       id: 3,
@@ -200,8 +196,6 @@ export default function PayPage() {
       amountDue: 31,
       interest: 5,
       principle: 20,
-      accrued_interest: 8,
-      accrued_principle: 15,
     },
   ];
 
@@ -377,7 +371,7 @@ export default function PayPage() {
           onClick={() => router.push('/installmentHis')}
           sx={{
             backgroundColor: '#718171',
-            borderRadius: '2px',
+            borderRadius: '1px',
             marginLeft: '10px',
             padding: '10px 20px',
           }}
