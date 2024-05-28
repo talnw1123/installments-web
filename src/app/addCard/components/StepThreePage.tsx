@@ -12,7 +12,7 @@ function valuetext(value: number) {
 
 const installmentColumns: GridColDef[] = [
   { field: 'installmentNumber', headerName: 'งวดที่', width: 120 },
-  { field: 'dueDate', headerName: 'วันที่ครบกำหนด', width: 150 },
+  { field: 'dueDate', headerName: 'วันที่ครบกำหนดขำระ', width: 150 },
   { field: 'amountDue', headerName: 'เงินที่ต้องชำระ', type: 'number', width: 180 },
   { field: 'interest', headerName: 'ดอกเบี้ย', type: 'number', width: 150 },
   { field: 'principal', headerName: 'เงินต้น', type: 'number', width: 150 },
@@ -58,8 +58,6 @@ const useStyles = makeStyles({
 const StepThreePage = () => {
   const { control, setValue, handleCreateInstallments, installments } = useContext(DataContext);
   const classes = useStyles();
-
-  console.log(installments);
 
   return (
     <>
@@ -156,7 +154,7 @@ const StepThreePage = () => {
               <Grid container spacing={3} className={classes.form}>
                 <Grid item xs={2}>
                   <Controller
-                    name="numberOfInstallment"
+                    name="numberOfInstallments"
                     defaultValue=""
                     control={control}
                     render={({ field }) => (

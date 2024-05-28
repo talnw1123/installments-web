@@ -1,13 +1,15 @@
 'use client';
-
 import { Card, Grid, TextField, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import axios from 'axios';
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
+dayjs.extend(customParseFormat);
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -67,46 +69,63 @@ export default function FindCustomerPage() {
     fetchBorrowers();
   }, []);
 
+  const calculateTotalPaid = paymentHistory => {
+    return paymentHistory.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+  };
+
+  const calculateDueDate = (createdAt, numberOfInstallments) => {
+    const date = dayjs(createdAt);
+    if (!date.isValid()) {
+      return 'Invalid Date';
+    }
+    const installmentMonths = parseInt(numberOfInstallments, 10);
+    return date.add(installmentMonths, 'month').format('DD/MM/YYYY');
+  };
+
   const preprocessedBorrowers = borrowersData.map(borrowerData => {
     const { borrower, bills } = borrowerData;
-    const totalAmount = bills.reduce((total, bill) => total + parseFloat(bill.totalInstallmentAmount), 0);
-    const dueDate = bills.length > 0 ? bills[0].dueDate : '';
-
+    const totalAmount = bills.reduce((total, bill) => {
+      const totalPaymentWithInterest = parseFloat(bill.totalPaymentWithInterest);
+      const totalPaid = calculateTotalPaid(bill.paymentHistory);
+      return total + (totalPaymentWithInterest - totalPaid);
+    }, 0);
+    const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].numberOfInstallments) : '';
+    //console.log(bills[0].createdAt, bills[0].numberOfInstallments)
     if (!borrower?.nationID) return null;
 
     return {
-      id: borrower.nationID,
-      first_name: borrower.firstName,
-      last_name: borrower.lastName,
-      phone: borrower.phone,
+      id: borrower?.nationID,
+      first_name: borrower?.firstName,
+      last_name: borrower?.lastName,
+      phone: borrower?.phone,
       totalAmount,
-      dueDate
+      dueDate,
     };
   });
 
   const filteredRows = preprocessedBorrowers.filter(row => row !== null);
 
-  const handleIdChange = event => {
+  const handleIdChange = (event: any) => {
     setIdQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handleNameChange = event => {
+  const handleNameChange = (event: any) => {
     setNameQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handleSurnameChange = event => {
+  const handleSurnameChange = (event: any) => {
     setSurnameQuery(event.target.value);
     setShowTable(true);
   };
 
-  const handlePhoneChange = event => {
+  const handlePhoneChange = (event: any) => {
     setPhoneQuery(event.target.value);
     setShowTable(true);
   };
 
-  const getFullNameLink = row => (
+  const getFullNameLink = (row: any) => (
     <Link href={`/profileCustomer?id=${row.id}`} passHref>
       <Typography component="a">{`${row.first_name || ''} ${row.last_name || ''}`}</Typography>
     </Link>
@@ -114,23 +133,22 @@ export default function FindCustomerPage() {
 
   const columnsWithLink = columns.map(col => ({
     ...col,
-    renderCell: ({ row, ...params }) => ( // เพิ่ม `row` เข้ากับ props
-      <Link href={`/profileCustomer?id=${row.id}`} passHref>
-        <Typography component="div" style={{ cursor: 'pointer', pointerEvents: 'none' }}>
-          {params.value}
-        </Typography>
+    renderCell: params => (
+      <Link href={`/profileCustomer?id=${params.row.id}`} passHref>
+        <Typography style={{ cursor: 'pointer', pointerEvents: 'auto' }}>{params.value}</Typography>
       </Link>
     ),
   }));
 
   const filteredRowsWithSearch = showTable
     ? filteredRows.filter(
-      row =>
-        row.id.toString().includes(idQuery) &&
-        row.first_name.toLowerCase().includes(nameQuery.toLowerCase()) &&
-        row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
-        row.phone.includes(phoneQuery)
-    )
+        row =>
+          row &&
+          row.id.toString().startsWith(idQuery) && // เปลี่ยนจาก includes เป็น startsWith
+          row.first_name.startsWith(nameQuery.toLowerCase()) &&
+          (row.last_name || '').toLowerCase().startsWith(surnameQuery.toLowerCase()) &&
+          row.phone.startsWith(phoneQuery)
+      )
     : filteredRows;
 
   return (
@@ -138,9 +156,9 @@ export default function FindCustomerPage() {
       <Card sx={{ padding: 3, width: '80%' }}>
         <form>
           <Typography variant="h4">ค้นหาผู้กู้</Typography>
-          <div>
-            <Grid container className={classes.formContainer}>
-              <div className={classes.column}>
+          <Grid>
+            <Grid container>
+              <Grid className={classes.column}>
                 <TextField
                   label="เลขประจำตัวประชาชน"
                   variant="standard"
@@ -149,8 +167,8 @@ export default function FindCustomerPage() {
                   value={idQuery}
                   onChange={handleIdChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="ชื่อ"
                   variant="standard"
@@ -159,8 +177,8 @@ export default function FindCustomerPage() {
                   value={nameQuery}
                   onChange={handleNameChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="นามสกุล"
                   variant="standard"
@@ -169,8 +187,8 @@ export default function FindCustomerPage() {
                   value={surnameQuery}
                   onChange={handleSurnameChange}
                 />
-              </div>
-              <div className={classes.column}>
+              </Grid>
+              <Grid className={classes.column}>
                 <TextField
                   label="เบอร์โทรศัพท์"
                   variant="standard"
@@ -179,20 +197,20 @@ export default function FindCustomerPage() {
                   value={phoneQuery}
                   onChange={handlePhoneChange}
                 />
-              </div>
+              </Grid>
             </Grid>
-          </div>
+          </Grid>
         </form>
-        <div className={classes.debtorListContainer}>
+        <Grid className={classes.debtorListContainer}>
           <Box className={classes.debtorList}>
             <DataGrid
               rows={filteredRowsWithSearch}
               columns={columnsWithLink}
               localeText={{ noRowsLabel: 'ไม่พบข้อมูล' }}
-              getRowId={(row) => row.id}
+              getRowId={row => row.id}
             />
           </Box>
-        </div>
+        </Grid>
       </Card>
     </Grid>
   );

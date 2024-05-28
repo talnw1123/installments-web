@@ -28,7 +28,7 @@ const AddCard = () => {
   //const { borrowerID, nationID, firstName, lastName, birthDate, job, income, phone, phoneInJob, status, kids, addressReal, addressCurrent, addressJob, googleMapAdressReal, googleMapAdressCurrent, googleMapAdressJob, firstNameOfSpouse, lastNameOfSpouse, jobOfSpouse, incomeOfSpouse, phoneOfSpouseInJob, phoneOfSpouse, addressOfSpouseJob, googleMapAdressJobOfSpouse, guarantorNationID, guarantorFirstName, guarantorLastName, phoneOfGuarantor, addressOfGuarantorReal, addressOfGuarantorCurrent, addressOfGuarantorJob, googleMapAdressRealOfGuarantor, googleMapAdressCurrentOfGuarantor, googleMapAdressJobOfGuarantor, jobOfGuarantor, incomeOfGuarantor, phoneOfGuarantorInJob, bills } = watch();
 
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง', 'ม่าย'], []);
+  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง'], []);
 
   const totalLoanValue = watch('totalLoan');
   const downPaymentValue = watch('downPayment');
@@ -57,9 +57,7 @@ const AddCard = () => {
       case 'หย่าร้าง':
         newMaritalStatus = 'Single';
         break;
-      case 'ม่าย':
-        newMaritalStatus = 'Single';
-        break;
+
       default:
         newMaritalStatus = 'Single';
     }
@@ -102,6 +100,9 @@ const AddCard = () => {
       setCreditScoreText('เกิดข้อผิดพลาดในการประเมินความสามารถในการผ่อนชำระ');
     } finally {
       setOpenToast(true);
+      setTimeout(() => {
+        setOpenToast(false);
+      }, 2000);
     }
   };
 
@@ -148,71 +149,63 @@ const AddCard = () => {
   //   }
   // }, [/* dependencies */]);
 
-  const onSubmit = useCallback(async (data: any) => {
-    console.log(data);
-    try {
-      // เรียกใช้งาน API createCard
-      const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
-      });
+  const onSubmit = useCallback(
+    async (data: any) => {
+      try {
+        const createCardResponse = await fetch('http://localhost:4400/api/createCard', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ ...data, creditScoreText }),
+        });
 
-      // เรียกใช้งาน API createBill
-      const createBillResponse = await fetch('http://localhost:4400/api/addBill', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data), // ส่งข้อมูลให้กับเซิร์ฟเวอร์เป็น JSON
-      });
+        const createBillResponse = await fetch('http://localhost:4400/api/addBill', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
 
-      //pdf
-      const downloadPdfResponse = await fetch('http://localhost:4400/api/downloadPdf', {
-        method: 'POST',
+        //pdf
+        const downloadPdfResponse = await fetch('http://localhost:4400/api/downloadPdf', {
+          method: 'POST',
 
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-      const blob = await downloadPdfResponse.blob();
+        const blob = await downloadPdfResponse.blob();
 
-      // Create a link element
-      const link = document.createElement('a');
+        const link = document.createElement('a');
 
-      // Create a URL for the blob and set it as the href attribute of the link
-      const url = window.URL.createObjectURL(blob);
-      link.href = url;
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
 
-      // Set the download attribute of the link
-      link.download = 'Installment contract.pdf';
+        link.download = 'Installment contract.pdf';
 
-      // Append the link to the body (necessary for Firefox)
-      document.body.appendChild(link);
+        document.body.appendChild(link);
 
-      // Programmatically click the link to trigger the download
-      link.click();
+        link.click();
 
-      // Remove the link from the document
-      document.body.removeChild(link);
+        document.body.removeChild(link);
 
-      // ตรวจสอบว่าทั้งสอง API ทำงานสำเร็จหรือไม่
-      if (createCardResponse.ok && createBillResponse.ok) {
-        const createCardData = await createCardResponse.json();
-        const createBillData = await createBillResponse.json();
-        console.log('New card created:', createCardData);
-        console.log('New bill created:', createBillData);
-        // ทำตามขั้นตอนต่อไปเช่น navigateToProfileCustomer();
-      } else {
-        throw new Error('One or more API requests failed');
+        if (createCardResponse.ok && createBillResponse.ok) {
+          const createCardData = await createCardResponse.json();
+          const createBillData = await createBillResponse.json();
+          //console.log('New card created:', createCardData);
+          //console.log('New bill created:', createBillData);
+        } else {
+          throw new Error('One or more API requests failed');
+        }
+      } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
       }
-    } catch (error) {
-      console.error('There was a problem with the fetch operation:', error);
-    }
-  }, []);
+    },
+    [creditScoreText]
+  );
 
   const nextStep = useCallback(() => setStep(prevStep => prevStep + 1), []);
   const prevStep = useCallback(() => setStep(prevStep => prevStep - 1), []);

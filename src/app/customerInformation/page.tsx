@@ -1,4 +1,4 @@
-import MenuList from './components/menuList';
+import MenuList from './components/MenuList';
 
 export default function CustomerInformationPage() {
   return <MenuList />;

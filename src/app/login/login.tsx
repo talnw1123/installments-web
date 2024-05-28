@@ -1,14 +1,13 @@
 'use client';
 
-/// ในไฟล์ LoginPage.tsx (Next.js)
 import AlertDialogError from '@components/alertDialog/alertError';
 import ToastSuccess from '@components/toast';
 import { Box, Button, Grid, Link, TextField, Typography } from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { authState } from '@store/index'; // เพิ่ม import นี้
+import { authState } from '@store/index';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
-import { useSetRecoilState } from 'recoil'; // เพิ่ม import นี้
+import { useSetRecoilState } from 'recoil';
 
 
 const useStyles = makeStyles({
@@ -60,7 +59,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data) => {
 
-    const { email, password } = data; // ดึงค่า email และ password จาก form data
+    const { email, password } = data;
 
     try {
       const response = await fetch('http://localhost:4400/users/login', {
@@ -68,19 +67,16 @@ export default function LoginPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }), // ส่งข้อมูล email และ password ไปยังเซิร์ฟเวอร์
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
         const responseData = await response.json();
-        const { token } = responseData; // ดึงค่า token จาก responseData
+        const { token } = responseData;
 
-        // เก็บ email และ token ที่ได้จาก form และ response data ใน Recoil state
+
         setAuth({ email, token });
 
-        // console.log(email, token)
-        // Redirect หน้าไปยังหน้าหลังจากล็อกอินเสร็จสิ้น
-        // เปลี่ยนเป็น URL ที่ต้องการ redirect ไป
       } else {
         setOpenAlertDialogError(true);
       }

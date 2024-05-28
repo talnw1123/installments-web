@@ -1,30 +1,40 @@
 'use client';
 import { Button, Grid } from '@mui/material';
+
+import { useRecoilState, userState } from '@store/index';
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { StepParams } from '../../../typings/renderStepProps';
 import EditProfileCustomer from './editProfileCustomer';
-
 export const DataContext = createContext<any>({});
 
 const EditProfileData = () => {
   const [installments, setInstallments] = useState<any[]>([]);
-
   const [step, setStep] = useState(0);
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
 
+  const [userInfo, setUserInfo] = useRecoilState(userState);
+  //console.log(userInfo.userNationID)
   const statuses = useMemo(() => ['โสด', 'สมรส', 'หย่าร้าง', 'หม้าย'], []);
+  const id = userInfo.userNationID;
 
-  const onSubmit = useCallback<SubmitHandler<StepParams>>(
-    data => {
-      console.log(data);
+  const onSubmit = useCallback(
+    async (data: any) => {
+      //console.log(data);
       const newData = { ...data, table: installments };
-      console.log(newData);
+
+      try {
+        const response = await axios.post(`http://localhost:4400/api/updateCard/${id}`, newData);
+        //console.log(response.data);
+      } catch (error) {
+        console.error('Error updating data:', error);
+      }
     },
-    [installments]
+    [installments, id]
   );
 
   const valuetext = useCallback((value: number) => `${value}%`, []);
@@ -53,8 +63,6 @@ const EditProfileData = () => {
   const conTextValue = useMemo(
     () => ({
       step,
-      // nextStep,
-      // prevStep,
       statuses,
       valuetext,
       onSubmit,
@@ -67,8 +75,13 @@ const EditProfileData = () => {
     [step, statuses, valuetext, onSubmit, calculate, birthDateValue, setValue, control, setAge]
   );
 
-  const handleEditClick = () => {
-    navigateTo('/profileCustomer');
+  const handleEditClick = async () => {
+    try {
+      await handleSubmit(onSubmit)();
+      navigateTo(`/profileCustomer?id=${id}&updated=true`);
+    } catch (error) {
+      console.error('Error handling submit:', error);
+    }
   };
 
   const navigateTo = (path: string) => {
@@ -83,7 +96,7 @@ const EditProfileData = () => {
             <>
               <EditProfileCustomer />
               <Grid item xs={12} sx={{ marginTop: '8px', display: 'flex', justifyContent: 'center' }}>
-                <Button type="submit" variant="contained" color="primary" onClick={handleEditClick}>
+                <Button type="button" variant="contained" color="primary" onClick={handleEditClick}>
                   ยืนยัน
                 </Button>
               </Grid>

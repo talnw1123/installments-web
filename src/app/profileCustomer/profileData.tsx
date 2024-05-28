@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { StepParams } from '../../../typings/renderStepProps';
+// import PayPage from '../Pay/Pay';
 import ProfileCustomer from './profileCustomer';
 
 export const DataContext1 = createContext<any>({});
@@ -15,7 +16,7 @@ const ProfileData = () => {
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
-  const statuses = useMemo(() => ['โสด', 'สมรส', 'หย่าร้าง', 'หม้าย'], []);
+  const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง'], []);
 
   const onSubmit = useCallback<SubmitHandler<StepParams>>(
     data => {
@@ -39,6 +40,7 @@ const ProfileData = () => {
   }, [setValue]);
 
   const date = watch('birthDate');
+
   const calculate = useCallback((birthDate: string | number | dayjs.Dayjs | Date | null | undefined) => {
     if (!birthDate) {
       return '';
@@ -123,6 +125,11 @@ const ProfileData = () => {
               <ProfileCustomer />
             </>
           )}
+          {/* {step === 0 && (
+            <>
+              <PayPage />
+            </>
+          )} */}
         </DataContext1.Provider>
       </form>
     </>
