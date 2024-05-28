@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { userState } from '@store/index';
-import axios from 'axios';
-import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
+import axios from 'axios';
+import dayjs from 'dayjs';
 import { useRecoilState } from 'recoil';
+import { userState } from '@store/index';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -62,16 +62,7 @@ const useStyles = makeStyles({
 });
 
 interface Column {
-  id:
-    | 'billNumber'
-    | 'status'
-    | 'principle'
-    | 'numberOfInstallments'
-    | 'payment'
-    | 'interest'
-    | 'date'
-    | 'paid'
-    | 'balance';
+  id: 'billNo' | 'status' | 'principle' | 'payment_term' | 'payment' | 'interest' | 'date' | 'paid' | 'balance';
   label: string;
   minWidth?: number;
   align?: 'right';
@@ -79,16 +70,16 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'billNumber', label: 'หมายเลขบิล', minWidth: 70 },
+  { id: 'billNo', label: 'หมายเลขบิล', minWidth: 70 },
   { id: 'status', label: 'สถานะการผ่อน', minWidth: 100 },
   {
     id: 'principle',
-    label: 'เงินต้น',
+    label: 'รวมเงินต้องจ่ายทั้งหมด',
     minWidth: 100,
   },
   {
-    id: 'numberOfInstallments',
-    label: 'จำนวนงวด',
+    id: 'payment_term',
+    label: 'ผ่อนทั้งหมด',
     minWidth: 100,
   },
   {
@@ -119,10 +110,10 @@ const columns: readonly Column[] = [
 ];
 
 interface Data {
-  billNumber: string;
+  billNo: string;
   status: string;
   principle: number;
-  numberOfInstallments: number;
+  payment_term: number;
   payment: number;
   interest: number;
   date: string;
@@ -131,17 +122,17 @@ interface Data {
 }
 
 function createData(
-  billNumber: string,
+  billNo: string,
   status: string,
   principle: number,
-  numberOfInstallments: number,
+  payment_term: number,
   payment: number,
   interest: number,
   date: string,
   paid: number,
   balance: number
 ): Data {
-  return { billNumber, status, principle, numberOfInstallments, payment, interest, date, paid, balance };
+  return { billNo, status, principle, payment_term, payment, interest, date, paid, balance };
 }
 
 export default function InstallmentHisPage() {
@@ -183,7 +174,7 @@ export default function InstallmentHisPage() {
           const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
           const numberOfInstallments = parseInt(bill.numberOfInstallments, 10);
           const paymentPerTerm = Math.ceil(totalPaymentWithInterest / numberOfInstallments);
-          const interest = (totalLoan * interestRates) / 100;
+          const interest = totalLoan * interestRates / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
           const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
           const balance = totalPaymentWithInterest - paid;
@@ -262,7 +253,7 @@ export default function InstallmentHisPage() {
                                 hover
                                 role="checkbox"
                                 tabIndex={-1}
-                                key={row.billNumber}
+                                key={row.billNo}
                                 style={{ textAlign: 'center' }}
                               >
                                 {columns.map(column => {
