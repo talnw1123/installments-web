@@ -151,8 +151,8 @@ export default function DebtCollectionPage() {
   //create table
   const handleCreateDebtCollection = () => {
     if (selectedBill && selectedDate) {
-      const demandDate = dayjs().format('DD/MM/YYYY');
-      const duePaid = selectedDate.format('DD/MM/YYYY');
+      const demandDate = dayjs().format('DD/MM/YYYY'); //วันทวง ใช้วันที่ปัจจุบัน
+      const duePaid = selectedDate.format('DD/MM/YYYY'); //วันครบกำหนดจ่าย เปลี่ยนเป็นดึงมาจากหลังบ้าน
       const overDay = calculateDaysOverdue(duePaid, demandDate);
       const lateFee = calculateLateFee(overDay);
 
