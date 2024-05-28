@@ -107,27 +107,25 @@ interface Data {
   totalPay: number;
   numberOfDebt: number;
   paymentDate: string;
-  noteDebt: string;
 }
 
 const initialRows: Data[] = [];
 
 export default function DebtCollectionPage() {
   const classes = useStyles();
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchType = searchParams.get('type') || 'ติดตามหนี้';
-  const menuList = [
-    'ประวัติผู้กู้',
-    'ชำระเงิน',
-    'ประวัติการชำระเงิน',
-    'สร้างการ์ดผ่อนสินค้า',
-    'ประวัติการผ่อนสินค้า',
-    'ติดตามหนี้',
-  ];
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [debtCollection, setDebtCollection] = useState<Data[]>(initialRows);
+  const [selectedBill, setSelectedBill] = useState<string>('');
+  const [installmentsNumber, setInstallmentsNumber] = useState<number>(0);
+  const [interest, setInterest] = useState<number>(0);
+  const [lateFees, setLateFees] = useState<number>(0);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const numberOptions = Array.from({ length: 100 }, (_, index) => ({
+    label: `${index + 1}`,
+    value: index + 1,
+  }));
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -145,25 +143,26 @@ export default function DebtCollectionPage() {
     return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
   };
 
-  const handleSave = () => {
+  //create table
+  const handleCreateDebtCollection = () => {
     if (selectedBill && selectedDate) {
       const demandDate = dayjs().format('DD/MM/YYYY');
       const duePaid = selectedDate.format('DD/MM/YYYY');
       const overDay = calculateDaysOverdue(duePaid, demandDate);
 
-      const newRow: Data = {
+      const newDebtCollection: Data = {
         billNumber: selectedBill,
         installmentsNumber,
         duePaid,
-        demandDate,
+        demandDate, //current day
         overDay,
         totalPay: interest + lateFees,
-        numberOfDebt: rows.filter(row => row.billNumber === selectedBill).length + 1,
+        numberOfDebt: debtCollection.filter(row => row.billNumber === selectedBill).length + 1,
         paymentDate: duePaid,
         noteDebt: 'N/A',
       };
 
-      setRows(prevRows => [...prevRows, newRow]);
+      setDebtCollection(prevRows => [...prevRows, newDebtCollection]);
     }
   };
 
@@ -184,7 +183,7 @@ export default function DebtCollectionPage() {
     duePaid: 'วันที่ครบกำหนดจ่าย',
     demandDate: 'วันที่ทวงถาม',
     overDay: 'จำนวนเกินกำหนด',
-    totalPay: 'จำนวนเกินกำหนด',
+    totalPay: 'เงินที่ต้องชำระ',
     numberOfDebt: 'ครั้งที่ทวง',
     paymentDate: 'วันที่นัดชำระ',
   };
@@ -208,7 +207,7 @@ export default function DebtCollectionPage() {
                   <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
-                      name="name"
+                      name="nationID"
                       label="เลขประจำตัวประชาชน"
                       defaultValue=" "
                       InputProps={{
@@ -221,7 +220,7 @@ export default function DebtCollectionPage() {
                   <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
-                      name="lastNameBorrower"
+                      name="contractNumber"
                       label="หมายเลขสัญญา"
                       defaultValue=" "
                       InputProps={{
@@ -234,7 +233,7 @@ export default function DebtCollectionPage() {
                   <Grid item xs={12} sm={4} className={classes.column}>
                     <TextField
                       id="standard-read-only-input"
-                      name="mapLinkDefaultBorrower"
+                      name="phone"
                       label="เบอร์โทรศัพท์"
                       defaultValue=" "
                       InputProps={{
@@ -297,28 +296,13 @@ export default function DebtCollectionPage() {
                       }}
                     />
                   </Grid>
-                  <Grid className={classes.box}>
-                    <TextField
-                      label="เงินดาวน์"
-                      type="number"
-                      variant="standard"
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </Grid>
-                  <Grid className={classes.box}>
-                    <TextField
-                      label="จำนวนงวด"
-                      type="number"
-                      variant="standard"
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
+                  <Grid item xs={1}>
+                    <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                      บาท
+                    </Typography>
                   </Grid>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} className={classes.column}>
                   <Typography
                     variant="h6"
                     sx={{ marginRight: '10px', fontWeight: 'bold', marginTop: '10px', color: '#718171' }}
@@ -396,11 +380,10 @@ export default function DebtCollectionPage() {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleSave}
+                      onClick={handleCreateDebtCollection}
                       sx={{
-                        backgroundColor: '#718171',
                         borderRadius: '1 px',
-                        marginLeft: '10px',
+                        marginLeft: '400px',
                         padding: '10px 20px',
                       }}
                     >
@@ -420,20 +403,22 @@ export default function DebtCollectionPage() {
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                              {columns.map(column => (
-                                <TableCell key={column}>{row[column]}</TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
+                          {debtCollection
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => (
+                              <TableRow hover role="checkbox" tabIndex={-1} key={index}>
+                                {columns.map(column => (
+                                  <TableCell key={column}>{row[column]}</TableCell>
+                                ))}
+                              </TableRow>
+                            ))}
                         </TableBody>
                       </Table>
                     </TableContainer>
                     <TablePagination
                       rowsPerPageOptions={[5, 10, 25]}
                       component="div"
-                      count={rows.length}
+                      count={debtCollection.length}
                       rowsPerPage={rowsPerPage}
                       page={page}
                       onPageChange={handleChangePage}
