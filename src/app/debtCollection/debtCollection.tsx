@@ -188,6 +188,8 @@ export default function DebtCollectionPage() {
     paymentDate: 'วันที่นัดชำระ',
   };
 
+  const [fineAmount, setFineAmount] = useState('50 บาท/วัน');
+
   return (
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
@@ -311,57 +313,44 @@ export default function DebtCollectionPage() {
                   </Typography>
                   <Grid container className={classes.formRow}>
                     <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        หมายเลขบิล
-                      </Typography>
                       <Autocomplete
                         disablePortal
-                        id="combo-box-demo"
+                        id="disable-close-on-select"
+                        disableCloseOnSelect
                         options={numberOptions}
                         sx={{ width: '100%' }}
                         value={numberOptions.find(option => option.value === Number(selectedBill)) || null}
                         onChange={(event, newValue) => setSelectedBill(newValue ? newValue.label : '')}
-                        renderInput={params => <TextField {...params} />}
+                        renderInput={params => <TextField {...params} label="หมายเลขบิล" variant="standard" />}
                       />
                     </Grid>
                     <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        งวดที่
-                      </Typography>
                       <Autocomplete
                         disablePortal
-                        id="combo-box-demo"
+                        id="disable-close-on-select"
+                        disableCloseOnSelect
                         options={numberOptions}
                         sx={{ width: '100%' }}
                         value={numberOptions.find(option => option.value === installmentsNumber) || null}
                         onChange={(event, newValue) => setInstallmentsNumber(newValue ? newValue.value : 0)}
-                        renderInput={params => <TextField {...params} />}
+                        renderInput={params => <TextField {...params} label="งวดที่" variant="standard" />}
                       />
                     </Grid>
                     <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        ดอกเบี้ย
-                      </Typography>
-                      <TextField
-                        type="number"
-                        id="outlined-basic"
-                        variant="outlined"
-                        sx={{ width: '100%' }}
-                        value={interest}
-                        onChange={e => setInterest(Number(e.target.value))}
-                      />
-                    </Grid>
-                    <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        ค่าปรับล่าช้า
-                      </Typography>
-                      <TextField
-                        id="outlined-basic"
-                        variant="outlined"
-                        sx={{ width: '100%' }}
-                        value={lateFees}
-                        onChange={e => setLateFees(Number(e.target.value))}
-                      />
+                      <Grid item xs={12} className={classes.column} container direction="row">
+                        <Grid className={classes.box} sx={{ flexGrow: 1 }}>
+                          <TextField
+                            id="standard-read-only-input"
+                            label="ค่าปรับ"
+                            value={fineAmount}
+                            variant="standard"
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                            sx={{ width: '100%' }}
+                          />
+                        </Grid>
+                      </Grid>
                     </Grid>
                     <Grid item className={classes.formControl}>
                       <Typography variant="body1" sx={{ marginRight: '10px' }}>

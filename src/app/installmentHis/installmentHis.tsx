@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { useRouter, useSearchParams } from 'next/navigation';
-import * as React from 'react';
+import { userState } from '@store/index';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { useRouter, useSearchParams } from 'next/navigation';
+import * as React from 'react';
 import { useRecoilState } from 'recoil';
-import { userState } from '@store/index';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -174,7 +174,7 @@ export default function InstallmentHisPage() {
           const totalPaymentWithInterest = totalLoan * (1 + interestRates / 100);
           const numberOfInstallments = parseInt(bill.numberOfInstallments, 10);
           const paymentPerTerm = Math.ceil(totalPaymentWithInterest / numberOfInstallments);
-          const interest = totalLoan * interestRates / 100;
+          const interest = (totalLoan * interestRates) / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
           const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
           const balance = totalPaymentWithInterest - paid;
