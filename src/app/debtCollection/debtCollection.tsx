@@ -143,6 +143,7 @@ export default function DebtCollectionPage() {
     return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
   };
 
+  //create table
   const handleCreateDebtCollection = () => {
     if (selectedBill && selectedDate) {
       const demandDate = dayjs().format('DD/MM/YYYY');
@@ -153,7 +154,7 @@ export default function DebtCollectionPage() {
         billNumber: selectedBill,
         installmentsNumber,
         duePaid,
-        demandDate,
+        demandDate, //current day
         overDay,
         totalPay: interest + lateFees,
         numberOfDebt: debtCollection.filter(row => row.billNumber === selectedBill).length + 1,
@@ -297,36 +298,6 @@ export default function DebtCollectionPage() {
                   <Grid item xs={1}>
                     <Typography variant="body1" sx={{ marginTop: '35px' }}>
                       บาท
-                    </Typography>
-                  </Grid>
-                  <Grid className={classes.box}>
-                    <TextField
-                      label="เงินดาวน์"
-                      type="number"
-                      variant="standard"
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                      บาท
-                    </Typography>
-                  </Grid>
-                  <Grid className={classes.box}>
-                    <TextField
-                      label="จำนวนงวด"
-                      type="number"
-                      variant="standard"
-                      InputProps={{
-                        readOnly: true,
-                      }}
-                    />
-                  </Grid>
-                  <Grid item xs={1}>
-                    <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                      งวด
                     </Typography>
                   </Grid>
                 </Grid>
