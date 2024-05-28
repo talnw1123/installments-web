@@ -146,16 +146,18 @@ export default function PaymentHistoryPage() {
 
         const allRows = data.flatMap((borrower: any) =>
           borrower.bills.flatMap((bill: any) =>
-            bill.paymentHistory.map((payment: any, index: number) => createData(
-              (index + 1).toString(),
-              dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
-              dayjs(payment.paymentDate).format('DD/MM/YYYY'),
-              dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
-              bill.totalLoan * (1 + bill.interestRates / 100),
-              bill.interestRates,
-              bill.totalLoan,
-              `หมายเลข ${bill.billNumber}`
-            ))
+            bill.paymentHistory.map((payment: any, index: number) =>
+              createData(
+                (index + 1).toString(),
+                dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
+                dayjs(payment.paymentDate).format('DD/MM/YYYY'),
+                dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
+                bill.totalLoan * (1 + bill.interestRates / 100),
+                bill.interestRates,
+                bill.totalLoan,
+                `หมายเลข ${bill.billNumber}`
+              )
+            )
           )
         );
         setRows(allRows);

@@ -104,6 +104,7 @@ interface Data {
   duePaid: string;
   demandDate: string;
   overDay: string;
+  lateFee: number;
   totalPay: number;
   numberOfDebt: number;
   paymentDate: string;
@@ -118,8 +119,8 @@ export default function DebtCollectionPage() {
   const [debtCollection, setDebtCollection] = useState<Data[]>(initialRows);
   const [selectedBill, setSelectedBill] = useState<string>('');
   const [installmentsNumber, setInstallmentsNumber] = useState<number>(0);
-  const [interest, setInterest] = useState<number>(0);
-  const [lateFees, setLateFees] = useState<number>(0);
+  const [amountDue, setAmountDue] = useState<number>(0); //เงินที่ต้องชำระ
+  const [lateFees, setLateFees] = useState<number>(0); //ค่าปรับ
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
 
   const numberOptions = Array.from({ length: 100 }, (_, index) => ({
@@ -143,12 +144,17 @@ export default function DebtCollectionPage() {
     return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
   };
 
+  const calculateLateFee = (daysOverdue: number): number => {
+    return daysOverdue > 0 ? daysOverdue * 50 : 0;
+  };
+
   //create table
   const handleCreateDebtCollection = () => {
     if (selectedBill && selectedDate) {
       const demandDate = dayjs().format('DD/MM/YYYY');
       const duePaid = selectedDate.format('DD/MM/YYYY');
       const overDay = calculateDaysOverdue(duePaid, demandDate);
+      const lateFee = calculateLateFee(overDay);
 
       const newDebtCollection: Data = {
         billNumber: selectedBill,
@@ -156,10 +162,10 @@ export default function DebtCollectionPage() {
         duePaid,
         demandDate, //current day
         overDay,
-        totalPay: interest + lateFees,
-        numberOfDebt: debtCollection.filter(row => row.billNumber === selectedBill).length + 1,
+        lateFee,
+        totalPay: amountDue + lateFees, //ค่าปรับ + เงินที่ต้องชำระ
+        numberOfDebt: debtCollection.filter(row => row.billNumber === selectedBill).length + 1, //เพิ่มครั้งที่ทวงทุกครั้งที่ บิล และ งวด ซ้ำกัน
         paymentDate: duePaid,
-        noteDebt: 'N/A',
       };
 
       setDebtCollection(prevRows => [...prevRows, newDebtCollection]);
@@ -172,6 +178,7 @@ export default function DebtCollectionPage() {
     'duePaid',
     'demandDate',
     'overDay',
+    'lateFee',
     'totalPay',
     'numberOfDebt',
     'paymentDate',
@@ -183,12 +190,13 @@ export default function DebtCollectionPage() {
     duePaid: 'วันที่ครบกำหนดจ่าย',
     demandDate: 'วันที่ทวงถาม',
     overDay: 'จำนวนเกินกำหนด',
+    lateFee: 'ค่าปรับ',
     totalPay: 'เงินที่ต้องชำระ',
     numberOfDebt: 'ครั้งที่ทวง',
     paymentDate: 'วันที่นัดชำระ',
   };
 
-  const [fineAmount, setFineAmount] = useState('50 บาท/วัน');
+  const [fineAmount, setFineAmount] = useState('50 บาท/วัน'); //use for default value lateFee
 
   return (
     <Grid container className={classes.bigContainer}>
