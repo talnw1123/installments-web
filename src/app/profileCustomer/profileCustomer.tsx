@@ -16,7 +16,6 @@ import { DataContext1 } from './profileData';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 
-
 dayjs.extend(utc);
 
 const useStyles = makeStyles({
@@ -67,12 +66,9 @@ const useStyles = makeStyles({
 });
 
 const ProfileCustomer = () => {
-
   const searchParams = useSearchParams();
 
-
   const id = searchParams.get('id');
-
 
   const { control, statuses, setValue, calculate, setAge } = useContext(DataContext1);
   const classes = useStyles();
@@ -97,6 +93,7 @@ const ProfileCustomer = () => {
   useEffect(() => {
     const fetchBorrowerData = async () => {
       try {
+        console.log(`Fetching data for ID: ${id}`);
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${id}`);
         const data = await response.json();
 
@@ -108,7 +105,6 @@ const ProfileCustomer = () => {
             setValue('firstName', borrower.firstName || '');
             setValue('lastName', borrower.lastName || '');
             setValue('birthDate', dayjs(borrower.birthDate) || null);
-            //console.log(dayjs(borrower.birthDate))
             const now = dayjs();
             setValue('age', now.diff(borrower.birthDate, 'year') || '');
             setValue('job', borrower.job || '');
@@ -144,7 +140,7 @@ const ProfileCustomer = () => {
             setValue('jobOfGuarantor', borrower.jobOfGuarantor || '');
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
-
+            setValue('creditScoreText', borrower.creditScoreText || '');
 
             setUserInfo(prevState => ({
               ...prevState,
@@ -758,6 +754,27 @@ const ProfileCustomer = () => {
                       <TextField
                         {...field}
                         label="Google Map link"
+                        variant="standard"
+                        fullWidth
+                        margin="normal"
+                        className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
+                      />
+                    )}
+                  />
+                </Grid>
+
+                <Grid item xs={10}>
+                  <Controller
+                    name="creditScoreText"
+                    defaultValue={' '}
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        label="creditScore"
                         variant="standard"
                         fullWidth
                         margin="normal"

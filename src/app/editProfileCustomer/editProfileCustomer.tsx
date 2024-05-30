@@ -6,7 +6,7 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
-import { Users } from 'app/users';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { Controller } from 'react-hook-form';
@@ -66,12 +66,12 @@ const EditProfileCustomer = () => {
   const classes = useStyles();
   const searchParams = useSearchParams();
   const id = searchParams.get('id');
-  console.log(id)
+  console.log(id);
 
   const [borrowerData, setBorrowerData] = useState(null);
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const handleEditClick = () => {
-    navigateTo('/');
+    navigateTo('/profileCustomer?id=${id}');
   };
 
   const navigateTo = (path: string) => {
@@ -129,7 +129,6 @@ const EditProfileCustomer = () => {
             setValue('incomeOfGuarantor', borrower.incomeOfGuarantor || '');
             setValue('phoneOfGuarantorInJob', borrower.phoneOfGuarantorInJob || '');
 
-
             setUserInfo(prevState => ({
               ...prevState,
               userNationID: id as string,
@@ -151,9 +150,15 @@ const EditProfileCustomer = () => {
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
         <Grid container className={classes.topContainer}>
-          <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
-            ประวัติผู้กู้
-          </Typography>
+          <Grid item>
+            <Grid container sx={{ mb: 3, mt: 1, color: 'red', fontSize: '16px', marginLeft: '1070px' }}>
+              <Link href={`/profileCustomer?id=${id}`}>{'ย้อนกลับ'}</Link>
+            </Grid>
+
+            <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
+              ประวัติผู้กู้
+            </Typography>
+          </Grid>
         </Grid>
 
         <Grid container className={classes.formContainer}>
@@ -167,7 +172,6 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="nationID"
-                      defaultValue={Users[0].id}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -185,7 +189,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="firstName"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -203,7 +207,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '4px' }}>
                     <Controller
                       name="addressReal"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -221,7 +225,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="googleMapAdressReal"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -240,7 +244,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="status"
-                        defaultValue={""}
+                        defaultValue={''}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -264,7 +268,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="kids"
-                        defaultValue={""}
+                        defaultValue={''}
                         control={control}
                         render={({ field }) => (
                           <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -286,7 +290,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phone"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -305,7 +309,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="job"
-                        defaultValue={""}
+                        defaultValue={''}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -323,7 +327,7 @@ const EditProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="income"
-                          defaultValue={""}
+                          defaultValue={''}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -346,7 +350,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneInJob"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -364,7 +368,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10} sx={{ marginTop: '5px' }}>
                     <Controller
                       name="firstNameOfSpouse"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -381,8 +385,8 @@ const EditProfileCustomer = () => {
 
                   <Grid item xs={10} sx={{ marginTop: '16px' }}>
                     <Controller
-                      name="phoneNumberSpouse"
-                      defaultValue={""}
+                      name="phoneOfSpouse"
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -401,7 +405,7 @@ const EditProfileCustomer = () => {
                     <Grid item xs={5}>
                       <Controller
                         name="phoneOfSpouse"
-                        defaultValue={""}
+                        defaultValue={''}
                         control={control}
                         render={({ field }) => (
                           <TextField
@@ -419,7 +423,7 @@ const EditProfileCustomer = () => {
                       <Grid>
                         <Controller
                           name="jobOfSpouse"
-                          defaultValue={""}
+                          defaultValue={''}
                           control={control}
                           render={({ field }) => (
                             <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
@@ -442,7 +446,7 @@ const EditProfileCustomer = () => {
                   <Grid item xs={10}>
                     <Controller
                       name="phoneOfSpouseInJob"
-                      defaultValue={""}
+                      defaultValue={''}
                       control={control}
                       render={({ field }) => (
                         <TextField
@@ -486,7 +490,6 @@ const EditProfileCustomer = () => {
                     <Controller
                       name="age"
                       control={control}
-                      defaultValue={Users[0].age}
                       render={({ field: { value } }) => (
                         <Grid sx={{ display: 'flex', flexDirection: 'row' }}>
                           <Typography>{value ? `อายุ: ${value}` : 'อายุ'}</Typography>
@@ -500,7 +503,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '3px' }}>
                   <Controller
                     name="lastName"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -518,7 +521,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressCurrent"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -537,7 +540,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressCurrent"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -555,7 +558,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10} sx={{ marginTop: '48px' }}>
                   <Controller
                     name="addressJob"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -574,7 +577,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressJob"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -592,7 +595,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="lastNameOfSpouse"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -610,7 +613,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="addressOfSpouseJob"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField
@@ -629,7 +632,7 @@ const EditProfileCustomer = () => {
                 <Grid item xs={10}>
                   <Controller
                     name="googleMapAdressJobOfSpouse"
-                    defaultValue={""}
+                    defaultValue={''}
                     control={control}
                     render={({ field }) => (
                       <TextField

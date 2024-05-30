@@ -63,6 +63,8 @@ export interface StepParams {
   dueDate: dayjs.Dayjs | null;
 
   table: any[];
+
+  creditScoreText: string;
 }
 
 export default renderStepProps;

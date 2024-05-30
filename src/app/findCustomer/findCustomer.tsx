@@ -69,7 +69,7 @@ export default function FindCustomerPage() {
     fetchBorrowers();
   }, []);
 
-  const calculateTotalPaid = (paymentHistory) => {
+  const calculateTotalPaid = paymentHistory => {
     return paymentHistory.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
   };
 
@@ -133,9 +133,9 @@ export default function FindCustomerPage() {
 
   const columnsWithLink = columns.map(col => ({
     ...col,
-    renderCell: ({ row, ...params }) => (
-      <Link href={`/profileCustomer?id=${row.id}`} passHref>
-        <Typography style={{ cursor: 'pointer', pointerEvents: 'none' }}>{params.value}</Typography>
+    renderCell: params => (
+      <Link href={`/profileCustomer?id=${params.row.id}`} passHref>
+        <Typography style={{ cursor: 'pointer', pointerEvents: 'auto' }}>{params.value}</Typography>
       </Link>
     ),
   }));
@@ -144,10 +144,10 @@ export default function FindCustomerPage() {
     ? filteredRows.filter(
         row =>
           row &&
-          row.id.toString().includes(idQuery) &&
-          row.first_name.toLowerCase().includes(nameQuery.toLowerCase()) &&
-          row.last_name.toLowerCase().includes(surnameQuery.toLowerCase()) &&
-          row.phone.includes(phoneQuery)
+          row.id.toString().startsWith(idQuery) && // เปลี่ยนจาก includes เป็น startsWith
+          row.first_name.startsWith(nameQuery.toLowerCase()) &&
+          (row.last_name || '').toLowerCase().startsWith(surnameQuery.toLowerCase()) &&
+          row.phone.startsWith(phoneQuery)
       )
     : filteredRows;
 

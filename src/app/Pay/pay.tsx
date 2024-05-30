@@ -3,13 +3,13 @@ import { Button, Card, Grid, MenuItem, TextField, ThemeProvider } from '@mui/mat
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
-import { GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useRecoilState, userState } from '@store/index';
 import MenuList from 'app/customerInformation/page';
+import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import dayjs from 'dayjs';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -112,17 +112,18 @@ export default function PayPage() {
     setSelectedBill(event.target.value);
   };
 
-  const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
+  const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>, rowIndex: number) => {
+    const { checked } = e.target;
     if (checked) {
-      setChecklist([...checklist, Number(value)]);
+      setChecklist([...checklist, rowIndex]);
     } else {
-      setChecklist(checklist.filter(item => item !== Number(value)));
+      setChecklist(checklist.filter(item => item !== rowIndex));
     }
   };
 
   const handleConfirm = async () => {
-    const totalAmount = checklist.reduce((acc, curr) => acc + curr, 0) + lateFees;
+    const totalAmount = checklist.reduce((acc, curr) => acc + rows[curr].debt, 0) + lateFees;
+    const timePayments = checklist.map((index) => rows[index].timePayment);
 
     try {
       const response = await fetch('http://localhost:4400/api/addPayment', {
@@ -132,7 +133,8 @@ export default function PayPage() {
         },
         body: JSON.stringify({
           billNumber: selectedBill,
-          amount: totalAmount,
+          timePayments: timePayments,
+          damages: lateFees,
         }),
       });
 
@@ -142,8 +144,6 @@ export default function PayPage() {
 
       const data = await response.json();
       console.log(data);
-
-
       router.push('/installmentHis');
     } catch (error) {
       console.error('Error sending payment data:', error);
@@ -163,7 +163,11 @@ export default function PayPage() {
       headerName: '',
       width: 100,
       renderCell: params => {
-        return <input type="checkbox" onChange={handleChecklist} value={Number(params.row.debt)} />;
+        return <input
+          type="checkbox"
+          onChange={(e) => handleChecklist(e, params.row.id - 1)}
+          checked={checklist.includes(params.row.id - 1)}
+        />
       },
     },
     {
@@ -237,17 +241,29 @@ export default function PayPage() {
     },
   ];
 
-  const rows = Array.isArray(bills) ? bills.map((bill, index) => ({
-    id: index + 1,
-    bill: bill.billNumber,
-    station: bill.station,
-    date: bill.date,
-    debt: bill.debt,
-    interest: bill.interest,
-    principle: bill.principle,
-    accrued_interest: bill.accrued_interest,
-    accrued_principle: bill.accrued_principle,
-  })) : [];
+  const rows = bills.flatMap((bill, billIndex) =>
+    bill.paymentHistory.map((payment, paymentIndex) => ({
+      id: billIndex * bill.paymentHistory.length + paymentIndex + 1,
+      timePayment: payment.timePayment,
+      date: dayjs(bill.createdAt).add(payment.timePayment, 'month').format('YYYY-MM-DD'),
+      station: payment.status === 'unpaid' ? 'ค้างชำระ' : 'ชำระแล้ว',
+      debt: parseFloat(bill.totalInstallmentAmount) * (1 + parseFloat(bill.interestRates) / 100) / parseFloat(bill.numberOfInstallments),
+      principle: Math.floor(bill.totalInstallmentAmount / bill.numberOfInstallments),
+      interest: Math.ceil((bill.totalInstallmentAmount) * (parseFloat(bill.interestRates) / 100) / bill.numberOfInstallments),
+      accrued_interest: calculateAccruedInterest(bill, paymentIndex),
+      accrued_principle: calculateAccruedPrinciple(bill, paymentIndex),
+    }))
+  );
+
+  function calculateAccruedInterest(bill, paymentIndex) {
+    const interest = (parseFloat(bill.totalInstallmentAmount) * (parseFloat(bill.interestRates) / 100)) / bill.numberOfInstallments;
+    return interest * (paymentIndex + 1);
+  }
+
+  function calculateAccruedPrinciple(bill, paymentIndex) {
+    const principle = (parseFloat(bill.totalInstallmentAmount)) / bill.numberOfInstallments;
+    return principle * (paymentIndex + 1);
+  }
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -316,7 +332,7 @@ export default function PayPage() {
                         id="birthDate"
                         name="birthDate"
                         label="วันเดือนปีเกิด"
-                        value={dayjs(borrower.birthDate)}
+                        value={dayjs(borrower.birthDate).format('YYYY-MM-DD')}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -367,46 +383,67 @@ export default function PayPage() {
         </Grid>
       </Card>
 
-      <Grid className={classes.box}>
-        <Typography variant="body1" sx={{ marginRight: '10px' }}>
-          ค่าปรับ
-        </Typography>
-        <TextField type="number" onChange={e => setLateFees(Number(e.target.value))} id="outlined-basic" variant="outlined" />
-        <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-          บาท
-        </Typography>
-      </Grid>
-      <Grid className={classes.box}>
-        <Typography variant="body1" sx={{ marginRight: '10px' }}>
-          รวมเป็นเงิน
-        </Typography>
-        <ThemeProvider
-          theme={{
-            palette: {
-              primary: {
-                main: '#007FFF',
-                dark: '#0066CC',
+      <Card sx={{ padding: 3, width: '80%', marginTop: '1rem' }}>
+        <DataGrid
+          rows={rows}
+          columns={columns}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
+          checkboxSelection={false}
+          disableSelectionOnClick
+          autoHeight
+        />
+      </Card>
+
+      <Grid container className={classes.formContainer} sx={{ marginTop: '1rem' }}>
+        <Grid className={classes.box}>
+          <Typography variant="body1" sx={{ marginRight: '10px' }}>
+            ค่าปรับ
+          </Typography>
+          <TextField
+            type="number"
+            onChange={e => setLateFees(Number(e.target.value))}
+            id="outlined-basic"
+            variant="outlined"
+          />
+          <Typography variant="body1" sx={{ marginLeft: '10px' }}>
+            บาท
+          </Typography>
+        </Grid>
+        <Grid className={classes.box}>
+          <Typography variant="body1" sx={{ marginRight: '10px' }}>
+            รวมเป็นเงิน
+          </Typography>
+          <ThemeProvider
+            theme={{
+              palette: {
+                primary: {
+                  main: '#007FFF',
+                  dark: '#0066CC',
+                },
               },
-            },
-          }}
-        >
-          <Box className={classes.showBox}>{checklist.reduce((acc, curr) => acc + curr, 0) + lateFees}</Box>
-        </ThemeProvider>
-        <Typography variant="body1" sx={{ marginLeft: '10px' }}>
-          บาท
-        </Typography>
-        <Button
-          variant="contained"
-          onClick={handleConfirm}
-          sx={{
-            backgroundColor: '#718171',
-            borderRadius: '1 px',
-            marginLeft: '10px',
-            padding: '10px 20px',
-          }}
-        >
-          ยืนยัน
-        </Button>
+            }}
+          >
+            <Box className={classes.showBox}>
+              {checklist.reduce((acc, curr) => acc + rows[curr].debt, 0) + lateFees}
+            </Box>
+          </ThemeProvider>
+          <Typography variant="body1" sx={{ marginLeft: '10px' }}>
+            บาท
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={handleConfirm}
+            sx={{
+              backgroundColor: '#718171',
+              borderRadius: '1px',
+              marginLeft: '10px',
+              padding: '10px 20px',
+            }}
+          >
+            ยืนยัน
+          </Button>
+        </Grid>
       </Grid>
     </Grid>
   );
