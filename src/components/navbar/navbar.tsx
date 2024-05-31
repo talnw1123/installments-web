@@ -28,7 +28,6 @@ interface NavbarProps {
 }
 
 const Navbar: FC<NavbarProps> = props => {
-  const { token } = props;
   const router = useRouter();
   const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
   const [activeLink, setActiveLink] = useRecoilState<string>(activeLinkState);
@@ -41,13 +40,6 @@ const Navbar: FC<NavbarProps> = props => {
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem('auth');
-    setAuth({ email: '', token: '' });
-    router.push('/login');
-    setActiveLink('');
   };
 
   return (
@@ -143,45 +135,6 @@ const Navbar: FC<NavbarProps> = props => {
               </Link>
             ))}
           </Box>
-          {token !== '' ? (
-            <Button
-              sx={{
-                borderRadius: 1.5,
-                padding: 1,
-                border: 1,
-                borderColor: '#FFFFFF',
-                color: '#FFFFFF',
-              }}
-              onClick={handleLogout}
-            >
-              <Typography
-                variant="h6"
-                sx={{
-                  display: { xs: 'none', md: 'flex' },
-                  fontFamily: 'monospace',
-                  fontWeight: 700,
-                  color: 'inherit',
-                  textDecoration: 'none',
-                }}
-              >
-                Logout
-              </Typography>
-            </Button>
-          ) : (
-            <Button
-              sx={{
-                borderRadius: 1.5,
-                padding: 1,
-                border: 1,
-                borderColor: '#FFFFFF',
-                color: '#FFFFFF',
-              }}
-            >
-              <Link href="/login" onClick={() => setActiveLink('')}>
-                Login
-              </Link>
-            </Button>
-          )}
         </Toolbar>
       </Container>
     </AppBar>
