@@ -19,6 +19,7 @@ import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useRecoilState } from 'recoil';
+import MenuList from 'app/customerInformation/page';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -176,9 +177,10 @@ export default function InstallmentHisPage() {
           const paymentPerTerm = Math.ceil(totalPaymentWithInterest / numberOfInstallments);
           const interest = (bill.totalInstallmentAmount * interestRates) / 100;
           const date = dayjs(bill.createdAt).format('DD/MM/YYYY');
-          const paid = bill.paymentHistory.reduce((sum: number, payment: any) => sum + payment.amount, 0);
-          const balance = bill.totalInstallmentAmount - paid;
-          const status = balance === 0 ? 'ผ่อนชำระเสร็จสิ้น' : 'กำลังผ่อนชำระ';
+          const paidCount = bill.paymentHistory.filter((payment: any) => payment.status === 'paid').length;
+          const paid = (totalPaymentWithInterest / numberOfInstallments) * paidCount;
+          const balance = totalPaymentWithInterest - paid;
+          const status = balance <= 0 ? 'ผ่อนชำระเสร็จสิ้น' : 'กำลังผ่อนชำระ';
 
           return createData(
             bill.billNumber,
@@ -206,21 +208,7 @@ export default function InstallmentHisPage() {
         <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
           <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
             <Grid item sx={{ marginTop: '2rem' }}>
-              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-                {menuList.map(item => (
-                  <Grid item key={item}>
-                    <Typography
-                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        router.push(`/installmentHis?type=${item}`);
-                      }}
-                      component="span"
-                    >
-                      {item.toUpperCase()}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
+              <MenuList />
             </Grid>
           </Grid>
           <Grid item xs={9} sx={{ display: 'grid' }}>

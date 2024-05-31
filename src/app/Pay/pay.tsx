@@ -357,7 +357,7 @@ export default function PayPage() {
                     )}
                   </Grid>
                 </Grid>
-                <Grid>
+                <Grid item xs={12} sm={2} className={classes.column}>
                   <TextField
                     id="billNumber"
                     label="เลือกบิลที่ต้องการจ่าย"
@@ -366,7 +366,7 @@ export default function PayPage() {
                     fullWidth
                     margin="normal"
                     className={classes.formField}
-                    sx={{ width: '30%' }}
+                    sx={{ width: '100%' }}
                     value={selectedBill}
                     onChange={handleBillSelect}
                   >

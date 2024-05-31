@@ -16,6 +16,7 @@ import {
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { userState } from '@store/index';
+import MenuList from 'app/customerInformation/page';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -118,7 +119,7 @@ export default function PaymentHistoryPage() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [billOptions, setBillOptions] = React.useState<string[]>([]);
   const [rows, setRows] = React.useState<Data[]>([]);
-
+  const [numberOfInstallment, setNumberOfInstallment] = React.useState<number | undefined>();
   const classes = useStyles();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -134,31 +135,38 @@ export default function PaymentHistoryPage() {
 
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [data, setData] = React.useState<any[]>([]);
 
   React.useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
-        const data = response.data;
-        const options = data.flatMap((borrower: any) =>
+        const responseData = response.data;
+        setData(responseData);
+
+        const options = responseData.flatMap((borrower: any) =>
           borrower.bills.map((bill: any) => `หมายเลข ${bill.billNumber}`)
         );
         setBillOptions(options);
 
-        const allRows = data.flatMap((borrower: any) =>
+        const allRows = responseData.flatMap((borrower: any) =>
           borrower.bills.flatMap((bill: any) =>
-            bill.paymentHistory.map((payment: any, index: number) =>
-              createData(
-                (index + 1).toString(),
-                dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
-                dayjs(payment.paymentDate).format('DD/MM/YYYY'),
-                dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
-                bill.totalInstallmentAmount * (1 + bill.interestRates / 100) / bill.numberOfInstallment,
-                bill.interestRates,
-                bill.totalInstallmentAmount,
-                `หมายเลข ${bill.billNumber}`
+            bill.paymentHistory
+              .filter((payment: any) => payment.status === 'paid') // Only include paid payments
+              .map((payment: any, index: number) =>
+                createData(
+                  (index + 1).toString(),
+                  dayjs(bill.createdAt).add(payment.timePayment, 'month').format('DD/MM/YYYY'),
+                  dayjs(payment.paymentDate).format('DD/MM/YYYY'),
+                  dayjs(payment.paymentDate).diff(dayjs(bill.createdAt).add(payment.timePayment, 'month'), 'day'),
+                  bill.totalLoan,
+                  bill.interestRates,
+                  Math.floor(bill.totalInstallmentAmount / bill.numberOfInstallments),
+                  `หมายเลข ${bill.billNumber}`,
+                  bill.numberOfInstallments // Pass the numberOfInstallment to createData
+                )
               )
-            )
           )
         );
         setRows(allRows);
@@ -167,12 +175,24 @@ export default function PaymentHistoryPage() {
       }
     };
 
+
     fetchData();
   }, [userInfo.userNationID]);
 
   const handleBillChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedBill(event.target.value);
+    const selectedBillNumber = event.target.value;
+    setSelectedBill(selectedBillNumber);
+
+    // Find the selected bill and set the numberOfInstallment
+    const selectedBillData = data.flatMap((borrower: any) =>
+      borrower.bills.find((bill: any) => `หมายเลข ${bill.billNumber}` === selectedBillNumber)
+    ).find(Boolean);
+
+    if (selectedBillData) {
+      setNumberOfInstallment(selectedBillData.numberOfInstallments);
+    }
   };
+
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -190,24 +210,39 @@ export default function PaymentHistoryPage() {
     return daysOverdue >= 0 ? `+${daysOverdue}` : `${daysOverdue}`;
   };
 
-  const calculateAmountToPay = (interest: string, principle: string): number => {
-    const interestRate = parseFloat(interest);
-    const principleAmount = parseFloat(principle);
-    return principleAmount * (1 + interestRate / 100);
+  const calculateAmountToPay = (interest: string, principle: number): number => {
+    console.log(`Calculating Amount to Pay with interest: ${interest}, principle: ${principle}, numberOfInstallment: ${numberOfInstallment}`);
+
+    // Check if interest is a valid number
+    const interestRate = parseFloat(interest.replace('%', ''));
+
+    // Check if principle is a valid number
+    const principleAmount = isNaN(principle) ? 0 : principle;
+
+    // Check if numberOfInstallment is a valid number greater than 0
+
+    const totalPay = Math.ceil(principleAmount * (1 + interestRate / 100));
+
+    //console.log(`Calculated totalPay: ${totalPay}`);
+    return totalPay;
   };
+
 
   function createData(
     number: string,
     due_Date: string,
     due_Paid: string,
     overDay: number,
-    totalLoan: string,
+    totalLoan: number,
     interest: string,
     principle: string,
-    bill: string
+    bill: string,
+    billNumberOfInstallment: number // เปลี่ยนชื่อพารามิเตอร์นี้
   ): Data {
-    const totalPay = calculateAmountToPay(interest, principle);
-    return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill };
+    //console.log(`Creating Data with interest: ${interest}, principle: ${principle}, numberOfInstallment: ${billNumberOfInstallment}`);
+    const totalPay = calculateAmountToPay(interest, principle); // ส่ง billNumberOfInstallment ไปให้ฟังก์ชัน calculateAmountToPay
+    console.log(`Calculated totalPay: ${totalPay}`);
+    return { number, due_Date, due_Paid, overDay, totalPay, interest, principle, bill, status: 'paid' };
   }
 
   return (
@@ -216,21 +251,7 @@ export default function PaymentHistoryPage() {
         <Grid container sx={{ display: 'flex', flexDirection: 'row' }}>
           <Grid item xs={2} sx={{ display: 'flex', flexDirection: 'column', borderRight: '2px solid lightgray' }}>
             <Grid item sx={{ marginTop: '2rem' }}>
-              <Grid container spacing={2} sx={{ display: 'flex', flexDirection: 'column' }}>
-                {menuList.map(item => (
-                  <Grid item key={item}>
-                    <Typography
-                      sx={{ fontWeight: searchType === item ? 700 : 0, cursor: 'pointer' }}
-                      onClick={() => {
-                        router.push(`/paymentHistory?type=${item}`);
-                      }}
-                      component="span"
-                    >
-                      {item.toUpperCase()}
-                    </Typography>
-                  </Grid>
-                ))}
-              </Grid>
+              <MenuList />
             </Grid>
           </Grid>
           <Grid item xs={9} sx={{ display: 'grid' }}>

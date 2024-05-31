@@ -69,8 +69,12 @@ export default function FindCustomerPage() {
     fetchBorrowers();
   }, []);
 
-  const calculateTotalPaid = paymentHistory => {
-    return paymentHistory.reduce((sum, payment) => sum + parseFloat(payment.amount), 0);
+  const calculateNumberOfPaidInstallments = paymentHistory => {
+    return paymentHistory.filter(payment => payment.status === 'paid').length;
+  };
+
+  const calculateTotalAmountDue = (totalPaymentWithInterest, numberOfInstallments, numberOfPaidInstallments) => {
+    return totalPaymentWithInterest - (totalPaymentWithInterest / numberOfInstallments) * numberOfPaidInstallments;
   };
 
   const calculateDueDate = (createdAt, numberOfInstallments) => {
@@ -86,11 +90,10 @@ export default function FindCustomerPage() {
     const { borrower, bills } = borrowerData;
     const totalAmount = bills.reduce((total, bill) => {
       const totalPaymentWithInterest = parseFloat(bill.totalPaymentWithInterest);
-      const totalPaid = calculateTotalPaid(bill.paymentHistory);
-      return total + (totalPaymentWithInterest - totalPaid);
+      const numberOfPaidInstallments = calculateNumberOfPaidInstallments(bill.paymentHistory);
+      return total + calculateTotalAmountDue(totalPaymentWithInterest, bill.numberOfInstallments, numberOfPaidInstallments);
     }, 0);
     const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].numberOfInstallments) : '';
-    //console.log(bills[0].createdAt, bills[0].numberOfInstallments)
     if (!borrower?.nationID) return null;
 
     return {
@@ -144,8 +147,8 @@ export default function FindCustomerPage() {
     ? filteredRows.filter(
         row =>
           row &&
-          row.id.toString().startsWith(idQuery) && // เปลี่ยนจาก includes เป็น startsWith
-          row.first_name.startsWith(nameQuery.toLowerCase()) &&
+          row.id.toString().startsWith(idQuery) &&
+          row.first_name.toLowerCase().startsWith(nameQuery.toLowerCase()) &&
           (row.last_name || '').toLowerCase().startsWith(surnameQuery.toLowerCase()) &&
           row.phone.startsWith(phoneQuery)
       )
