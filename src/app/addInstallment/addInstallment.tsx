@@ -341,7 +341,7 @@ const AddInstallmentPage = () => {
               onClick={handleCreateInstallments}
               sx={{ marginTop: '22px' }}
             >
-              สร้าง
+              ยืนยัน
             </Button>
           </Grid>
         </Card>
