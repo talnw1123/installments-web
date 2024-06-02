@@ -192,7 +192,6 @@ const AddCard = () => {
 
         document.body.removeChild(link);
 
-
         if (createCardResponse.ok && createBillResponse.ok) {
           const createCardData = await createCardResponse.json();
           const createBillData = await createBillResponse.json();

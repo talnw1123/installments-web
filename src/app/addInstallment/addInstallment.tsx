@@ -4,7 +4,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import { makeStyles } from '@mui/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
-import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { StepParams } from '../../../typings/renderStepProps';
 
@@ -74,6 +74,15 @@ const AddInstallmentPage = () => {
   const contractDateValue = watch('contractDate');
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
+  const isMounted = useRef<boolean>(false);
+
+  type Borrower = {
+    firstName: string;
+    lastName: string;
+    nationID: string;
+  };
+
+  const [borrowers, setBorrowers] = useState<Borrower[]>([]);
 
   const totalInstallmentAmount = useMemo(() => {
     if (totalLoanValue && downPaymentValue) {
@@ -88,6 +97,78 @@ const AddInstallmentPage = () => {
       setValue('totalInstallmentAmount', total.toFixed(2));
     }
   }, [totalLoanValue, downPaymentValue, setValue]);
+
+  useEffect(() => {
+    async function fetchBorrowers() {
+      try {
+        const response = await fetch('http://localhost:4400/api/getBorrowersName');
+        const data = await response.json();
+        const formattedData: Borrower[] = data.map((item: any) => ({
+          firstName: item.firstName,
+          lastName: item.lastName,
+          nationID: item.nationID,
+        }));
+        setBorrowers(formattedData);
+      } catch (error) {
+        console.error('Failed to fetch borrowers:', error);
+      }
+    }
+
+    fetchBorrowers();
+  }, []);
+
+  const onSubmit = useCallback(async (data: any) => {
+    try {
+      console.log('Submitting data:', data);
+      const createBillCardResponse = await fetch('http://localhost:4400/api/createBillCard', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!createBillCardResponse.ok) {
+        const errorData = await createBillCardResponse.json();
+        console.error('Error response:', errorData);
+        throw new Error(`Error: ${createBillCardResponse.status}`);
+      }
+
+      const downloadPdfResponse = await fetch('http://localhost:4400/api/downloadPdf', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!downloadPdfResponse.ok) {
+        const errorData = await downloadPdfResponse.json();
+        console.error('Error response:', errorData);
+        throw new Error(`Error: ${downloadPdfResponse.status}`);
+      }
+
+      const blob = await downloadPdfResponse.blob();
+      const link = document.createElement('a');
+      const url = window.URL.createObjectURL(blob);
+      link.href = url;
+      link.download = 'Installment contract.pdf';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('There was a problem with the fetch operation:', error);
+    }
+  }, []);
+
+  const valuetext = useCallback((value: number) => `${value}%`, []);
+
+  useEffect(() => {
+    setValue('interestRates', '5%');
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+    };
+  }, [setValue]);
 
   const handleCreateInstallments = useCallback(() => {
     const numberOfInstallments = parseInt(numberOfInstallmentsValue, 10);
@@ -137,216 +218,232 @@ const AddInstallmentPage = () => {
 
   return (
     <>
-      <Grid container className={classes.bigContainer}>
-        <Card sx={{ padding: 4, width: '75%' }}>
-          <Typography variant="h5" sx={{ marginLeft: '4px', marginBottom: '10px' }}>
-            เพิ่มการ์ดผ่อนสินค้า
-          </Typography>
-          <Grid container spacing={4} className={classes.formContainer}>
-            <Grid item>
-              <Grid container spacing={3} className={classes.form}>
-                <Grid item xs={3.5}>
-                  <Controller
-                    name="idBorrower"
-                    control={form?.control}
-                    render={({ field: { onChange } }) => (
-                      <Autocomplete
-                        id="idBorrower-autocomplete"
-                        options={[]}
-                        getOptionLabel={option => option.name}
-                        style={{ width: 300 }}
-                        onChange={(event, item) => {
-                          onChange(item?.id);
-                        }}
-                        renderInput={params => <TextField {...params} label="user" />}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DataContext.Provider value={conTextValue}>
+          <Grid container className={classes.bigContainer}>
+            <Card sx={{ padding: 4, width: '75%' }}>
+              <Typography variant="h5" sx={{ marginLeft: '4px', marginBottom: '10px' }}>
+                เพิ่มการ์ดผ่อนสินค้า
+              </Typography>
+              <Grid container spacing={4} className={classes.formContainer}>
+                <Grid item>
+                  <Grid container spacing={3} className={classes.form}>
+                    <Grid item xs={3.5}>
+                      <Controller
+                        name="nationID"
+                        control={form.control}
+                        rules={{ required: 'Nation ID is required' }}
+                        render={({ field, fieldState: { error } }) => (
+                          <>
+                            <Autocomplete
+                              id="idBorrower-autocomplete"
+                              options={borrowers}
+                              getOptionLabel={option => `${option.firstName} ${option.lastName}`}
+                              style={{ width: 300 }}
+                              onChange={(event, item) => {
+                                field.onChange(item ? item.nationID : null);
+                              }}
+                              renderInput={params => (
+                                <TextField
+                                  {...params}
+                                  label="user"
+                                  error={!!error}
+                                  helperText={error ? error.message : null}
+                                />
+                              )}
+                            />
+                          </>
+                        )}
                       />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={2.5}>
-                  <Controller
-                    name="billNumber"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="หมายเลขบิล"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
+                    </Grid>
+                    <Grid item xs={2.5}>
+                      <Controller
+                        name="billNumber"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="หมายเลขบิล"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
                       />
-                    )}
-                  />
+                    </Grid>
+
+                    <Grid item xs={2.5}>
+                      <Controller
+                        name="contractNumber"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="หมายเลขสัญญา"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+
+                    <Grid item xs={2.5}>
+                      <Controller
+                        name="totalLoan"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="รวมยอดเงินกู้"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        บาท
+                      </Typography>
+                    </Grid>
+                  </Grid>
+
+                  <Grid container spacing={3} className={classes.form}>
+                    <Grid item xs={1.5}>
+                      <Controller
+                        name="downPayment"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="เงินดาว์น"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        บาท
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={1.5}>
+                      <Controller
+                        name="numberOfInstallments"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="จำนวนงวด"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        งวด
+                      </Typography>
+                    </Grid>
+
+                    <Grid item xs={2}>
+                      <Controller
+                        name="interestRates"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="อัตราดอกเบี้ย"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                            InputProps={{
+                              readOnly: true,
+                            }}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Controller
+                        name="totalInstallmentAmount"
+                        defaultValue=""
+                        control={control}
+                        render={({ field }) => (
+                          <TextField
+                            {...field}
+                            label="รวมยอดเงินผ่อน"
+                            variant="standard"
+                            fullWidth
+                            margin="normal"
+                            className={classes.formField}
+                          />
+                        )}
+                      />
+                    </Grid>
+                    <Grid item xs={1}>
+                      <Typography variant="body1" sx={{ marginTop: '35px' }}>
+                        บาท
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        type="button"
+                        onClick={handleCreateInstallments}
+                        sx={{ marginTop: '22px' }}
+                      >
+                        สร้าง
+                      </Button>
+                    </Grid>
+                  </Grid>
                 </Grid>
 
-                <Grid item xs={2.5}>
+                <Grid item xs={12}>
                   <Controller
-                    name="contractNumber"
-                    defaultValue=""
+                    name="table"
                     control={control}
+                    defaultValue={[]}
                     render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="หมายเลขสัญญา"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
+                      <DataGrid rows={installments || []} columns={installmentColumns} autoHeight {...field} />
                     )}
                   />
-                </Grid>
-
-                <Grid item xs={2.5}>
-                  <Controller
-                    name="totalLoan"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="รวมยอดเงินกู้"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                    บาท
-                  </Typography>
                 </Grid>
               </Grid>
-
-              <Grid container spacing={3} className={classes.form}>
-                <Grid item xs={1.5}>
-                  <Controller
-                    name="downPayment"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="เงินดาว์น"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                    บาท
-                  </Typography>
-                </Grid>
-                <Grid item xs={1.5}>
-                  <Controller
-                    name="numberOfInstallments"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="จำนวนงวด"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                    งวด
-                  </Typography>
-                </Grid>
-
-                <Grid item xs={2}>
-                  <Controller
-                    name="interestRates"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="อัตราดอกเบี้ย"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={2}>
-                  <Controller
-                    name="totalInstallmentAmount"
-                    defaultValue=""
-                    control={control}
-                    render={({ field }) => (
-                      <TextField
-                        {...field}
-                        label="รวมยอดเงินผ่อน"
-                        variant="standard"
-                        fullWidth
-                        margin="normal"
-                        className={classes.formField}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item xs={1}>
-                  <Typography variant="body1" sx={{ marginTop: '35px' }}>
-                    บาท
-                  </Typography>
-                </Grid>
-                <Grid item xs={2}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    type="button"
-                    onClick={handleCreateInstallments}
-                    sx={{ marginTop: '22px' }}
-                  >
-                    สร้าง
-                  </Button>
-                </Grid>
+              <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  type="submit"
+                  onClick={handleCreateInstallments}
+                  sx={{ marginTop: '22px' }}
+                >
+                  ยืนยัน
+                </Button>
               </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Controller
-                name="table"
-                control={control}
-                defaultValue={[]}
-                render={({ field }) => (
-                  <DataGrid rows={installments || []} columns={installmentColumns} autoHeight {...field} />
-                )}
-              />
-            </Grid>
+            </Card>
           </Grid>
-          <Grid item sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              onClick={handleCreateInstallments}
-              sx={{ marginTop: '22px' }}
-            >
-              ยืนยัน
-            </Button>
-          </Grid>
-        </Card>
-      </Grid>
-      <DataContext.Provider value={conTextValue}></DataContext.Provider>
+        </DataContext.Provider>
+      </form>
     </>
   );
 };

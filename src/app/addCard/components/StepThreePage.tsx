@@ -188,6 +188,9 @@ const StepThreePage = () => {
                         fullWidth
                         margin="normal"
                         className={classes.formField}
+                        InputProps={{
+                          readOnly: true,
+                        }}
                       />
                     )}
                   />
