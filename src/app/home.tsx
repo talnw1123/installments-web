@@ -1,15 +1,14 @@
 'use client';
 import CircleIcon from '@mui/icons-material/Circle';
 import { Card, Grid, TextField, Typography } from '@mui/material';
+import { LineChart } from '@mui/x-charts/LineChart';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { LineChart } from '@mui/x-charts/LineChart';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-
+import { useEffect, useState } from 'react';
 
 dayjs.extend(utc);
 
@@ -27,7 +26,7 @@ const HomePage = () => {
         const response = await axios.get('http://localhost:4400/api/dailyLogs');
         const dataWithConvertedDates = response.data.map(item => ({
           ...item,
-          date: dayjs(item.date)
+          date: dayjs(item.date),
         }));
         setGraphData(dataWithConvertedDates);
       } catch (error) {
@@ -41,11 +40,11 @@ const HomePage = () => {
     updateGraphData(startDate, endDate);
   }, [startDate, endDate, graphData]);
 
-  const handleStartDateChange = (date) => {
+  const handleStartDateChange = date => {
     setStartDate(date);
   };
 
-  const handleEndDateChange = (date) => {
+  const handleEndDateChange = date => {
     setEndDate(date);
   };
 
@@ -74,14 +73,14 @@ const HomePage = () => {
     <Grid container justifyContent="center" padding="1rem">
       <Card sx={{ padding: 3, width: '80%' }}>
         <Typography variant="h4">สรุปการผ่อนชำระสินค้า</Typography>
-        <Grid container justifyContent="center" alignItems="center" marginBottom="1rem" marginTop="1rem">
+        <Grid container justifyContent="center" alignItems="center" marginBottom="1.5rem" marginTop="1.5rem">
           <Grid item marginRight="1rem">
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
                 label="วันที่เริ่มต้น"
                 value={startDate}
                 onChange={handleStartDateChange}
-                renderInput={(params) => <TextField {...params} variant="standard" fullWidth margin="normal" />}
+                renderInput={params => <TextField {...params} variant="standard" fullWidth margin="normal" />}
               />
             </LocalizationProvider>
           </Grid>
@@ -91,7 +90,7 @@ const HomePage = () => {
                 label="วันที่สิ้นสุด"
                 value={endDate}
                 onChange={handleEndDateChange}
-                renderInput={(params) => <TextField {...params} variant="standard" fullWidth margin="normal" />}
+                renderInput={params => <TextField {...params} variant="standard" fullWidth margin="normal" />}
               />
             </LocalizationProvider>
           </Grid>
@@ -103,20 +102,20 @@ const HomePage = () => {
                 {
                   data: filteredData.map(item => item.date),
                   scaleType: 'time',
-                  label: 'วันที่'
-                }
+                  label: 'วันที่',
+                },
               ]}
               series={[
                 {
                   label: 'ยอดจ่ายแล้ว',
                   data: filteredData.map(item => item.totalPaid),
-                  color: '#2196f3'
+                  color: '#2196f3',
                 },
                 {
                   label: 'ยอดค้าง',
                   data: filteredData.map(item => item.totalDept),
-                  color: '#4caf50'
-                }
+                  color: '#4caf50',
+                },
               ]}
               height={300}
               width={600}
@@ -130,9 +129,9 @@ const HomePage = () => {
             <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{totalPaidInRange.toFixed(2)}</Typography>
             <Typography style={{ color: '#2196f3' }}>บาท</Typography>
           </Grid>
-          <Grid item display="flex" marginTop="5px">
+          <Grid item display="flex" marginLeft="60px">
             <CircleIcon style={{ color: '#4caf50', marginRight: '10px' }} />
-            <Typography style={{ color: '#4caf50', marginRight: '55px' }}>ยอดค้าง</Typography>
+            <Typography style={{ color: '#4caf50', marginRight: '27px' }}>ยอดค้าง</Typography>
             <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{totalDeptInRange.toFixed(2)}</Typography>
             <Typography style={{ color: '#4caf50' }}>บาท</Typography>
           </Grid>
