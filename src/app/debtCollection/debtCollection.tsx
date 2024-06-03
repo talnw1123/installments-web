@@ -107,6 +107,7 @@ interface Data {
   demandDate: string;
   overDay: string;
   totalPay: number;
+  damage: number;
   numberOfDebt: number;
   paymentDate: string;
 }
@@ -121,16 +122,18 @@ export default function DebtCollectionPage() {
   const [borrowerData, setBorrowerData] = useState(null);
   const [userInfo, setUserInfo] = useRecoilState(userState);
   const [selectedBill, setSelectedBill] = useState(null);
-  const [installmentsNumber, setInstallmentsNumber] = useState(null);
+  //const [installmentsNumber, setInstallmentsNumber] = useState(null);
   const [interest, setInterest] = useState(null);
-  const [lateFees, setLateFees] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [lateFees, setLateFees] = useState(50);
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null); // กำหนดประเภท Dayjs
+
   const [rows, setRows] = useState<Data[]>(initialRows);
   const [installments, setInstallments] = useState([]);
 
-  const [totalPaymentWithInterest, setTotalPaymentWithInterest] = useState(null);
-  const [downPayment, setDownPayment] = useState(null);
-  const [numberOfInstallments, setNumberOfInstallments] = useState(null);
+  const [totalInstallmentAmount, setTotalInstallmentAmount] = useState(0);
+  const [downPayment, setDownPayment] = useState(0);
+  const [numberOfInstallments, setNumberOfInstallments] = useState(0);
+  const [contractNumber, setContractNumber] = useState(0);
   const menuList = [
     'ประวัติผู้กู้',
     'ชำระเงิน',
@@ -166,17 +169,27 @@ export default function DebtCollectionPage() {
         const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
         const data = await response.json();
         setBorrowerData(data);
+        console.log(data)
+        // Check if data.bills is an array
+        const billsData = data && data.length > 0 ? data[0].bills : [];
 
-        // Filter installments for the selected bill
-        const selectedBillData = data.bills.find(bill => bill.billNumber === selectedBill);
-        if (selectedBillData) {
-          setInstallmentsNumber(selectedBillData.numberOfInstallments);
-          setInterest(selectedBillData.interestRates);
-          setTotalPaymentWithInterest(selectedBillData.totalPaymentWithInterest);
-          setDownPayment(selectedBillData.downPayment);
-          setNumberOfInstallments(selectedBillData.numberOfInstallments);
+        if (billsData && Array.isArray(billsData)) {
+          const selectedBillData = billsData.find(bill => bill.billNumber === selectedBill);
+          if (selectedBillData) {
+            //setInstallmentsNumber(selectedBillData.numberOfInstallments);
+            setInterest(selectedBillData.interestRates);
+            setTotalInstallmentAmount(selectedBillData.totalInstallmentAmount);
+            setDownPayment(selectedBillData.downPayment);
+            setNumberOfInstallments(selectedBillData.numberOfInstallments);
+            setContractNumber(selectedBillData.numberOfInstallments);
+            console.log('Total Payment with Interest:', selectedBillData.totalInstallmentAmount);
+            console.log('Down Payment:', selectedBillData.downPayment);
+            console.log('Number of Installments:', selectedBillData.contractNumber);
+          } else {
+            setInstallments([]);
+          }
         } else {
-          setInstallments([]);
+          console.error('Invalid data structure: bills not found or not an array');
         }
       } catch (error) {
         console.error('Error fetching borrower data:', error);
@@ -187,41 +200,120 @@ export default function DebtCollectionPage() {
   }, [selectedBill, userInfo.userNationID]);
 
   useEffect(() => {
-    if (selectedBill && borrowerData) {
-      const selectedBillData = borrowerData.bills.find(bill => bill.billNumber === selectedBill);
-      if (selectedBillData) {
-        setInstallmentsNumber(selectedBillData.numberOfInstallments);
-        setInterest(selectedBillData.interestRates);
-        setTotalPaymentWithInterest(selectedBillData.totalPaymentWithInterest);
-        setDownPayment(selectedBillData.downPayment);
-        setNumberOfInstallments(selectedBillData.numberOfInstallments);
+    console.log('Total Payment with Interest:', totalInstallmentAmount);
+  }, [totalInstallmentAmount]);
+
+  useEffect(() => {
+    console.log('Down Payment:', downPayment);
+  }, [downPayment]);
+
+  useEffect(() => {
+    console.log('Number of Installments:', numberOfInstallments);
+  }, [numberOfInstallments]);
+
+  useEffect(() => {
+    async function fetchBorrowerData() {
+      try {
+        const response = await fetch(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
+        const data = await response.json();
+        setBorrowerData(data);
+        console.log('Fetched data:', data);
+
+        const billsData = data && data.length > 0 ? data[0].bills : [];
+
+        if (billsData && Array.isArray(billsData)) {
+          const processedRows = billsData.map(bill => {
+            const latestUnpaid = bill.paymentHistory
+              .filter(payment => payment.status === 'unpaid')
+              .sort((a, b) => a.timePayment - b.timePayment)[0]; // เรียงตาม timePayment จากน้อยไปมาก
+            console.log('Latest unpaid payment:', latestUnpaid);
+
+            const createdAt = dayjs(bill.createdAt);
+            const dueDate = latestUnpaid ? createdAt.add(latestUnpaid.timePayment, 'month').format('DD/MM/YYYY') : createdAt.format('DD/MM/YYYY'); // คำนวณวันที่ครบกำหนด
+            const overDay = latestUnpaid ? dayjs().diff(createdAt, 'day') : 0; // คำนวณจำนวนวันที่เกินกำหนด
+
+
+            return {
+              billNumber: bill.billNumber,
+              dueDate: dueDate,
+              demandDate: latestUnpaid?.demandDate ? dayjs(latestUnpaid.demandDate).format('DD/MM/YYYY') : '', // จัดรูปแบบวันที่
+              paymentDate: latestUnpaid?.paymentDueDate ? dayjs(latestUnpaid.paymentDueDate).format('DD/MM/YYYY') : '', // จัดรูปแบบวันที่
+              overDay: overDay >= 0 ? `+${overDay}` : `${overDay}`,
+              damage: latestUnpaid?.damages,
+              totalPay: latestUnpaid?.amount ,
+              numberOfDebt: latestUnpaid?.numberOfCall,
+
+            };
+          });
+          setRows(processedRows);
+        } else {
+          console.error('Invalid data structure: bills not found or not an array');
+        }
+      } catch (error) {
+        console.error('Error fetching borrower data:', error);
       }
     }
-  }, [selectedBill, borrowerData]);
 
-  const handleSave = () => {
+    fetchBorrowerData();
+  }, [userInfo.userNationID]);
+
+
+  const handleSave = async () => {
     if (selectedBill && selectedDate) {
       const demandDate = dayjs().format('DD/MM/YYYY');
-      const dueDate = selectedDate.format('DD/MM/YYYY');
-      const overDay = calculateDaysOverdue(dueDate, demandDate);
+      const paymentDueDate = selectedDate.format('DD/MM/YYYY');
+      const overDay = calculateDaysOverdue(paymentDueDate, demandDate);
 
-      const newRow: Data = {
-        billNumber: selectedBill,
-        installmentsNumber,
-        dueDate,
-        demandDate,
-        overDay,
-        totalPay: interest + lateFees,
-        numberOfDebt: rows.filter(row => row.billNumber === selectedBill).length + 1,
-        paymentDate: dueDate,
-      };
+      const updatedRows = rows.map(row => {
+        if (row.billNumber === selectedBill) {
+          return {
+            ...row,
+            demandDate: demandDate,
+            paymentDate: paymentDueDate,
+            //overDay: overDay,
+          };
+        }
+        return row;
+      });
 
-      setRows(prevRows => [...prevRows, newRow]);
+      setRows(updatedRows);
+
+      try {
+        const selectedBillData = bills.find(bill => bill.billNumber === selectedBill);
+        const createdAt = dayjs(selectedBillData.createdAt);
+        const daysOverdue = selectedDate.diff(createdAt, 'day');
+        const damages = (daysOverdue + 1) * 50;
+
+        const response = await fetch(`http://localhost:4400/api/updatePaymentHistory`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            billNumber: selectedBill,
+            demandDate: dayjs().toDate(),
+            paymentDueDate: selectedDate.toDate(),
+            damages: damages,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to update payment dates');
+        }
+
+        // รีเฟรชหน้าเพื่อโหลดข้อมูลใหม่จาก API
+        // window.location.reload();
+      } catch (error) {
+        console.error('Error updating payment dates:', error);
+      }
     }
   };
 
+
+
+
   if (!borrowerData) {
-    return <div>Loading...</div>;
+    return
   }
 
   const data = borrowerData[0] || {};
@@ -230,24 +322,23 @@ export default function DebtCollectionPage() {
 
   const columns: readonly (keyof Data)[] = [
     'billNumber',
-    'installmentsNumber',
     'dueDate',
     'demandDate',
     'overDay',
-    'damames',
     'totalPay',
+    'damage',
     'numberOfDebt',
     'paymentDate',
+
   ];
 
   const columnLabels: { [key in keyof Data]: string } = {
     billNumber: 'หมายเลขบิล',
-    installmentsNumber: 'งวดที่',
     dueDate: 'วันที่ครบกำหนดขำระ',
     demandDate: 'วันที่ทวงถาม',
     overDay: 'จำนวนเกินกำหนด',
-    damames: 'ค่าปรับ',
-    totalPay: 'จำนวนเงินที่ต้องจ่ายทั้งหมด',
+    totalPay: 'จำนวนเงินที่ต้องจ่าย',
+    damage: 'ค่าปรับ',
     numberOfDebt: 'ครั้งที่ทวง',
     paymentDate: 'วันที่นัดชำระ',
   };
@@ -286,8 +377,8 @@ export default function DebtCollectionPage() {
                       id="lastName"
                       name="lastNameBorrower"
                       label="หมายเลขสัญญา"
-                      defaultValue={borrowerData ? borrowerData.billNumber : ''}
-                      value={bills.billNumber}
+                      //defaultValue={borrowerData ? borrowerData.billNumber : ''}
+                      value={contractNumber|| ''}
                       InputProps={{
                         readOnly: true,
                       }}
@@ -362,7 +453,7 @@ export default function DebtCollectionPage() {
                       label="รวมยอดเงินกู้"
                       type="number"
                       variant="standard"
-                      value={totalPaymentWithInterest || ''}
+                      value={totalInstallmentAmount || ''}
                       InputProps={{
                         readOnly: true,
                       }}
@@ -411,48 +502,20 @@ export default function DebtCollectionPage() {
                         onChange={(event, newValue) => {
                           setSelectedBill(newValue);
                           const selectedBillData = bills.find(bill => bill.billNumber === newValue);
-                          setInstallmentsNumber(null); // Reset installments number when a new bill is selected
+                          //setInstallmentsNumber(null); // Reset installments number when a new bill is selected
                           setInterest(selectedBillData?.interestRates || null);
+                          setTotalInstallmentAmount(0);
+                          setDownPayment(0);
+                          setNumberOfInstallments(0);
+                          setContractNumber(0);
                         }}
                         renderInput={(params) => <TextField {...params} label="หมายเลขบิล" />}
                         sx={{ width: '100%' }}
                       />
                     </Grid>
-
                     <Grid item className={classes.formControl}>
                       <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        งวดที่
-                      </Typography>
-                      <Autocomplete
-                        id="installmentsNumber"
-                        options={selectedBill ? Array.from({ length: bills.find(bill => bill.billNumber === selectedBill).numberOfInstallments }, (_, i) => i + 1) : []}
-                        value={installmentsNumber}
-                        onChange={(event, newValue) => setInstallmentsNumber(newValue)}
-                        renderInput={(params) => <TextField {...params} label="งวดที่" />}
-                        sx={{ width: '100%' }}
-                      />
-                    </Grid>
-
-                    <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        ดอกเบี้ย
-                      </Typography>
-                      <TextField
-                        id="interestRates"
-                        name="interestRates"
-                        label="ดอกเบี้ย"
-                        defaultValue={interest || ''}
-                        value={interest || ''}
-                        InputProps={{
-                          readOnly: true,
-                        }}
-                        variant="standard"
-                        sx={{ width: '100%' }}
-                      />
-                    </Grid>
-                    <Grid item className={classes.formControl}>
-                      <Typography variant="body1" sx={{ marginRight: '10px' }}>
-                        ค่าปรับล่าช้า
+                        ค่าปรับล่าช้า / วัน
                       </Typography>
                       <TextField
                         id="lateFees"
@@ -461,7 +524,7 @@ export default function DebtCollectionPage() {
                         defaultValue={lateFees}
                         value={lateFees}
                         InputProps={{
-                          readOnly: true,
+                          readOnly: false,
                         }}
                         variant="standard"
                         sx={{ width: '100%' }}
@@ -485,7 +548,7 @@ export default function DebtCollectionPage() {
                       variant="contained"
                       color="primary"
                       onClick={handleSave}
-                      disabled={!selectedBill || !installmentsNumber || !interest || !lateFees || !selectedDate}
+                      disabled={!selectedBill || !lateFees || !selectedDate}
                       sx={{
                         backgroundColor: '#718171',
                         borderRadius: '1 px',
@@ -499,20 +562,24 @@ export default function DebtCollectionPage() {
                 </Grid>
                 <Grid item xs={12} className={classes.column}>
                   <Paper sx={{ width: '100%', marginTop: '2rem' }}>
-                    <TableContainer sx={{ maxHeight: 440 }}>
-                      <Table stickyHeader>
+                    <TableContainer>
+                      <Table>
                         <TableHead>
                           <TableRow>
-                            {columns.map(column => (
-                              <TableCell key={column}>{columnLabels[column]}</TableCell>
+                            {columns.map((column) => (
+                              <TableCell key={column}>
+                                {columnLabels[column]}
+                              </TableCell>
                             ))}
                           </TableRow>
                         </TableHead>
                         <TableBody>
-                          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                              {columns.map(column => (
-                                <TableCell key={column}>{row[column]}</TableCell>
+                          {rows.map((row, index) => (
+                            <TableRow key={index}>
+                              {columns.map((column) => (
+                                <TableCell key={column}>
+                                  {row[column] || ''}
+                                </TableCell>
                               ))}
                             </TableRow>
                           ))}

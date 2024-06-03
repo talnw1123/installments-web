@@ -110,8 +110,8 @@ export default function PayPage() {
 
   const handleBillSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedBill(event.target.value);
+    setChecklist([]);  // Clear checklist when a new bill is selected
   };
-
   const handleChecklist = (e: React.ChangeEvent<HTMLInputElement>, rowIndex: number) => {
     const { checked } = e.target;
     if (checked) {
@@ -151,7 +151,7 @@ export default function PayPage() {
   };
 
   if (!borrowerData) {
-    return <div>Loading...</div>;
+    return
   }
 
   const data = borrowerData[0] || {};
@@ -255,6 +255,12 @@ export default function PayPage() {
     }))
   );
 
+  const calculateAge = (birthDate) => {
+    const today = dayjs();
+    const birth = dayjs(birthDate);
+    return today.diff(birth, 'year');
+  };
+
   function calculateAccruedInterest(bill, paymentIndex) {
     const interest = (parseFloat(bill.totalInstallmentAmount) * (parseFloat(bill.interestRates) / 100)) / bill.numberOfInstallments;
     return interest * (paymentIndex + 1);
@@ -264,6 +270,22 @@ export default function PayPage() {
     const principle = (parseFloat(bill.totalInstallmentAmount)) / bill.numberOfInstallments;
     return principle * (paymentIndex + 1);
   }
+
+  const filteredRows = selectedBill ?
+  bills.filter(bill => bill.billNumber === selectedBill)
+       .flatMap((bill, billIndex) =>
+    bill.paymentHistory.map((payment, paymentIndex) => ({
+      id: billIndex * bill.paymentHistory.length + paymentIndex + 1,
+      timePayment: payment.timePayment,
+      date: dayjs(bill.createdAt).add(payment.timePayment, 'month').format('YYYY-MM-DD'),
+      station: payment.status === 'unpaid' ? 'ค้างชำระ' : 'ชำระแล้ว',
+      debt: parseFloat(bill.totalInstallmentAmount) * (1 + parseFloat(bill.interestRates) / 100) / parseFloat(bill.numberOfInstallments),
+      principle: Math.floor(bill.totalInstallmentAmount / bill.numberOfInstallments),
+      interest: Math.ceil((bill.totalInstallmentAmount) * (parseFloat(bill.interestRates) / 100) / bill.numberOfInstallments),
+      accrued_interest: calculateAccruedInterest(bill, paymentIndex),
+      accrued_principle: calculateAccruedPrinciple(bill, paymentIndex),
+    }))
+  ) : [];
 
   return (
     <Grid container className={classes.bigContainer}>
@@ -347,7 +369,7 @@ export default function PayPage() {
                         id="age"
                         name="age"
                         label="อายุ"
-                        value={borrower.age}
+                        value={calculateAge(borrower.birthDate)}
                         InputProps={{
                           readOnly: true,
                         }}
@@ -383,17 +405,19 @@ export default function PayPage() {
         </Grid>
       </Card>
 
-      <Card sx={{ padding: 3, width: '80%', marginTop: '1rem' }}>
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={5}
-          rowsPerPageOptions={[5]}
-          checkboxSelection={false}
-          disableSelectionOnClick
-          autoHeight
-        />
-      </Card>
+      {selectedBill && (
+  <Card sx={{ padding: 3, width: '80%', marginTop: '1rem' }}>
+    <DataGrid
+      rows={filteredRows}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5]}
+      checkboxSelection={false}
+      disableSelectionOnClick
+      autoHeight
+    />
+  </Card>
+)}
 
       <Grid container className={classes.formContainer} sx={{ marginTop: '1rem' }}>
         <Grid className={classes.box}>
