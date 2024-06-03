@@ -77,13 +77,17 @@ export default function FindCustomerPage() {
     return totalPaymentWithInterest - (totalPaymentWithInterest / numberOfInstallments) * numberOfPaidInstallments;
   };
 
-  const calculateDueDate = (createdAt, numberOfInstallments) => {
-    const date = dayjs(createdAt);
-    if (!date.isValid()) {
-      return 'Invalid Date';
+  const calculateDueDate = (createdAt, paymentHistory) => {
+    const unpaidPayment = paymentHistory
+      .filter(payment => payment.status === 'unpaid')
+      .sort((a, b) => a.timePayment - b.timePayment)[0];
+
+    if (unpaidPayment) {
+      const date = dayjs(createdAt);
+      return date.add(unpaidPayment.timePayment, 'month').format('DD/MM/YYYY');
+    } else {
+      return 'N/A';
     }
-    const installmentMonths = parseInt(numberOfInstallments, 10);
-    return date.add(installmentMonths, 'month').format('DD/MM/YYYY');
   };
 
   const preprocessedBorrowers = borrowersData.map(borrowerData => {
@@ -93,7 +97,8 @@ export default function FindCustomerPage() {
       const numberOfPaidInstallments = calculateNumberOfPaidInstallments(bill.paymentHistory);
       return total + calculateTotalAmountDue(totalPaymentWithInterest, bill.numberOfInstallments, numberOfPaidInstallments);
     }, 0);
-    const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].numberOfInstallments) : '';
+    const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].paymentHistory) : '';
+
     if (!borrower?.nationID) return null;
 
     return {
