@@ -138,7 +138,6 @@ export default function PaymentHistoryPage() {
   const [data, setData] = React.useState<any[]>([]);
 
   React.useEffect(() => {
-
     const fetchData = async () => {
       try {
         const response = await axios.get(`http://localhost:4400/api/getEachBorrowers/${userInfo.userNationID}`);
@@ -175,7 +174,6 @@ export default function PaymentHistoryPage() {
       }
     };
 
-
     fetchData();
   }, [userInfo.userNationID]);
 
@@ -184,15 +182,16 @@ export default function PaymentHistoryPage() {
     setSelectedBill(selectedBillNumber);
 
     // Find the selected bill and set the numberOfInstallment
-    const selectedBillData = data.flatMap((borrower: any) =>
-      borrower.bills.find((bill: any) => `หมายเลข ${bill.billNumber}` === selectedBillNumber)
-    ).find(Boolean);
+    const selectedBillData = data
+      .flatMap((borrower: any) =>
+        borrower.bills.find((bill: any) => `หมายเลข ${bill.billNumber}` === selectedBillNumber)
+      )
+      .find(Boolean);
 
     if (selectedBillData) {
       setNumberOfInstallment(selectedBillData.numberOfInstallments);
     }
   };
-
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -211,7 +210,9 @@ export default function PaymentHistoryPage() {
   };
 
   const calculateAmountToPay = (interest: string, principle: number): number => {
-    console.log(`Calculating Amount to Pay with interest: ${interest}, principle: ${principle}, numberOfInstallment: ${numberOfInstallment}`);
+    console.log(
+      `Calculating Amount to Pay with interest: ${interest}, principle: ${principle}, numberOfInstallment: ${numberOfInstallment}`
+    );
 
     // Check if interest is a valid number
     const interestRate = parseFloat(interest.replace('%', ''));
@@ -226,7 +227,6 @@ export default function PaymentHistoryPage() {
     //console.log(`Calculated totalPay: ${totalPay}`);
     return totalPay;
   };
-
 
   function createData(
     number: string,
@@ -279,7 +279,7 @@ export default function PaymentHistoryPage() {
                 <Grid>
                   <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                     <Typography variant="h6" sx={{ marginTop: '1rem', marginLeft: '1rem', fontWeight: 'bold' }}>
-                      ประวัติการชำระหนี้
+                      ประวัติการชำระเงิน
                     </Typography>
                     <TableContainer sx={{ maxHeight: 440 }}>
                       <Table stickyHeader aria-label="sticky table">
