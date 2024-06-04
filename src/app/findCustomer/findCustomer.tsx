@@ -86,7 +86,7 @@ export default function FindCustomerPage() {
       const date = dayjs(createdAt);
       return date.add(unpaidPayment.timePayment, 'month').format('DD/MM/YYYY');
     } else {
-      return 'N/A';
+      return 'ชำระเสร็จสิ้น';
     }
   };
 

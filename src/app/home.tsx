@@ -17,8 +17,8 @@ const HomePage = () => {
   const [endDate, setEndDate] = useState(null);
   const [graphData, setGraphData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
-  const [totalPaidInRange, setTotalPaidInRange] = useState(0);
-  const [totalDeptInRange, setTotalDeptInRange] = useState(0);
+  const [latestTotalPaid, setLatestTotalPaid] = useState(0);
+  const [latestTotalDept, setLatestTotalDept] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,15 +57,18 @@ const HomePage = () => {
 
       setFilteredData(filtered);
 
-      const totalPaid = filtered.reduce((sum, item) => sum + item.totalPaid, 0);
-      const totalDept = filtered.reduce((sum, item) => sum + item.totalDept, 0);
-
-      setTotalPaidInRange(totalPaid);
-      setTotalDeptInRange(totalDept);
+      if (filtered.length > 0) {
+        const latestEntry = filtered[filtered.length - 1];
+        setLatestTotalPaid(latestEntry.totalPaid);
+        setLatestTotalDept(latestEntry.totalDept);
+      } else {
+        setLatestTotalPaid(0);
+        setLatestTotalDept(0);
+      }
     } else {
       setFilteredData([]);
-      setTotalPaidInRange(0);
-      setTotalDeptInRange(0);
+      setLatestTotalPaid(0);
+      setLatestTotalDept(0);
     }
   };
 
@@ -126,13 +129,13 @@ const HomePage = () => {
           <Grid item display="flex">
             <CircleIcon style={{ color: '#2196f3', marginRight: '10px' }} />
             <Typography style={{ color: '#2196f3', marginRight: '27px' }}>ยอดจ่ายแล้ว</Typography>
-            <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{totalPaidInRange.toFixed(2)}</Typography>
+            <Typography style={{ color: '#2196f3', marginRight: '25px' }}>{latestTotalPaid.toFixed(2)}</Typography>
             <Typography style={{ color: '#2196f3' }}>บาท</Typography>
           </Grid>
           <Grid item display="flex" marginTop="5px">
             <CircleIcon style={{ color: '#4caf50', marginRight: '10px' }} />
             <Typography style={{ color: '#4caf50', marginRight: '55px' }}>ยอดค้าง</Typography>
-            <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{totalDeptInRange.toFixed(2)}</Typography>
+            <Typography style={{ color: '#4caf50', marginRight: '25px' }}>{latestTotalDept.toFixed(2)}</Typography>
             <Typography style={{ color: '#4caf50' }}>บาท</Typography>
           </Grid>
         </Grid>

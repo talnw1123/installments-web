@@ -65,7 +65,6 @@ const useStyles = makeStyles({
 const AddInstallmentPage = () => {
   const classes = useStyles();
   const [installments, setInstallments] = useState<any[]>([]);
-  const [selectedBill, setSelectedBill] = useState<any>(null);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   const form = useForm<StepParams>({});
   const totalLoanValue = watch('totalLoan');
@@ -76,7 +75,7 @@ const AddInstallmentPage = () => {
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
   const isMounted = useRef<boolean>(false);
-
+  const [selectedBill, setSelectedBill] = useState<any>(null);
   type Borrower = {
     firstName: string;
     lastName: string;
@@ -119,19 +118,19 @@ const AddInstallmentPage = () => {
   }, []);
 
   const onSubmit = useCallback(async (data: any) => {
-    if (!selectedBill) {
-      console.error('No bill selected');
-      return;
-    }
-
-    const payload = {
-      ...data,
-      nationID: selectedBill.nationID,
-    };
-
     try {
+      if (!selectedBill) {
+        console.error('No bill selected');
+        return;
+      }
+
+      const payload = {
+        ...data,
+        nationID: selectedBill, // เพิ่มข้อมูล selectedBill เข้าไปในข้อมูลที่จะส่งไปยัง API
+      };
+
       console.log('Submitting data:', payload);
-      const createBillCardResponse = await fetch('http://localhost:4400/api/createBillCard', {
+      const createBillCardResponse = await fetch('http://localhost:4400/api/addBill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -223,9 +222,8 @@ const AddInstallmentPage = () => {
       setInstallments,
       totalLoanValue,
       downPaymentValue,
-      selectedBill,
     }),
-    [handleCreateInstallments, installments, setInstallments, totalLoanValue, downPaymentValue, selectedBill]
+    [handleCreateInstallments, installments, setInstallments, totalLoanValue, downPaymentValue]
   );
 
   return (
@@ -248,23 +246,22 @@ const AddInstallmentPage = () => {
                         render={({ field, fieldState: { error } }) => (
                           <>
                             <Autocomplete
-                              id="idBorrower-autocomplete"
-                              options={borrowers}
-                              getOptionLabel={option => `${option.firstName} ${option.lastName}`}
-                              style={{ width: 300 }}
-                              onChange={(event, item) => {
-                                field.onChange(item ? item.nationID : null);
-                                setSelectedBill(item);
-                              }}
-                              renderInput={params => (
-                                <TextField
-                                  {...params}
-                                  label="user"
-                                  error={!!error}
-                                  helperText={error ? error.message : null}
-                                />
-                              )}
-                            />
+  id="idBorrower-autocomplete"
+  options={borrowers}
+  getOptionLabel={option => `${option.firstName} ${option.lastName}`}
+  style={{ width: 300 }}
+  onChange={(event, item) => {
+    setSelectedBill(item ? item.nationID : null);
+  }}
+  renderInput={params => (
+    <TextField
+      {...params}
+      label="user"
+      error={!!error}
+      helperText={error ? error.message : null}
+    />
+  )}
+/>
                           </>
                         )}
                       />
