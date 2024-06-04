@@ -75,7 +75,7 @@ const AddInstallmentPage = () => {
   const loanAmount = Number(totalLoanValue);
   const downPayment = Number(downPaymentValue);
   const isMounted = useRef<boolean>(false);
-
+  const [selectedBill, setSelectedBill] = useState<any>(null);
   type Borrower = {
     firstName: string;
     lastName: string;
@@ -119,13 +119,23 @@ const AddInstallmentPage = () => {
 
   const onSubmit = useCallback(async (data: any) => {
     try {
-      console.log('Submitting data:', data);
-      const createBillCardResponse = await fetch('http://localhost:4400/api/createBillCard', {
+      if (!selectedBill) {
+        console.error('No bill selected');
+        return;
+      }
+
+      const payload = {
+        ...data,
+        nationID: selectedBill, // เพิ่มข้อมูล selectedBill เข้าไปในข้อมูลที่จะส่งไปยัง API
+      };
+
+      console.log('Submitting data:', payload);
+      const createBillCardResponse = await fetch('http://localhost:4400/api/addBill', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!createBillCardResponse.ok) {
@@ -158,7 +168,7 @@ const AddInstallmentPage = () => {
     } catch (error) {
       console.error('There was a problem with the fetch operation:', error);
     }
-  }, []);
+  }, [selectedBill]);
 
   const valuetext = useCallback((value: number) => `${value}%`, []);
 
@@ -236,22 +246,22 @@ const AddInstallmentPage = () => {
                         render={({ field, fieldState: { error } }) => (
                           <>
                             <Autocomplete
-                              id="idBorrower-autocomplete"
-                              options={borrowers}
-                              getOptionLabel={option => `${option.firstName} ${option.lastName}`}
-                              style={{ width: 300 }}
-                              onChange={(event, item) => {
-                                field.onChange(item ? item.nationID : null);
-                              }}
-                              renderInput={params => (
-                                <TextField
-                                  {...params}
-                                  label="user"
-                                  error={!!error}
-                                  helperText={error ? error.message : null}
-                                />
-                              )}
-                            />
+  id="idBorrower-autocomplete"
+  options={borrowers}
+  getOptionLabel={option => `${option.firstName} ${option.lastName}`}
+  style={{ width: 300 }}
+  onChange={(event, item) => {
+    setSelectedBill(item ? item.nationID : null);
+  }}
+  renderInput={params => (
+    <TextField
+      {...params}
+      label="user"
+      error={!!error}
+      helperText={error ? error.message : null}
+    />
+  )}
+/>
                           </>
                         )}
                       />
