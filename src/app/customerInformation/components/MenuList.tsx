@@ -28,9 +28,9 @@ export default function MenuList() {
   const [userInfo, setUserInfo] = useRecoilState(userState);
 
   const id = searchParams.get('id');
-  const searchType = searchParams.get('type') || 'ประวัติผู้กู้';
+  const searchType = searchParams.get('type') || 'ประวัติลูกค้า';
   const menuList = [
-    { label: 'ประวัติผู้กู้', route: `/profileCustomer?id=${userInfo.userNationID}` },
+    { label: 'ประวัติลูกค้า', route: `/profileCustomer?id=${userInfo.userNationID}` },
     { label: 'ชำระเงิน', route: `/Pay?type=${userInfo.userNationID}` },
     { label: 'ประวัติการชำระเงิน', route: `/paymentHistory?type=${userInfo.userNationID}` },
     { label: 'ประวัติการผ่อนสินค้า', route: `/installmentHis?type=${userInfo.userNationID}` },

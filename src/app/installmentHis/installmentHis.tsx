@@ -14,12 +14,12 @@ import {
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
 import { userState } from '@store/index';
+import MenuList from 'app/customerInformation/page';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import * as React from 'react';
 import { useRecoilState } from 'recoil';
-import MenuList from 'app/customerInformation/page';
 
 const useStyles = makeStyles({
   bigContainer: {
@@ -142,7 +142,7 @@ export default function InstallmentHisPage() {
   const searchParams = useSearchParams();
   const searchType = searchParams.get('type') || 'ประวัติการผ่อนสินค้า';
   const menuList = [
-    'ประวัติผู้กู้',
+    'ประวัติลูกค้า',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',

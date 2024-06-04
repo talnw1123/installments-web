@@ -156,7 +156,7 @@ const EditProfileCustomer = () => {
             </Grid>
 
             <Typography variant="h4" sx={{ marginLeft: '12.5px' }}>
-              ประวัติผู้กู้
+              ประวัติลูกค้า
             </Typography>
           </Grid>
         </Grid>

@@ -95,7 +95,9 @@ export default function FindCustomerPage() {
     const totalAmount = bills.reduce((total, bill) => {
       const totalPaymentWithInterest = parseFloat(bill.totalPaymentWithInterest);
       const numberOfPaidInstallments = calculateNumberOfPaidInstallments(bill.paymentHistory);
-      return total + calculateTotalAmountDue(totalPaymentWithInterest, bill.numberOfInstallments, numberOfPaidInstallments);
+      return (
+        total + calculateTotalAmountDue(totalPaymentWithInterest, bill.numberOfInstallments, numberOfPaidInstallments)
+      );
     }, 0);
     const dueDate = bills.length > 0 ? calculateDueDate(bills[0].createdAt, bills[0].paymentHistory) : '';
 
@@ -163,7 +165,7 @@ export default function FindCustomerPage() {
     <Grid container className={classes.bigContainer}>
       <Card sx={{ padding: 3, width: '80%' }}>
         <form>
-          <Typography variant="h4">ค้นหาผู้กู้</Typography>
+          <Typography variant="h4">ค้นหาลูกค้า</Typography>
           <Grid>
             <Grid container>
               <Grid className={classes.column}>

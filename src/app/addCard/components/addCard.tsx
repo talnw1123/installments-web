@@ -27,7 +27,7 @@ const AddCard = () => {
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
   //const { borrowerID, nationID, firstName, lastName, birthDate, job, income, phone, phoneInJob, status, kids, addressReal, addressCurrent, addressJob, googleMapAdressReal, googleMapAdressCurrent, googleMapAdressJob, firstNameOfSpouse, lastNameOfSpouse, jobOfSpouse, incomeOfSpouse, phoneOfSpouseInJob, phoneOfSpouse, addressOfSpouseJob, googleMapAdressJobOfSpouse, guarantorNationID, guarantorFirstName, guarantorLastName, phoneOfGuarantor, addressOfGuarantorReal, addressOfGuarantorCurrent, addressOfGuarantorJob, googleMapAdressRealOfGuarantor, googleMapAdressCurrentOfGuarantor, googleMapAdressJobOfGuarantor, jobOfGuarantor, incomeOfGuarantor, phoneOfGuarantorInJob, bills } = watch();
 
-  const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
+  const steps = ['ข้อมูลลูกค้า', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง'], []);
 
   const totalLoanValue = watch('totalLoan');

@@ -15,7 +15,7 @@ const ProfileData = () => {
   const [age, setAge] = useState<number | null>(null);
   const isMounted = useRef<boolean>(false);
   const { handleSubmit, watch, setValue, control } = useForm<StepParams>();
-  const steps = ['ข้อมูลผู้กู้', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
+  const steps = ['ข้อมูลลูกค้า', 'ข้อมูลผู้ค้ำประกัน', 'สร้างการ์ดผ่อนสินค้า'];
   const statuses = useMemo(() => ['โสด', 'แต่งงาน', 'หย่าร้าง'], []);
 
   const onSubmit = useCallback<SubmitHandler<StepParams>>(

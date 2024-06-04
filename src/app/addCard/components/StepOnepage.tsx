@@ -48,7 +48,7 @@ const StepOnePage = () => {
       <Grid container className={classes.bigContainer}>
         <Card sx={{ padding: 3, width: '75%' }}>
           <Typography variant="h4" sx={{ marginLeft: 11 }}>
-            ข้อมูลผู้กู้
+            ข้อมูลลูกค้า
           </Typography>
           <Grid container style={{ display: 'flex', flexDirection: 'row' }}>
             <Grid item style={{ width: '50%' }}>

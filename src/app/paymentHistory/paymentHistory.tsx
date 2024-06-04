@@ -1,17 +1,17 @@
 'use client';
 import {
-  Card,
-  Grid,
-  MenuItem,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TablePagination,
-  TableRow,
-  TextField,
+    Card,
+    Grid,
+    MenuItem,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    TableRow,
+    TextField,
 } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { makeStyles } from '@mui/styles';
@@ -125,7 +125,7 @@ export default function PaymentHistoryPage() {
   const searchParams = useSearchParams();
   const searchType = searchParams.get('type') || 'ประวัติการชำระเงิน';
   const menuList = [
-    'ประวัติผู้กู้',
+    'ประวัติลูกค้า',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',

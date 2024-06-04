@@ -18,9 +18,9 @@ import { FC, useState } from 'react';
 
 const menuNav = [
   { name: 'หน้าแรก', path: '/' },
-  { name: 'สร้างการ์ดผู้กู้', path: '/addCard' },
+  { name: 'สร้างการ์ดลูกค้า', path: '/addCard' },
   { name: 'เพิ่มการ์ดผ่อนสินค้า', path: '/addInstallment' },
-  { name: 'ค้นหาผู้กู้', path: '/findCustomer' },
+  { name: 'ค้นหาลูกค้า', path: '/findCustomer' },
 ];
 
 interface NavbarProps {

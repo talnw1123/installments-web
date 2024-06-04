@@ -83,7 +83,7 @@ export default function PayPage() {
   const nationID = searchParams.get('nationID') || 'defaultID';
   const searchType = searchParams.get('type') || 'ชำระเงิน';
   const menuList = [
-    'ประวัติผู้กู้',
+    'ประวัติลูกค้า',
     'ชำระเงิน',
     'ประวัติการชำระเงิน',
     'สร้างการ์ดผ่อนสินค้า',
@@ -269,7 +269,6 @@ export default function PayPage() {
     const today = dayjs();
     const birth = dayjs(birthDate);
     return today.diff(birth, 'year');
-
   };
 
   function calculateAccruedInterest(bill, paymentIndex) {
@@ -397,7 +396,7 @@ export default function PayPage() {
                     )}
                   </Grid>
                 </Grid>
-                <Grid item xs={3}  className={classes.column} >
+                <Grid item xs={3} className={classes.column}>
                   <TextField
                     id="billNumber"
                     label="เลือกบิลที่ต้องการจ่าย"
