@@ -30,7 +30,7 @@ const HomePage = () => {
         }));
         setGraphData(dataWithConvertedDates);
       } catch (error) {
-        console.error('Error fetching data', error);
+        console.error('Error fetching data2', error);
       }
     };
     fetchData();
